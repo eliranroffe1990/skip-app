@@ -1,4 +1,4 @@
-const VERSION = 'skip-v5';
+const VERSION = 'skip-v6';
 
 // Install - skip waiting immediately
 self.addEventListener('install', event => {
