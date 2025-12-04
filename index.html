@@ -188,6 +188,7 @@
     .confirm-btn { flex: 1; padding: 14px; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Heebo', sans-serif; }
     .confirm-btn.cancel { background: #F0F0F0; color: var(--text); }
     .confirm-btn.danger { background: var(--danger); color: #fff; }
+    .confirm-btn.primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; }
     
     /* SETTINGS */
     .settings-screen { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
@@ -227,12 +228,10 @@
     .plat-note { font-size: 11px; margin: 8px 0 0; }
     .plat-note.gold { color: var(--secondary); }
     .plat-note.green { color: var(--primary); }
-    .btn-share { width: 100%; padding: 16px; font-size: 15px; font-weight: 600; color: #fff; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border: none; border-radius: 12px; cursor: pointer; font-family: 'Heebo', sans-serif; margin-top: 10px; }
-    
-    /* Platform Links */
     .plat-links { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
     .plat-link { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; text-decoration: none; border-radius: 20px; font-size: 11px; font-weight: 500; }
     .plat-link:active { transform: scale(0.95); }
+    .btn-share { width: 100%; padding: 16px; font-size: 15px; font-weight: 600; color: #fff; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border: none; border-radius: 12px; cursor: pointer; font-family: 'Heebo', sans-serif; margin-top: 10px; }
     
     /* Summary Screen */
     .summary-screen { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
@@ -254,6 +253,9 @@
     .btn-sum.primary { color: #fff; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
     .btn-sum.secondary { color: var(--primary); background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     .btn-sum.outline { color: var(--text-light); background: transparent; }
+    
+    /* Investment section titles */
+    .inv-section-title { font-size: 16px; font-weight: 700; color: var(--text); margin: 20px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--primary); }
   </style>
 </head>
 <body>
@@ -529,9 +531,8 @@
           <p>👨‍👩‍👧 שתף את ההורים!</p>
         </div>
         <div class="warn-box">
-          <p>⚠️ מידע להמחשה בלבד.</p>
+          <p>⚠️ מידע להמחשה בלבד. אין זו המלצה להשקעה.</p>
         </div>
-        <h3 class="sec-title" id="platTitle">🏦 פלטפורמות</h3>
         <div id="platList"></div>
         <button class="btn-share hidden" id="btnShare">📤 שתף עם ההורים</button>
         <button class="btn-next" id="btnFinish" style="margin-top:20px;">🎉 סיום וסיכום</button>
@@ -541,6 +542,7 @@
     <!-- SUMMARY -->
     <div class="screen summary-screen" id="s-summary">
       <div class="sum-head">
+        <button class="back-btn light" id="backFromSummary" style="position:absolute;top:50px;right:20px;"><span>➜</span> חזרה</button>
         <div class="sum-emoji">🏆</div>
         <h1 class="sum-title">כל הכבוד!</h1>
         <p class="sum-subtitle">הנה הסיכום שלך</p>
@@ -574,8 +576,22 @@
         </div>
         <div class="sum-actions">
           <button class="btn-sum primary" id="btnBackToDash">🏠 חזרה לדשבורד</button>
-          <button class="btn-sum secondary" id="btnNewGame">🔄 התחל מחדש</button>
-          <button class="btn-sum outline" id="btnShareSum">📤 שתף את ההישג</button>
+          <button class="btn-sum secondary" id="btnShareSum">📤 שתף את ההישג</button>
+          <button class="btn-sum outline" id="btnNewGame">🔄 התחל מחדש (איפוס)</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- BACK CONFIRM DIALOG -->
+    <div class="confirm" id="backConfirm">
+      <div class="confirm-box">
+        <div class="confirm-icon">🔙</div>
+        <h3>לחזור אחורה?</h3>
+        <p id="backConfirmText">מה תרצה לעשות?</p>
+        <div class="confirm-btns" style="flex-direction:column;gap:8px;">
+          <button class="confirm-btn primary" id="btnBackSave">💾 שמור וחזור</button>
+          <button class="confirm-btn cancel" id="btnBackNoSave">🚫 חזור בלי לשמור</button>
+          <button class="confirm-btn cancel" id="btnBackCancel" style="background:transparent;color:var(--text-light);">❌ ביטול</button>
         </div>
       </div>
     </div>
@@ -598,6 +614,7 @@ let app = {
 };
 
 let selectedCat = null;
+let pendingBack = null; // For back confirmation
 
 // ========== CONSTANTS ==========
 const CATS = [
@@ -613,18 +630,56 @@ const CATS = [
   { id: 'other', name: 'אחר', icon: '📦', color: '#607D8B' }
 ];
 
+// EXPANDED INVESTMENT OPTIONS
 const PLAT_ADULT = [
-  { name: 'Pillow', icon: '🛋️', desc: 'השקעות פסיביות', tags: ['תיקים מוכנים'], note: 'למתחילים', cls: 'gold', url: 'https://www.pillow.co.il', phone: '' },
-  { name: 'Shares', icon: '📊', desc: 'מניות', tags: ['ללא עמלות'], note: 'לצעירים', cls: 'gold', url: 'https://www.shares.io/he', phone: '' },
-  { name: 'eToro', icon: '🌐', desc: 'גלובלי', tags: ['CopyTrader'], note: 'גלובלי', cls: 'gold', url: 'https://www.etoro.com/he', phone: '' },
-  { name: 'קופת גמל - מיטב', icon: '🏦', desc: 'הטבות מס', tags: ['הטבות'], note: 'טווח ארוך', cls: 'gold', url: 'https://www.meitav.co.il', phone: '*6411' }
+  // Apps & Platforms
+  { section: '📱 אפליקציות השקעה', items: [
+    { name: 'Pillow', icon: '🛋️', desc: 'השקעות פסיביות בתיקים מוכנים', tags: ['למתחילים', 'פסיבי'], note: 'מינימום 100₪', cls: 'gold', url: 'https://www.pillow.co.il', phone: '' },
+    { name: 'Shares', icon: '📊', desc: 'מסחר במניות ללא עמלות', tags: ['ללא עמלות', 'מניות'], note: 'לצעירים ומתחילים', cls: 'gold', url: 'https://www.shares.io/he', phone: '' },
+    { name: 'eToro', icon: '🌐', desc: 'פלטפורמה גלובלית עם CopyTrader', tags: ['גלובלי', 'CopyTrader'], note: 'השקעה חברתית', cls: 'gold', url: 'https://www.etoro.com/he', phone: '' },
+    { name: 'Plus500', icon: '📈', desc: 'CFD ומסחר במט"ח', tags: ['מט"ח', 'CFD'], note: 'למתקדמים', cls: 'gold', url: 'https://www.plus500.co.il', phone: '' },
+    { name: 'Interactive Brokers', icon: '🏛️', desc: 'ברוקר בינלאומי מוביל', tags: ['מקצועי', 'גלובלי'], note: 'עמלות נמוכות', cls: 'gold', url: 'https://www.interactivebrokers.com', phone: '' },
+  ]},
+  // Banks
+  { section: '🏦 בנקים', items: [
+    { name: 'בנק הפועלים - השקעות', icon: '🏦', desc: 'פיקדונות וקרנות נאמנות', tags: ['בטוח', 'מגוון'], note: 'יעוץ אישי', cls: 'gold', url: 'https://www.bankhapoalim.co.il', phone: '*2407' },
+    { name: 'בנק לאומי - שוק ההון', icon: '🏛️', desc: 'מסחר בבורסה דרך הבנק', tags: ['מניות', 'אג"ח'], note: 'פלטפורמה מתקדמת', cls: 'gold', url: 'https://www.leumi.co.il', phone: '*5522' },
+    { name: 'בנק דיסקונט', icon: '🏦', desc: 'השקעות ופיקדונות', tags: ['פיקדון', 'חיסכון'], note: 'ריביות תחרותיות', cls: 'gold', url: 'https://www.discountbank.co.il', phone: '*3366' },
+  ]},
+  // Pension & Long-term
+  { section: '📊 פנסיה וחיסכון ארוך טווח', items: [
+    { name: 'מיטב דש', icon: '💼', desc: 'קרן פנסיה וקופת גמל', tags: ['פנסיה', 'הטבות מס'], note: 'מובילה בתשואות', cls: 'gold', url: 'https://www.meitav.co.il', phone: '*6411' },
+    { name: 'אלטשולר שחם', icon: '📊', desc: 'קרנות פנסיה וגמל', tags: ['פנסיה', 'גמל'], note: 'דמי ניהול נמוכים', cls: 'gold', url: 'https://www.as-invest.co.il', phone: '*6212' },
+    { name: 'הראל', icon: '🛡️', desc: 'ביטוח וחיסכון', tags: ['ביטוח', 'פנסיה'], note: 'חבילות משולבות', cls: 'gold', url: 'https://www.harel-group.co.il', phone: '*4700' },
+    { name: 'מגדל', icon: '🏢', desc: 'קרנות פנסיה וביטוח', tags: ['פנסיה', 'ביטוח'], note: 'מגוון מסלולים', cls: 'gold', url: 'https://www.migdal.co.il', phone: '*4949' },
+    { name: 'כלל ביטוח', icon: '🏛️', desc: 'פנסיה והשקעות', tags: ['פנסיה', 'גמל'], note: 'יציבות לאורך זמן', cls: 'gold', url: 'https://www.clalbit.co.il', phone: '*5765' },
+  ]},
+  // Crypto
+  { section: '🪙 קריפטו', items: [
+    { name: 'Bit2C', icon: '₿', desc: 'בורסת קריפטו ישראלית', tags: ['ביטקוין', 'קריפטו'], note: 'בשקלים', cls: 'gold', url: 'https://www.bit2c.co.il', phone: '' },
+    { name: 'Binance', icon: '🔶', desc: 'בורסת קריפטו גלובלית', tags: ['קריפטו', 'גלובלי'], note: 'מאות מטבעות', cls: 'gold', url: 'https://www.binance.com', phone: '' },
+  ]}
 ];
 
 const PLAT_MINOR = [
-  { name: 'חיסכון לכל ילד', icon: '👶', desc: 'תוכנית ממשלתית', note: 'ההורים מוסיפים', cls: 'green', url: 'https://www.btl.gov.il/benefits/Children_Allowance/hesconLayeled', phone: '*6050' },
-  { name: 'בנק הפועלים - נוער', icon: '🏦', desc: 'חשבון נוער', note: 'עם ההורים', cls: 'green', url: 'https://www.bankhapoalim.co.il', phone: '*2407' },
-  { name: 'בנק לאומי - נוער', icon: '🏛️', desc: 'חשבון נוער', note: 'עם ההורים', cls: 'green', url: 'https://www.leumi.co.il', phone: '*5522' },
-  { name: 'קופת גמל להשקעה', icon: '🎓', desc: 'חיסכון לטווח ארוך', note: 'ההורים מפקידים', cls: 'green', url: 'https://www.meitav.co.il', phone: '*6411' }
+  { section: '👶 תוכניות ממשלתיות', items: [
+    { name: 'חיסכון לכל ילד', icon: '👶', desc: 'תוכנית ממשלתית - 50₪ לחודש מהמדינה', tags: ['ממשלתי', 'אוטומטי'], note: 'עד גיל 18', cls: 'green', url: 'https://www.btl.gov.il/benefits/Children_Allowance/hesconLayeled', phone: '*6050' },
+  ]},
+  { section: '🏦 חשבונות נוער בבנקים', items: [
+    { name: 'בנק הפועלים - נוער', icon: '🏦', desc: 'חשבון נוער עם כרטיס נטען', tags: ['כרטיס', 'אפליקציה'], note: 'גילאי 12-18', cls: 'green', url: 'https://www.bankhapoalim.co.il', phone: '*2407' },
+    { name: 'בנק לאומי - PEPPER', icon: '🌶️', desc: 'חשבון דיגיטלי לצעירים', tags: ['דיגיטלי', 'קל'], note: 'ללא עמלות', cls: 'green', url: 'https://www.leumi.co.il', phone: '*5522' },
+    { name: 'בנק דיסקונט - נוער', icon: '🏦', desc: 'חשבון לנוער', tags: ['חיסכון', 'כרטיס'], note: 'הטבות לנוער', cls: 'green', url: 'https://www.discountbank.co.il', phone: '*3366' },
+    { name: 'בנק מזרחי - ZOOM', icon: '📱', desc: 'חשבון דיגיטלי לנוער', tags: ['דיגיטלי', 'מגניב'], note: 'אפליקציה ידידותית', cls: 'green', url: 'https://www.mizrahi-tefahot.co.il', phone: '*6860' },
+  ]},
+  { section: '💰 חיסכון עם ההורים', items: [
+    { name: 'קופת גמל להשקעה', icon: '🎓', desc: 'חיסכון לטווח ארוך עם הטבות מס', tags: ['הטבות מס', 'ארוך טווח'], note: 'ההורים פותחים', cls: 'green', url: 'https://www.meitav.co.il', phone: '*6411' },
+    { name: 'תוכנית חיסכון בנקאית', icon: '🏦', desc: 'פיקדון בנקאי לילדים', tags: ['בטוח', 'ריבית'], note: 'סכום חודשי קבוע', cls: 'green', url: '', phone: '' },
+    { name: 'קרן נאמנות', icon: '📈', desc: 'השקעה בשוק ההון', tags: ['מגוון', 'מקצועי'], note: 'ההורים מנהלים', cls: 'green', url: '', phone: '' },
+  ]},
+  { section: '📚 למידה פיננסית', items: [
+    { name: 'פעמונים', icon: '🔔', desc: 'חינוך פיננסי לנוער', tags: ['חינמי', 'חינוך'], note: 'סדנאות וקורסים', cls: 'green', url: 'https://www.paamonim.org', phone: '' },
+    { name: 'הבורסה לניירות ערך', icon: '📊', desc: 'מידע ולמידה על שוק ההון', tags: ['מידע', 'חינוך'], note: 'אתר הבורסה', cls: 'green', url: 'https://www.tase.co.il', phone: '' },
+  ]}
 ];
 
 // ========== STORAGE ==========
@@ -650,6 +705,34 @@ function goTo(id) {
   if (id === 's-set') updateSet();
   if (id === 's-inv') updateInv();
   if (id === 's-summary') updateSummary();
+}
+
+// ========== BACK CONFIRMATION ==========
+function showBackConfirm(targetScreen, hasChanges) {
+  if (!hasChanges) {
+    goTo(targetScreen);
+    return;
+  }
+  pendingBack = targetScreen;
+  document.getElementById('backConfirm').classList.add('on');
+}
+
+function hideBackConfirm() {
+  document.getElementById('backConfirm').classList.remove('on');
+  pendingBack = null;
+}
+
+function backWithSave() {
+  save();
+  if (pendingBack) goTo(pendingBack);
+  hideBackConfirm();
+}
+
+function backWithoutSave() {
+  // Reload from storage to discard changes
+  load();
+  if (pendingBack) goTo(pendingBack);
+  hideBackConfirm();
 }
 
 // ========== TERMS ==========
@@ -955,23 +1038,27 @@ function updateInv() {
   if (isAdult) {
     document.getElementById('u18inv').classList.add('hidden');
     document.getElementById('btnShare').classList.add('hidden');
-    document.getElementById('platTitle').textContent = '🏦 פלטפורמות';
   } else {
     document.getElementById('u18inv').classList.remove('hidden');
     document.getElementById('btnShare').classList.remove('hidden');
-    document.getElementById('platTitle').textContent = '🎓 אפשרויות';
   }
   
-  document.getElementById('platList').innerHTML = plats.map(p => {
-    let tags = '';
-    if (p.tags) tags = '<div class="plat-tags">' + p.tags.map(t => '<span class="plat-tag">'+t+'</span>').join('') + '</div>';
-    const icon = p.cls === 'gold' ? '✨' : '📝';
-    let links = '<div class="plat-links">';
-    if (p.url) links += '<a href="'+p.url+'" target="_blank" class="plat-link">🌐 לאתר</a>';
-    if (p.phone) links += '<a href="tel:'+p.phone.replace('*','')+'" class="plat-link">📞 '+p.phone+'</a>';
-    links += '</div>';
-    return '<div class="plat"><div class="plat-icon">'+p.icon+'</div><div class="plat-info"><p class="plat-name">'+p.name+'</p><p class="plat-desc">'+p.desc+'</p>'+tags+'<p class="plat-note '+p.cls+'">'+icon+' '+p.note+'</p>'+links+'</div></div>';
-  }).join('');
+  let html = '';
+  plats.forEach(section => {
+    html += '<h3 class="inv-section-title">' + section.section + '</h3>';
+    section.items.forEach(p => {
+      let tags = '';
+      if (p.tags) tags = '<div class="plat-tags">' + p.tags.map(t => '<span class="plat-tag">'+t+'</span>').join('') + '</div>';
+      const icon = p.cls === 'gold' ? '✨' : '📝';
+      let links = '<div class="plat-links">';
+      if (p.url) links += '<a href="'+p.url+'" target="_blank" class="plat-link">🌐 לאתר</a>';
+      if (p.phone) links += '<a href="tel:'+p.phone.replace('*','')+'" class="plat-link">📞 '+p.phone+'</a>';
+      links += '</div>';
+      html += '<div class="plat"><div class="plat-icon">'+p.icon+'</div><div class="plat-info"><p class="plat-name">'+p.name+'</p><p class="plat-desc">'+p.desc+'</p>'+tags+'<p class="plat-note '+p.cls+'">'+icon+' '+p.note+'</p>'+links+'</div></div>';
+    });
+  });
+  
+  document.getElementById('platList').innerHTML = html;
 }
 
 function share() {
@@ -987,7 +1074,6 @@ function updateSummary() {
   document.getElementById('sumMoney').textContent = '₪' + Math.round(app.points * 0.5);
   document.getElementById('sumStreak').textContent = app.streak;
   
-  // Custom tip based on performance
   const money = Math.round(app.points * 0.5);
   let tip = '';
   if (money >= 500) tip = 'וואו! חסכת סכום משמעותי! זה הזמן לחשוב על השקעה אמיתית לטווח ארוך.';
@@ -1019,11 +1105,17 @@ function setupEvents() {
   document.getElementById('btnStart').addEventListener('click', () => goTo('s-name'));
   
   // Name
-  document.getElementById('backToSplash').addEventListener('click', () => goTo('s-splash'));
+  document.getElementById('backToSplash').addEventListener('click', () => {
+    const hasChanges = document.getElementById('inName').value.trim() !== '';
+    showBackConfirm('s-splash', hasChanges);
+  });
   document.getElementById('btnName').addEventListener('click', saveName);
   
   // Age
-  document.getElementById('backToName').addEventListener('click', () => goTo('s-name'));
+  document.getElementById('backToName').addEventListener('click', () => {
+    const hasChanges = document.getElementById('inAge').value !== '';
+    showBackConfirm('s-name', hasChanges);
+  });
   document.getElementById('inAge').addEventListener('input', checkAge);
   document.getElementById('btnAge').addEventListener('click', saveAge);
   
@@ -1039,6 +1131,7 @@ function setupEvents() {
   document.getElementById('timeYear').addEventListener('click', () => setTime('year'));
   
   // Dashboard
+  document.getElementById('backFromDash').addEventListener('click', () => goTo('s-splash'));
   document.getElementById('btnSettings').addEventListener('click', () => goTo('s-set'));
   document.getElementById('tabSum').addEventListener('click', () => switchTab('sum'));
   document.getElementById('tabHis').addEventListener('click', () => switchTab('his'));
@@ -1070,13 +1163,19 @@ function setupEvents() {
   document.getElementById('btnShare').addEventListener('click', share);
   document.getElementById('btnFinish').addEventListener('click', () => goTo('s-summary'));
   
-  // Summary
-  document.getElementById('btnBackToDash').addEventListener('click', () => goTo('s-dash'));
+  // Summary - back to dashboard WITHOUT deleting data
+  document.getElementById('backFromSummary').addEventListener('click', () => goTo('s-inv'));
+  document.getElementById('btnBackToDash').addEventListener('click', () => {
+    save(); // Save data
+    goTo('s-dash');
+  });
   document.getElementById('btnNewGame').addEventListener('click', newGame);
   document.getElementById('btnShareSum').addEventListener('click', shareSummary);
   
-  // Dashboard back button
-  document.getElementById('backFromDash').addEventListener('click', () => goTo('s-splash'));
+  // Back Confirmation Dialog
+  document.getElementById('btnBackSave').addEventListener('click', backWithSave);
+  document.getElementById('btnBackNoSave').addEventListener('click', backWithoutSave);
+  document.getElementById('btnBackCancel').addEventListener('click', hideBackConfirm);
 }
 
 // ========== INIT ==========
