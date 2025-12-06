@@ -1,43 +1,38 @@
-const VERSION = 'skip-v6';
+// SKIPAPP Service Worker v2.0
+const CACHE_NAME = 'skipapp-v2.0';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/manifest.json'
+];
 
-// Install - skip waiting immediately
+// Install
 self.addEventListener('install', event => {
-  self.skipWaiting();
-});
-
-// Activate - clear ALL old caches and take control
-self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.map(key => {
-          if (key !== VERSION) {
-            console.log('Deleting old cache:', key);
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => {
-      return self.clients.claim();
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
   );
 });
 
-// Fetch - Network first, then cache
+// Fetch
 self.addEventListener('fetch', event => {
   event.respondWith(
     fetch(event.request)
-      .then(response => {
-        // Clone and cache
-        const clone = response.clone();
-        caches.open(VERSION).then(cache => {
-          cache.put(event.request, clone);
-        });
-        return response;
-      })
-      .catch(() => {
-        // Offline - try cache
-        return caches.match(event.request);
-      })
+      .catch(() => caches.match(event.request))
+  );
+});
+
+// Activate
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
   );
 });
