@@ -5,750 +5,1029 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="SKIP">
+  <meta name="apple-mobile-web-app-title" content="SKIPAPP">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#5B8A72">
-  <title>SKIP - משחק החיסכון החכם</title>
+  <meta name="theme-color" content="#A8D5BA">
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCBmaWxsPSIjQThENUJBIiB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIi8+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iNjAiIGZpbGw9IiNGRkYiIG9wYWNpdHk9IjAuMyIvPjxwYXRoIGQ9Ik02MCA5NmwyMCAyMCA0MC00MCIgc3Ryb2tlPSIjRkZGIiBzdHJva2Utd2lkdGg9IjEwIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=">
+  <title>SKIPAPP - משחק החיסכון החכם</title>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; overflow: hidden; }
-    body { font-family: 'Heebo', sans-serif; background: linear-gradient(135deg, #5B8A72 0%, #7BA896 100%); min-height: 100vh; }
-    body.en { font-family: 'Poppins', sans-serif; direction: ltr; }
-    body.en .app { direction: ltr; }
-    :root { --primary: #5B8A72; --primary-light: #7BA896; --secondary: #E8B86D; --accent: #F4A261; --bg: #FDF8F3; --text: #2D3436; --text-light: #636E72; --danger: #E74C3C; }
-    .app { width: 100%; height: 100vh; max-width: 500px; margin: 0 auto; background: var(--bg); position: relative; overflow: hidden; }
-    @media (min-width: 501px) { body { display: flex; justify-content: center; align-items: center; padding: 20px; } .app { height: 90vh; max-height: 850px; border-radius: 40px; box-shadow: 0 50px 100px rgba(0,0,0,0.3); } }
-    .screen { display: none; width: 100%; height: 100%; flex-direction: column; overflow: hidden; }
-    .screen.active { display: flex; }
-    .hidden { display: none !important; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-tap-highlight-color: transparent; 
+    }
     
-    /* LANGUAGE SELECT */
-    .lang-screen { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); align-items: center; justify-content: center; padding: 40px 20px; text-align: center; }
-    .lang-logo { width: 120px; height: 120px; background: rgba(255,255,255,0.2); border-radius: 30px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; position: relative; }
-    .lang-logo-icon { font-size: 60px; }
-    .lang-logo-play { position: absolute; bottom: -5px; right: -5px; width: 40px; height: 40px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-    .lang-logo-play::after { content: ''; width: 0; height: 0; border-left: 12px solid var(--primary); border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
-    .lang-title { font-size: 50px; font-weight: 800; color: #fff; letter-spacing: -1px; margin-bottom: 5px; }
-    .lang-sub { font-size: 14px; color: rgba(255,255,255,0.9); margin-bottom: 40px; }
-    .lang-label { font-size: 16px; color: #fff; margin-bottom: 20px; font-weight: 500; }
-    .lang-btns { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 280px; }
-    .lang-btn { padding: 18px 30px; font-size: 18px; font-weight: 600; border: none; border-radius: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: transform 0.2s; }
-    .lang-btn:active { transform: scale(0.95); }
-    .lang-btn.he { background: #fff; color: var(--primary); }
-    .lang-btn.en { background: rgba(255,255,255,0.2); color: #fff; border: 2px solid rgba(255,255,255,0.5); }
-    .lang-flag { font-size: 28px; }
-
-    /* TERMS */
-    .terms-screen { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 40px 20px 20px; }
-    .terms-header { text-align: center; margin-bottom: 15px; flex-shrink: 0; }
-    .terms-icon { font-size: 45px; margin-bottom: 8px; }
-    .terms-title { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 5px; }
-    .terms-sub { font-size: 13px; color: rgba(255,255,255,0.9); }
-    .terms-box { background: #fff; border-radius: 18px; padding: 18px; flex: 1; overflow-y: auto; margin-bottom: 12px; min-height: 0; }
-    .terms-sec { margin-bottom: 14px; }
-    .terms-sec:last-child { margin-bottom: 0; }
-    .terms-sec h3 { font-size: 14px; color: var(--text); margin-bottom: 6px; }
-    .terms-sec p, .terms-sec li { font-size: 12px; color: var(--text-light); line-height: 1.5; }
-    .terms-sec ul { padding-right: 18px; margin: 0; }
-    body.en .terms-sec ul { padding-right: 0; padding-left: 18px; }
-    .terms-sec li { margin-bottom: 3px; }
-    .terms-footer { flex-shrink: 0; }
-    .terms-check { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
-    .check-label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
-    .check-label input { width: 24px; height: 24px; cursor: pointer; flex-shrink: 0; margin-top: 2px; accent-color: #fff; }
-    .check-text { font-size: 13px; color: #fff; line-height: 1.4; }
-    .btn-accept { width: 100%; padding: 16px; font-size: 16px; font-weight: 600; color: #888; background: #ccc; border: none; border-radius: 14px; cursor: not-allowed; font-family: inherit; transition: all 0.3s ease; }
-    .btn-accept.enabled { color: var(--primary); background: #fff; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
+    html, body { 
+      height: 100%; 
+      overflow: hidden; 
+    }
     
-    /* SPLASH */
-    .splash-screen { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); align-items: center; justify-content: center; padding: 40px 20px; text-align: center; position: relative; }
-    .splash-logo { width: 120px; height: 120px; background: rgba(255,255,255,0.2); border-radius: 30px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; position: relative; animation: float 3s ease-in-out infinite; }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-    .splash-logo-icon { font-size: 60px; }
-    .splash-logo-play { position: absolute; bottom: -5px; right: -5px; width: 40px; height: 40px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-    .splash-logo-play::after { content: ''; width: 0; height: 0; border-left: 12px solid var(--primary); border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
-    .splash-title { font-size: 60px; font-weight: 800; color: #fff; letter-spacing: -2px; }
-    .splash-sub { font-size: 16px; color: rgba(255,255,255,0.9); margin-top: 5px; }
-    .btn-start { margin-top: 50px; padding: 16px 50px; font-size: 17px; font-weight: 600; color: var(--primary); background: #fff; border: none; border-radius: 50px; cursor: pointer; font-family: inherit; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
-    .splash-back { position: absolute; top: 40px; right: 20px; }
-    body.en .splash-back { right: auto; left: 20px; }
+    body { 
+      font-family: 'Assistant', 'Rubik', sans-serif; 
+      background: linear-gradient(135deg, #A8D5BA 0%, #D4E9DF 100%); 
+      min-height: 100vh; 
+    }
     
-    /* FORM */
-    .form-screen { background: var(--bg); padding: 50px 20px 20px; }
-    .back-btn { display: inline-flex; align-items: center; gap: 5px; background: #fff; border: none; border-radius: 10px; padding: 8px 14px; cursor: pointer; color: var(--text); font-size: 13px; font-weight: 500; font-family: inherit; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    .back-btn:active { transform: scale(0.95); }
-    .back-btn.light { background: rgba(255,255,255,0.2); color: #fff; box-shadow: none; }
-    .form-title { font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 5px; }
-    .form-sub { font-size: 14px; color: var(--text-light); margin-bottom: 25px; }
-    .input { width: 100%; padding: 16px; font-size: 16px; border: 2px solid #E0E0E0; border-radius: 12px; outline: none; font-family: inherit; background: #fff; }
-    .input:focus { border-color: var(--primary); }
-    .btn-next { width: 100%; margin-top: 25px; padding: 16px; font-size: 16px; font-weight: 600; color: #fff; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border: none; border-radius: 12px; cursor: pointer; font-family: inherit; }
-    .info-box { background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%); border-radius: 12px; padding: 15px; margin-top: 15px; }
-    .info-box p { margin: 0; font-size: 13px; color: var(--text); line-height: 1.5; }
-    .opt { background: #fff; border-radius: 16px; padding: 18px; margin-bottom: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 2px solid transparent; display: flex; align-items: center; gap: 14px; }
-    .opt:active { transform: scale(0.98); border-color: var(--primary); }
-    .opt-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
-    .opt-icon.green { background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); }
-    .opt-icon.orange { background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%); }
-    .opt h3 { font-size: 16px; font-weight: 600; color: var(--text); margin: 0 0 3px; }
-    .opt p { font-size: 12px; color: var(--text-light); margin: 0; }
+    :root {
+      --primary: #A8D5BA;
+      --primary-dark: #7EBA9B;
+      --secondary: #FFD9A0;
+      --accent: #FFB88C;
+      --bg: #FFFCF7;
+      --text: #3D3D3D;
+      --text-light: #757575;
+      --success: #90D4A8;
+      --danger: #FF9B9B;
+      --card-bg: #FFFFFF;
+    }
     
-    /* GROUP SHARE */
-    .share-box { background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); border-radius: 16px; padding: 20px; margin-top: 20px; text-align: center; }
-    .share-box h4 { font-size: 15px; color: var(--text); margin: 0 0 15px; }
-    .share-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-    .share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 25px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
-    .share-btn.whatsapp { background: #25D366; color: #fff; }
-    .share-btn.email { background: #EA4335; color: #fff; }
-    .share-btn.copy { background: #fff; color: var(--text); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .app { 
+      width: 100%; 
+      height: 100vh; 
+      max-width: 500px; 
+      margin: 0 auto; 
+      background: var(--bg); 
+      position: relative; 
+      overflow: hidden; 
+    }
     
-    /* DASHBOARD */
-    .dash-screen { background: var(--bg); }
-    .dash-head { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 40px 20px 50px; border-radius: 0 0 25px 25px; flex-shrink: 0; }
-    .dash-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-    .dash-greet { font-size: 13px; color: rgba(255,255,255,0.8); margin: 0 0 3px; }
-    .dash-title { font-size: 20px; font-weight: 700; color: #fff; margin: 0; }
-    .head-acts { display: flex; gap: 8px; }
-    .streak { background: rgba(255,255,255,0.2); border-radius: 10px; padding: 7px 12px; color: #fff; font-size: 13px; }
-    .set-btn { background: rgba(255,255,255,0.2); border: none; border-radius: 10px; padding: 7px 12px; color: #fff; font-size: 16px; cursor: pointer; }
-    .stats { background: #fff; border-radius: 16px; padding: 18px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; justify-content: space-around; text-align: center; }
-    .stat { flex: 1; }
-    .stat-div { width: 1px; background: #EEE; margin: 0 10px; }
-    .stat-lbl { font-size: 10px; color: var(--text-light); margin: 0; }
-    .stat-val { font-size: 22px; font-weight: 800; margin: 3px 0 0; }
-    .stat-val.p { color: var(--primary); }
-    .stat-val.s { color: var(--secondary); }
-    .stat-val.a { color: var(--accent); }
-    .tabs { display: flex; background: #fff; border-radius: 12px; padding: 4px; margin: -15px 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; z-index: 10; flex-shrink: 0; }
-    .tab { flex: 1; padding: 10px; border: none; border-radius: 10px; background: transparent; color: var(--text-light); font-weight: 600; font-size: 12px; cursor: pointer; font-family: inherit; }
-    .tab.on { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; }
-    .dash-content { padding: 15px 20px 100px; flex: 1; overflow-y: auto; min-height: 0; }
-    .period-sel { display: flex; background: #F0F0F0; border-radius: 10px; padding: 4px; margin: 15px 0; }
-    .period { flex: 1; padding: 10px; border: none; border-radius: 8px; background: transparent; color: var(--text-light); font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; }
-    .period.on { background: #fff; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-    .sum-card { border-radius: 14px; padding: 18px; text-align: center; }
-    .sum-card.green { background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); }
-    .sum-card.orange { background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%); }
-    .sum-lbl { font-size: 11px; color: var(--text-light); margin: 0; }
-    .sum-val { font-size: 26px; font-weight: 800; margin: 5px 0 0; }
-    .sum-val.p { color: var(--primary); }
-    .sum-val.s { color: var(--secondary); }
-    .sec-title { font-size: 14px; font-weight: 600; color: var(--text); margin: 20px 0 12px; }
-    .cat-card { background: #fff; border-radius: 14px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-    .cat-title { font-size: 13px; font-weight: 600; color: var(--text); margin: 0 0 12px; }
-    .cat-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F0F0F0; }
-    .cat-item:last-child { border-bottom: none; }
-    .cat-info { display: flex; align-items: center; gap: 8px; }
-    .cat-icon { font-size: 18px; }
-    .cat-name { font-size: 13px; color: var(--text); }
-    .cat-pts { font-size: 13px; font-weight: 600; color: var(--primary); }
-    .empty { background: #fff; border-radius: 16px; padding: 40px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    .empty-icon { font-size: 50px; margin-bottom: 15px; }
-    .empty p { color: var(--text-light); font-size: 14px; line-height: 1.6; margin: 0; }
-    .skip { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 12px; cursor: pointer; }
-    .skip-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-    .skip-det { flex: 1; }
-    .skip-name { font-size: 14px; font-weight: 600; color: var(--text); margin: 0; }
-    .skip-meta { font-size: 11px; color: var(--text-light); margin: 2px 0 0; }
-    .skip-pts { background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: 700; color: var(--primary); }
-    .fab { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border: none; box-shadow: 0 10px 30px rgba(91,138,114,0.4); cursor: pointer; font-size: 30px; color: #fff; display: flex; align-items: center; justify-content: center; z-index: 50; }
-    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: flex-end; justify-content: center; z-index: 100; }
-    .modal.on { display: flex; }
-    .modal-box { background: var(--bg); width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 25px 20px 35px; max-height: 85vh; overflow-y: auto; }
-    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-    .modal-title { font-size: 20px; font-weight: 700; color: var(--text); margin: 0; }
-    .modal-del { background: #FFE5E5; border: none; border-radius: 10px; padding: 8px 12px; font-size: 16px; cursor: pointer; }
-    .cats-lbl { font-size: 13px; font-weight: 600; color: var(--text); margin: 0 0 10px; }
-    .cats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
-    .cat-opt { background: #fff; border-radius: 12px; padding: 10px 5px; text-align: center; cursor: pointer; border: 2px solid transparent; }
-    .cat-opt.sel { border-color: var(--primary); background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); }
-    .cat-opt-icon { font-size: 22px; margin-bottom: 4px; }
-    .cat-opt-name { font-size: 10px; color: var(--text-light); }
-    .pts-prev { background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); border-radius: 12px; padding: 15px; text-align: center; margin: 15px 0; }
-    .pts-prev-lbl { font-size: 12px; color: var(--text-light); margin: 0; }
-    .pts-prev-val { font-size: 28px; font-weight: 800; color: var(--primary); margin: 5px 0 0; }
-    .pts-prev-money { font-size: 14px; color: var(--text-light); margin: 0; }
-    .btn-cancel { width: 100%; margin-top: 10px; padding: 14px; font-size: 14px; font-weight: 500; color: var(--text-light); background: transparent; border: none; cursor: pointer; font-family: inherit; }
-    .confirm { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 200; }
-    .confirm.on { display: flex; }
-    .confirm-box { background: #fff; border-radius: 20px; padding: 30px; width: 85%; max-width: 320px; text-align: center; }
-    .confirm-icon { font-size: 50px; margin-bottom: 15px; }
-    .confirm-box h3 { font-size: 20px; font-weight: 700; color: var(--text); margin: 0 0 10px; }
-    .confirm-box p { font-size: 14px; color: var(--text-light); margin: 0 0 20px; }
-    .confirm-btns { display: flex; gap: 10px; flex-direction: column; }
-    .confirm-btn { flex: 1; padding: 14px; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
-    .confirm-btn.cancel { background: #F0F0F0; color: var(--text); }
-    .confirm-btn.danger { background: var(--danger); color: #fff; }
-    .confirm-btn.primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; }
-    .settings-screen { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
-    .set-head { padding: 50px 20px 30px; flex-shrink: 0; }
-    .set-head-inner { display: flex; align-items: center; gap: 15px; }
-    .set-title { font-size: 24px; font-weight: 700; color: #fff; margin: 0; }
-    .set-content { flex: 1; background: var(--bg); border-radius: 25px 25px 0 0; padding: 25px 20px; overflow-y: auto; min-height: 0; }
-    .set-card { background: #fff; border-radius: 16px; padding: 18px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-    .set-card-title { font-size: 14px; font-weight: 600; color: var(--text); margin: 0 0 15px; }
-    .set-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
-    .set-row:last-child { border-bottom: none; }
-    .set-lbl { font-size: 13px; color: var(--text-light); }
-    .set-val { font-size: 13px; font-weight: 600; color: var(--text); }
-    .btn-set { width: 100%; padding: 14px; font-size: 14px; font-weight: 500; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; margin-bottom: 10px; }
-    .btn-set.outline { background: #fff; color: var(--text); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-    .btn-set.danger { background: #FFE5E5; color: var(--danger); }
-    .ver { text-align: center; font-size: 12px; color: var(--text-light); margin-top: 20px; }
-    .invest-screen { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
-    .inv-head { padding: 50px 20px 25px; flex-shrink: 0; }
-    .inv-head-inner { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-    .inv-title { font-size: 24px; font-weight: 700; color: #fff; margin: 0; }
-    .inv-sum { background: rgba(255,255,255,0.2); border-radius: 16px; padding: 20px; text-align: center; }
-    .inv-sum-lbl { font-size: 13px; color: rgba(255,255,255,0.8); margin: 0 0 5px; }
-    .inv-sum-val { font-size: 36px; font-weight: 800; color: #fff; margin: 0; }
-    .inv-content { flex: 1; background: var(--bg); border-radius: 25px 25px 0 0; padding: 25px 20px; overflow-y: auto; min-height: 0; }
-    .warn-box { background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%); border-radius: 12px; padding: 12px; margin-bottom: 15px; }
-    .warn-box p { margin: 0; font-size: 12px; color: var(--text); }
-    .plat { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; gap: 12px; }
-    .plat-icon { width: 45px; height: 45px; background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-    .plat-info { flex: 1; }
-    .plat-name { font-size: 14px; font-weight: 600; color: var(--text); margin: 0; }
-    .plat-desc { font-size: 12px; color: var(--text-light); margin: 3px 0 0; }
-    .plat-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
-    .plat-tag { background: #F5F5F5; padding: 3px 8px; border-radius: 15px; font-size: 10px; color: var(--text-light); }
-    .plat-note { font-size: 11px; margin: 8px 0 0; }
-    .plat-note.gold { color: var(--secondary); }
-    .plat-note.green { color: var(--primary); }
-    .btn-share { width: 100%; padding: 16px; font-size: 15px; font-weight: 600; color: #fff; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border: none; border-radius: 12px; cursor: pointer; font-family: inherit; margin-top: 10px; }
-    .plat-links { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-    .plat-link { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; text-decoration: none; border-radius: 20px; font-size: 11px; font-weight: 500; }
-    .summary-screen { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); position: relative; }
-    .sum-head { padding: 50px 20px 25px; flex-shrink: 0; text-align: center; }
-    .sum-emoji { font-size: 80px; margin-bottom: 15px; }
-    .sum-title { font-size: 28px; font-weight: 800; color: #fff; margin: 0 0 5px; }
-    .sum-subtitle { font-size: 14px; color: rgba(255,255,255,0.9); margin: 0; }
-    .sum-content { flex: 1; background: var(--bg); border-radius: 25px 25px 0 0; padding: 25px 20px; overflow-y: auto; min-height: 0; }
-    .sum-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .sum-stat { background: #fff; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-    .sum-stat-icon { font-size: 30px; margin-bottom: 8px; }
-    .sum-stat-val { font-size: 24px; font-weight: 800; color: var(--primary); margin: 0; }
-    .sum-stat-lbl { font-size: 12px; color: var(--text-light); margin: 5px 0 0; }
-    .sum-message { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-    .sum-message h3 { font-size: 16px; color: var(--text); margin: 0 0 10px; }
-    .sum-message p { font-size: 13px; color: var(--text-light); line-height: 1.6; margin: 0; }
-    .sum-actions { display: flex; flex-direction: column; gap: 10px; }
-    .btn-sum { width: 100%; padding: 16px; font-size: 15px; font-weight: 600; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; }
-    .btn-sum.primary { color: #fff; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
-    .btn-sum.secondary { color: var(--primary); background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .btn-sum.outline { color: var(--text-light); background: transparent; }
+    @media (min-width: 501px) {
+      body { 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        padding: 20px; 
+      }
+      .app { 
+        height: 90vh; 
+        max-height: 850px; 
+        border-radius: 40px; 
+        box-shadow: 0 30px 80px rgba(0,0,0,0.15); 
+      }
+    }
+    
+    .screen { 
+      display: none; 
+      width: 100%; 
+      height: 100%; 
+      flex-direction: column; 
+      overflow: hidden; 
+    }
+    
+    .screen.active { 
+      display: flex; 
+      animation: fadeIn 0.4s ease; 
+    }
+    
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(10px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+    
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 0 0 30px 30px;
+      box-shadow: 0 4px 20px rgba(168, 213, 186, 0.3);
+    }
+    
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 5px;
+    }
+    
+    .header .subtitle {
+      font-size: 15px;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+    
+    /* Play Icon */
+    .play-icon {
+      width: 120px;
+      height: 120px;
+      margin: 40px auto 30px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--success) 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 40px rgba(168, 213, 186, 0.4);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .play-icon::before {
+      content: '';
+      width: 0;
+      height: 0;
+      border-top: 25px solid transparent;
+      border-bottom: 25px solid transparent;
+      border-right: 40px solid white;
+      margin-right: -5px;
+    }
+    
+    /* Content */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+      transition: all 0.3s ease;
+    }
+    
+    .card:active {
+      transform: scale(0.98);
+    }
+    
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      letter-spacing: -0.3px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(168, 213, 186, 0.3);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(2px);
+      box-shadow: 0 3px 10px rgba(168, 213, 186, 0.3);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      color: var(--text);
+      box-shadow: 0 6px 20px rgba(255, 217, 160, 0.3);
+    }
+    
+    /* Input */
+    input, select {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #E8E8E8;
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(168, 213, 186, 0.1);
+    }
+    
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+    }
+    
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+    
+    /* Date Display */
+    .date-display {
+      background: linear-gradient(135deg, #F5F5F5 0%, #FAFAFA 100%);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
+      border: 1px solid #E8E8E8;
+    }
+    
+    .date-hebrew {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+    
+    .date-gregorian {
+      font-size: 14px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+    
+    /* Skip Entry */
+    .skip-entry {
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      border-right: 4px solid var(--primary);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .skip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .skip-category {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .skip-amount {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--success);
+    }
+    
+    .skip-date {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 5px;
+    }
+    
+    .skip-description {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    
+    /* Form Group */
+    .form-group {
+      margin-bottom: 18px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 15px;
+    }
+    
+    /* Bottom Nav */
+    .bottom-nav {
+      background: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid #E8E8E8;
+      box-shadow: 0 -2px 20px rgba(0,0,0,0.05);
+    }
+    
+    .nav-btn {
+      background: none;
+      border: none;
+      padding: 10px 15px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 10px;
+      font-family: inherit;
+    }
+    
+    .nav-btn.active {
+      color: var(--primary-dark);
+      background: rgba(168, 213, 186, 0.1);
+    }
+    
+    /* Back Button */
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.3);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+    
+    .back-btn:active {
+      transform: scale(0.9);
+      background: rgba(255,255,255,0.4);
+    }
+    
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-light);
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #E8E8E8;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+    }
+    
+    .empty-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+    
+    .empty-text {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    
+    /* Success Message */
+    .success-msg {
+      background: linear-gradient(135deg, var(--success) 0%, #7FC99C 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(144, 212, 168, 0.3);
+    }
+    
+    /* Category Badge */
+    .category-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: rgba(168, 213, 186, 0.15);
+      color: var(--primary-dark);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    
+    /* Welcome Screen Specific */
+    .welcome-content {
+      text-align: center;
+      padding: 40px 30px;
+    }
+    
+    .app-title {
+      font-size: 48px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 15px;
+      letter-spacing: -1px;
+    }
+    
+    .app-tagline {
+      font-size: 18px;
+      color: var(--text-light);
+      margin-bottom: 40px;
+      font-weight: 500;
+    }
+    
+    .feature-list {
+      text-align: right;
+      margin: 30px 0;
+    }
+    
+    .feature-item {
+      padding: 15px;
+      margin-bottom: 10px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--success) 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    
+    .feature-text {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      text-align: right;
+    }
   </style>
 </head>
 <body>
   <div class="app">
-    
-    <!-- LANGUAGE SELECT -->
-    <div class="screen lang-screen active" id="s-lang">
-      <div class="lang-logo">
-        <span class="lang-logo-icon">⏭️</span>
-        <div class="lang-logo-play"></div>
+    <!-- Welcome Screen -->
+    <div class="screen active" id="welcome">
+      <div class="header">
+        <h1>SKIPAPP</h1>
+        <div class="subtitle">דלג על ההוצאה, צבור לעתיד</div>
       </div>
-      <h1 class="lang-title">SKIP</h1>
-      <p class="lang-sub">Smart Saving Game</p>
-      <p class="lang-label">🌐 Choose Language / בחר שפה</p>
-      <div class="lang-btns">
-        <button class="lang-btn he" id="btnLangHe"><span class="lang-flag">🇮🇱</span> עברית</button>
-        <button class="lang-btn en" id="btnLangEn"><span class="lang-flag">🇺🇸</span> English</button>
-      </div>
-    </div>
-    
-    <!-- TERMS -->
-    <div class="screen terms-screen" id="s-terms">
-      <div class="terms-header"><div class="terms-icon">📋</div><h1 class="terms-title" data-he="תנאי שימוש" data-en="Terms of Use">תנאי שימוש</h1><p class="terms-sub" data-he="לפני שנתחיל, חשוב שתקרא ותסכים" data-en="Please read and agree before we start">לפני שנתחיל, חשוב שתקרא ותסכים</p></div>
-      <div class="terms-box" id="termsBox">
-        <div class="terms-sec"><h3>🎯 <span data-he="מטרת האפליקציה" data-en="App Purpose">מטרת האפליקציה</span></h3><p data-he="SKIP היא אפליקציה חינוכית לפיתוח מודעות פיננסית." data-en="SKIP is an educational app for developing financial awareness.">SKIP היא אפליקציה חינוכית לפיתוח מודעות פיננסית.</p></div>
-        <div class="terms-sec"><h3>⚠️ <span data-he="הבהרות" data-en="Disclaimers">הבהרות</span></h3><ul><li data-he="האפליקציה היא כלי חינוכי בלבד" data-en="The app is for educational purposes only">האפליקציה היא כלי חינוכי בלבד</li><li data-he="הנקודות הם להמחשה בלבד" data-en="Points are for illustration only">הנקודות הם להמחשה בלבד</li><li data-he="הצעות ההשקעה הן מידע כללי" data-en="Investment suggestions are general information">הצעות ההשקעה הן מידע כללי</li></ul></div>
-        <div class="terms-sec"><h3>👶 <span data-he="מתחת ל-18" data-en="Under 18">מתחת ל-18</span></h3><p data-he="השימוש מותנה בהסכמת הורה." data-en="Use requires parental consent.">השימוש מותנה בהסכמת הורה.</p></div>
-        <div class="terms-sec"><h3>🔒 <span data-he="פרטיות" data-en="Privacy">פרטיות</span></h3><ul><li data-he="המידע נשמר מקומית בלבד" data-en="Data is stored locally only">המידע נשמר מקומית בלבד</li><li data-he="אנחנו לא אוספים מידע" data-en="We do not collect any data">אנחנו לא אוספים מידע</li></ul></div>
-      </div>
-      <div class="terms-footer">
-        <div class="terms-check"><label class="check-label"><input type="checkbox" id="chkTerms"><span class="check-text" data-he="קראתי ואני מסכים/ה לתנאי השימוש" data-en="I have read and agree to the Terms of Use">קראתי ואני מסכים/ה לתנאי השימוש</span></label></div>
-        <button class="btn-accept" id="btnAccept" data-he-off="⬜ יש לסמן את תיבת האישור" data-en-off="⬜ Please check the box above" data-he-on="אני מסכים/ה - בואו נתחיל! 🚀" data-en-on="I agree - Let's start! 🚀">⬜ יש לסמן את תיבת האישור</button>
-      </div>
-    </div>
-    
-    <!-- SPLASH -->
-    <div class="screen splash-screen" id="s-splash">
-      <div class="splash-back"><button class="back-btn light" id="backToTerms"><span>➜</span> <span data-he="תנאים" data-en="Terms">תנאים</span></button></div>
-      <div class="splash-logo">
-        <span class="splash-logo-icon">⏭️</span>
-        <div class="splash-logo-play"></div>
-      </div>
-      <h1 class="splash-title">SKIP</h1>
-      <p class="splash-sub" data-he="דלג על ההוצאה. צבור לעתיד." data-en="Skip the expense. Save for the future.">דלג על ההוצאה. צבור לעתיד.</p>
-      <button class="btn-start" id="btnStart" data-he="בואו נתחיל 🚀" data-en="Let's Start 🚀">בואו נתחיל 🚀</button>
-    </div>
-    
-    <!-- NAME -->
-    <div class="screen form-screen" id="s-name">
-      <button class="back-btn" id="backToSplash"><span>➜</span> <span data-he="חזרה" data-en="Back">חזרה</span></button>
-      <h2 class="form-title" data-he="👋 שלום!" data-en="👋 Hello!">👋 שלום!</h2>
-      <p class="form-sub" data-he="איך קוראים לך?" data-en="What's your name?">איך קוראים לך?</p>
-      <input type="text" class="input" id="inName" data-he-placeholder="השם שלך..." data-en-placeholder="Your name...">
-      <button class="btn-next" id="btnName" data-he="המשך" data-en="Continue">המשך</button>
-    </div>
-    
-    <!-- AGE -->
-    <div class="screen form-screen" id="s-age">
-      <button class="back-btn" id="backToName"><span>➜</span> <span data-he="חזרה" data-en="Back">חזרה</span></button>
-      <h2 class="form-title" data-he="🎂 בן/בת כמה?" data-en="🎂 How old are you?">🎂 בן/בת כמה?</h2>
-      <p class="form-sub" data-he="זה יעזור להתאים אפשרויות" data-en="This helps us customize options">זה יעזור להתאים אפשרויות</p>
-      <input type="number" class="input" id="inAge" data-he-placeholder="הגיל שלך..." data-en-placeholder="Your age..." min="10" max="99">
-      <div class="info-box hidden" id="u18info"><p data-he="👨‍👩‍👧 מתחת ל-18? ההורים יעזרו!" data-en="👨‍👩‍👧 Under 18? Parents can help!">👨‍👩‍👧 מתחת ל-18? ההורים יעזרו!</p></div>
-      <button class="btn-next" id="btnAge" data-he="המשך" data-en="Continue">המשך</button>
-    </div>
-    
-    <!-- MODE -->
-    <div class="screen form-screen" id="s-mode">
-      <button class="back-btn" id="backToAge"><span>➜</span> <span data-he="חזרה" data-en="Back">חזרה</span></button>
-      <h2 class="form-title"><span data-he="היי" data-en="Hey">היי</span> <span id="greetName"></span>! 🎯</h2>
-      <p class="form-sub" data-he="איך תרצה לשחק?" data-en="How would you like to play?">איך תרצה לשחק?</p>
-      <div class="opt" id="modeSolo"><div class="opt-icon green">👤</div><div><h3 data-he="משחק יחיד" data-en="Solo Game">משחק יחיד</h3><p data-he="התחרה מול עצמך" data-en="Compete against yourself">התחרה מול עצמך</p></div></div>
-      <div class="opt" id="modeGroup"><div class="opt-icon orange">👥</div><div><h3 data-he="קבוצה" data-en="Group">קבוצה</h3><p data-he="התחרו יחד" data-en="Compete together">התחרו יחד</p></div></div>
-      <div class="share-box hidden" id="groupShare">
-        <h4 data-he="📤 שתף עם חברים" data-en="📤 Share with friends">📤 שתף עם חברים</h4>
-        <div class="share-btns">
-          <button class="share-btn whatsapp" id="shareWhatsapp">📱 WhatsApp</button>
-          <button class="share-btn email" id="shareEmail">✉️ Email</button>
-          <button class="share-btn copy" id="shareCopy" data-he="📋 העתק לינק" data-en="📋 Copy Link">📋 העתק לינק</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- TIME -->
-    <div class="screen form-screen" id="s-time">
-      <button class="back-btn" id="backToMode"><span>➜</span> <span data-he="חזרה" data-en="Back">חזרה</span></button>
-      <h2 class="form-title" data-he="⏱️ כמה זמן?" data-en="⏱️ How long?">⏱️ כמה זמן?</h2>
-      <p class="form-sub" data-he="בחר משך אתגר" data-en="Choose challenge duration">בחר משך אתגר</p>
-      <div class="opt" id="timeWeek"><div class="opt-icon green">📅</div><div><h3 data-he="שבוע" data-en="Week">שבוע</h3><p data-he="אתגר קצר" data-en="Short challenge">אתגר קצר</p></div></div>
-      <div class="opt" id="timeMonth"><div class="opt-icon orange">🗓️</div><div><h3 data-he="חודש" data-en="Month">חודש</h3><p data-he="בניית הרגל" data-en="Build a habit">בניית הרגל</p></div></div>
-      <div class="opt" id="timeYear"><div class="opt-icon green">🎯</div><div><h3 data-he="שנה" data-en="Year">שנה</h3><p data-he="שינוי חיים" data-en="Life change">שינוי חיים</p></div></div>
-    </div>
-    
-    <!-- DASHBOARD -->
-    <div class="screen dash-screen" id="s-dash">
-      <div class="dash-head">
-        <div class="dash-top">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <button class="back-btn light" id="backFromDash" style="margin:0;padding:6px 10px;font-size:12px;"><span>🏠</span></button>
-            <div><p class="dash-greet"><span data-he="שלום" data-en="Hello">שלום</span> <span id="dashName"></span> 👋</p><h1 class="dash-title" data-he="הדשבורד שלך" data-en="Your Dashboard">הדשבורד שלך</h1></div>
+      
+      <div class="content">
+        <div class="welcome-content">
+          <div class="play-icon"></div>
+          
+          <div class="app-title">SKIPAPP</div>
+          <div class="app-tagline">משחק החיסכון שישנה לך את החיים</div>
+          
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-icon">✓</div>
+              <div class="feature-text">תעד כל רכישה שוויתרת עליה</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">💰</div>
+              <div class="feature-text">צבור נקודות וראה את החיסכון שלך</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">📊</div>
+              <div class="feature-text">עקוב אחרי ההתקדמות שלך</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">🎯</div>
+              <div class="feature-text">השג מטרות והתפתח</div>
+            </div>
           </div>
-          <div class="head-acts"><div class="streak">🔥 <span id="streakN">0</span></div><button class="set-btn" id="btnSettings">⚙️</button></div>
-        </div>
-        <div class="stats">
-          <div class="stat"><p class="stat-lbl" data-he="נקודות" data-en="Points">נקודות</p><p class="stat-val p" id="totPts">0</p></div>
-          <div class="stat-div"></div>
-          <div class="stat"><p class="stat-lbl" data-he="שווי" data-en="Value">שווי</p><p class="stat-val s" id="totMoney">₪0</p></div>
-          <div class="stat-div"></div>
-          <div class="stat"><p class="stat-lbl" data-he="דילוגים" data-en="Skips">דילוגים</p><p class="stat-val a" id="totSkips">0</p></div>
-        </div>
-      </div>
-      <div class="tabs">
-        <button class="tab on" id="tabSum">📊 <span data-he="סיכום" data-en="Summary">סיכום</span></button>
-        <button class="tab" id="tabHis">📝 <span data-he="היסטוריה" data-en="History">היסטוריה</span></button>
-        <button class="tab" id="tabInv">💰 <span data-he="השקעות" data-en="Invest">השקעות</span></button>
-      </div>
-      <div class="dash-content">
-        <div id="sumContent">
-          <div class="period-sel"><button class="period on" id="pWeek" data-he="השבוע" data-en="This Week">השבוע</button><button class="period" id="pMonth" data-he="החודש" data-en="This Month">החודש</button><button class="period" id="pYear" data-he="השנה" data-en="This Year">השנה</button></div>
-          <div class="sum-grid"><div class="sum-card green"><p class="sum-lbl"><span data-he="נקודות" data-en="Points">נקודות</span> <span id="prdLbl" data-he="השבוע" data-en="This Week">השבוע</span></p><p class="sum-val p" id="prdPts">0</p></div><div class="sum-card orange"><p class="sum-lbl" data-he="שווי" data-en="Value">שווי</p><p class="sum-val s" id="prdMoney">₪0</p></div></div>
-          <div class="cat-card"><h4 class="cat-title">📊 <span data-he="לפי קטגוריה" data-en="By Category">לפי קטגוריה</span></h4><div id="catsList"></div></div>
-        </div>
-        <div id="hisContent" class="hidden"><h3 class="sec-title" data-he="הדילוגים שלך" data-en="Your Skips">הדילוגים שלך</h3><div id="skipsList"></div></div>
-      </div>
-      <button class="fab" id="fabAdd">⏭️</button>
-      <div class="modal" id="addModal">
-        <div class="modal-box">
-          <div class="modal-head"><h3 class="modal-title" id="modalTitle" data-he="⏭️ דילגת?" data-en="⏭️ Skipped?">⏭️ דילגת?</h3><button class="modal-del hidden" id="modalDel">🗑️</button></div>
-          <p class="cats-lbl" data-he="קטגוריה" data-en="Category">קטגוריה</p><div class="cats-grid" id="catsGrid"></div>
-          <input type="text" class="input" id="inItem" data-he-placeholder="על מה דילגת?" data-en-placeholder="What did you skip?" style="margin-bottom:10px">
-          <input type="number" class="input" id="inPrice" data-he-placeholder="כמה זה עלה? (₪)" data-en-placeholder="How much was it? (₪)">
-          <div class="pts-prev hidden" id="ptsPreview"><p class="pts-prev-lbl" id="prevLbl" data-he="תצבור" data-en="You'll earn">תצבור</p><p class="pts-prev-val" id="prevPts">+0</p><p class="pts-prev-money" id="prevMoney">(₪0)</p></div>
-          <button class="btn-next" id="btnSave" data-he="הוסף ⏭️" data-en="Add ⏭️">הוסף ⏭️</button>
-          <button class="btn-cancel" id="btnCancelAdd" data-he="ביטול" data-en="Cancel">ביטול</button>
-        </div>
-      </div>
-      <div class="confirm" id="delConfirm">
-        <div class="confirm-box"><div class="confirm-icon">🗑️</div><h3 data-he="למחוק?" data-en="Delete?">למחוק?</h3><p id="delName" data-he="הדילוג יימחק." data-en="This skip will be deleted.">הדילוג יימחק.</p>
-          <div class="confirm-btns"><button class="confirm-btn cancel" id="btnCancelDel" data-he="ביטול" data-en="Cancel">ביטול</button><button class="confirm-btn danger" id="btnConfirmDel" data-he="מחק" data-en="Delete">מחק</button></div>
+          
+          <button class="btn btn-primary" onclick="showScreen('home')">בואו נתחיל!</button>
         </div>
       </div>
     </div>
-    
-    <!-- SETTINGS -->
-    <div class="screen settings-screen" id="s-set">
-      <div class="set-head"><div class="set-head-inner"><button class="back-btn light" id="backFromSet"><span>➜</span> <span data-he="חזרה" data-en="Back">חזרה</span></button><h2 class="set-title" data-he="הגדרות" data-en="Settings">הגדרות</h2></div></div>
-      <div class="set-content">
-        <div class="set-card"><h4 class="set-card-title">👤 <span data-he="פרופיל" data-en="Profile">פרופיל</span></h4><div class="set-row"><span class="set-lbl" data-he="שם" data-en="Name">שם</span><span class="set-val" id="setName">-</span></div><div class="set-row"><span class="set-lbl" data-he="גיל" data-en="Age">גיל</span><span class="set-val" id="setAge">-</span></div><div class="set-row"><span class="set-lbl" data-he="מצב" data-en="Mode">מצב</span><span class="set-val" id="setMode">-</span></div><div class="set-row"><span class="set-lbl" data-he="שפה" data-en="Language">שפה</span><span class="set-val" id="setLang">עברית</span></div></div>
-        <div class="set-card"><h4 class="set-card-title">📊 <span data-he="סטטיסטיקות" data-en="Statistics">סטטיסטיקות</span></h4><div class="set-row"><span class="set-lbl" data-he="דילוגים" data-en="Skips">דילוגים</span><span class="set-val" id="setSkips" style="color:var(--primary)">0</span></div><div class="set-row"><span class="set-lbl" data-he="נקודות" data-en="Points">נקודות</span><span class="set-val" id="setPts" style="color:var(--primary)">0</span></div><div class="set-row"><span class="set-lbl" data-he="שווי" data-en="Value">שווי</span><span class="set-val" id="setMoney" style="color:var(--secondary)">₪0</span></div></div>
-        <button class="btn-set outline" id="btnTerms">📋 <span data-he="תנאי שימוש" data-en="Terms of Use">תנאי שימוש</span></button>
-        <button class="btn-set outline" id="btnChangeLang">🌐 <span data-he="שנה שפה" data-en="Change Language">שנה שפה</span></button>
-        <button class="btn-set danger" id="btnReset">🗑️ <span data-he="איפוס" data-en="Reset">איפוס</span></button>
-        <p class="ver">SKIP v1.0 © 2025</p>
+
+    <!-- Home Screen -->
+    <div class="screen" id="home">
+      <div class="header">
+        <h1>SKIPAPP</h1>
+        <div class="subtitle">שלום, משתמש!</div>
       </div>
-      <div class="confirm" id="resetConfirm">
-        <div class="confirm-box"><div class="confirm-icon">⚠️</div><h3 data-he="לאפס?" data-en="Reset?">לאפס?</h3><p data-he="כל הנתונים יימחקו." data-en="All data will be deleted.">כל הנתונים יימחקו.</p>
-          <div class="confirm-btns"><button class="confirm-btn cancel" id="btnCancelReset" data-he="ביטול" data-en="Cancel">ביטול</button><button class="confirm-btn danger" id="btnConfirmReset" data-he="אפס" data-en="Reset">אפס</button></div>
+      
+      <div class="content">
+        <div class="date-display">
+          <div class="date-hebrew" id="hebrewDate">טוען תאריך...</div>
+          <div class="date-gregorian" id="gregorianDate">Loading...</div>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="totalPoints">0</div>
+            <div class="stat-label">נקודות כולל</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="todaySkips">0</div>
+            <div class="stat-label">דילוגים היום</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="weekStreak">0</div>
+            <div class="stat-label">רצף ימים</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="totalSavings">₪0</div>
+            <div class="stat-label">חסכון כולל</div>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="showScreen('addSkip')" style="margin-bottom: 15px;">
+          + הוסף דילוג חדש
+        </button>
+        
+        <div class="card">
+          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;">הדילוגים האחרונים</h3>
+          <div id="recentSkips">
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <div class="empty-text">עדיין אין דילוגים</div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    
-    <!-- INVESTMENTS -->
-    <div class="screen invest-screen" id="s-inv">
-      <div class="inv-head">
-        <div class="inv-head-inner"><button class="back-btn light" id="backFromInv"><span>➜</span> <span data-he="חזרה" data-en="Back">חזרה</span></button><h2 class="inv-title">💰 <span data-he="השקעות" data-en="Investments">השקעות</span></h2></div>
-        <div class="inv-sum"><p class="inv-sum-lbl" data-he="הכסף שחסכת:" data-en="Money you saved:">הכסף שחסכת:</p><p class="inv-sum-val" id="invTot">₪0</p></div>
-      </div>
-      <div class="inv-content">
-        <div class="info-box hidden" id="u18inv"><p data-he="👨‍👩‍👧 שתף את ההורים!" data-en="👨‍👩‍👧 Share with your parents!">👨‍👩‍👧 שתף את ההורים!</p></div>
-        <div class="warn-box"><p data-he="⚠️ מידע להמחשה בלבד. התייעץ עם יועץ פיננסי." data-en="⚠️ For illustration only. Consult a financial advisor.">⚠️ מידע להמחשה בלבד. התייעץ עם יועץ פיננסי.</p></div>
-        <div id="platList"></div>
-        <button class="btn-share hidden" id="btnShare" data-he="📤 שתף עם ההורים" data-en="📤 Share with parents">📤 שתף עם ההורים</button>
-        <button class="btn-next" id="btnFinish" style="margin-top:20px;" data-he="🎉 סיום וסיכום" data-en="🎉 Finish & Summary">🎉 סיום וסיכום</button>
+      
+      <div class="bottom-nav">
+        <button class="nav-btn active" onclick="showScreen('home')">🏠 בית</button>
+        <button class="nav-btn" onclick="showScreen('history')">📊 היסטוריה</button>
+        <button class="nav-btn" onclick="showScreen('stats')">📈 סטטיסטיקות</button>
+        <button class="nav-btn" onclick="showScreen('settings')">⚙️ הגדרות</button>
       </div>
     </div>
-    
-    <!-- SUMMARY -->
-    <div class="screen summary-screen" id="s-summary">
-      <button class="back-btn light" id="backFromSummary" style="position:absolute;top:40px;right:20px;z-index:10;"><span>➜</span> <span data-he="חזרה" data-en="Back">חזרה</span></button>
-      <div class="sum-head"><div class="sum-emoji">🏆</div><h1 class="sum-title" data-he="כל הכבוד!" data-en="Great Job!">כל הכבוד!</h1><p class="sum-subtitle" data-he="הנה הסיכום שלך" data-en="Here's your summary">הנה הסיכום שלך</p></div>
-      <div class="sum-content">
-        <div class="sum-stats">
-          <div class="sum-stat"><div class="sum-stat-icon">⏭️</div><p class="sum-stat-val" id="sumSkips">0</p><p class="sum-stat-lbl" data-he="דילוגים" data-en="Skips">דילוגים</p></div>
-          <div class="sum-stat"><div class="sum-stat-icon">⭐</div><p class="sum-stat-val" id="sumPts">0</p><p class="sum-stat-lbl" data-he="נקודות" data-en="Points">נקודות</p></div>
-          <div class="sum-stat"><div class="sum-stat-icon">💰</div><p class="sum-stat-val" id="sumMoney">₪0</p><p class="sum-stat-lbl" data-he="נחסך" data-en="Saved">נחסך</p></div>
-          <div class="sum-stat"><div class="sum-stat-icon">🔥</div><p class="sum-stat-val" id="sumStreak">0</p><p class="sum-stat-lbl" data-he="רצף" data-en="Streak">רצף</p></div>
+
+    <!-- Add Skip Screen -->
+    <div class="screen" id="addSkip">
+      <div class="header">
+        <button class="back-btn" onclick="showScreen('home')">←</button>
+        <h1>דילוג חדש</h1>
+        <div class="subtitle">תעד רכישה שדילגת עליה</div>
+      </div>
+      
+      <div class="content">
+        <div class="date-display">
+          <div class="date-hebrew" id="addSkipHebrewDate">טוען תאריך...</div>
+          <div class="date-gregorian" id="addSkipGregorianDate">Loading...</div>
         </div>
-        <div class="sum-message"><h3>💡 <span data-he="מה עכשיו?" data-en="What's next?">מה עכשיו?</span></h3><p id="sumTip" data-he="המשך לדלג על הוצאות מיותרות!" data-en="Keep skipping unnecessary expenses!">המשך לדלג על הוצאות מיותרות!</p></div>
-        <div class="sum-actions">
-          <button class="btn-sum primary" id="btnBackToDash" data-he="🏠 חזרה לדשבורד" data-en="🏠 Back to Dashboard">🏠 חזרה לדשבורד</button>
-          <button class="btn-sum secondary" id="btnShareSum" data-he="📤 שתף את ההישג" data-en="📤 Share Achievement">📤 שתף את ההישג</button>
-          <button class="btn-sum outline" id="btnNewGame" data-he="🔄 התחל מחדש (מאפס נתונים)" data-en="🔄 Start Over (resets data)">🔄 התחל מחדש (מאפס נתונים)</button>
-        </div>
+        
+        <form id="skipForm" onsubmit="addSkip(event)">
+          <div class="form-group">
+            <label>קטגוריה</label>
+            <select id="category" required>
+              <option value="">בחר קטגוריה</option>
+              <option value="אוכל ומשקאות">🍕 אוכל ומשקאות</option>
+              <option value="אופנה וביגוד">👕 אופנה וביגוד</option>
+              <option value="בידור">🎬 בידור</option>
+              <option value="טכנולוגיה">📱 טכנולוגיה</option>
+              <option value="יופי וטיפוח">💄 יופי וטיפוח</option>
+              <option value="תחבורה">🚗 תחבורה</option>
+              <option value="מנויים">📺 מנויים</option>
+              <option value="קניות דחף">🛍️ קניות דחף</option>
+              <option value="חברתי">🎉 חברתי</option>
+              <option value="אחר">📦 אחר</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>סכום (₪)</label>
+            <input type="number" id="amount" placeholder="כמה חסכת?" required min="1" step="0.01">
+          </div>
+          
+          <div class="form-group">
+            <label>תיאור (אופציונלי)</label>
+            <input type="text" id="description" placeholder="על מה ויתרת?">
+          </div>
+          
+          <button type="submit" class="btn btn-primary">שמור דילוג</button>
+        </form>
       </div>
     </div>
-    
+
+    <!-- History Screen -->
+    <div class="screen" id="history">
+      <div class="header">
+        <h1>היסטוריה</h1>
+        <div class="subtitle">כל הדילוגים שלך</div>
+      </div>
+      
+      <div class="content">
+        <div class="date-display">
+          <div class="date-hebrew" id="historyHebrewDate">טוען תאריך...</div>
+          <div class="date-gregorian" id="historyGregorianDate">Loading...</div>
+        </div>
+        
+        <div id="allSkips">
+          <div class="loading">
+            <div class="spinner"></div>
+            <div>טוען נתונים...</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bottom-nav">
+        <button class="nav-btn" onclick="showScreen('home')">🏠 בית</button>
+        <button class="nav-btn active" onclick="showScreen('history')">📊 היסטוריה</button>
+        <button class="nav-btn" onclick="showScreen('stats')">📈 סטטיסטיקות</button>
+        <button class="nav-btn" onclick="showScreen('settings')">⚙️ הגדרות</button>
+      </div>
+    </div>
+
+    <!-- Stats Screen -->
+    <div class="screen" id="stats">
+      <div class="header">
+        <h1>סטטיסטיקות</h1>
+        <div class="subtitle">הנתונים שלך במבט אחד</div>
+      </div>
+      
+      <div class="content">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="statsTotal">0</div>
+            <div class="stat-label">סה"כ דילוגים</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statsWeek">0</div>
+            <div class="stat-label">השבוע</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statsMonth">0</div>
+            <div class="stat-label">החודש</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statsAvg">₪0</div>
+            <div class="stat-label">ממוצע דילוג</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;">קטגוריות פופולריות</h3>
+          <div id="topCategories">
+            <div class="empty-state">
+              <div class="empty-icon">📊</div>
+              <div class="empty-text">אין מספיק נתונים</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bottom-nav">
+        <button class="nav-btn" onclick="showScreen('home')">🏠 בית</button>
+        <button class="nav-btn" onclick="showScreen('history')">📊 היסטוריה</button>
+        <button class="nav-btn active" onclick="showScreen('stats')">📈 סטטיסטיקות</button>
+        <button class="nav-btn" onclick="showScreen('settings')">⚙️ הגדרות</button>
+      </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div class="screen" id="settings">
+      <div class="header">
+        <h1>הגדרות</h1>
+        <div class="subtitle">התאם אישית את החוויה</div>
+      </div>
+      
+      <div class="content">
+        <div class="card">
+          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;">אודות SKIPAPP</h3>
+          <p style="color: var(--text-light); line-height: 1.6; margin-bottom: 10px;">
+            SKIPAPP היא אפליקציה חינוכית שמבוססת על מחקר בכלכלה התנהגותית. 
+            האפליקציה מלמדת אוריינות פיננסית באמצעות תיעוד הוצאות שנמנעו.
+          </p>
+          <p style="color: var(--text-light); line-height: 1.6;">
+            גרסה: 2.0<br>
+            פותח על ידי: ד"ר אלירן<br>
+            מבוסס על מתודולוגיית AST
+          </p>
+        </div>
+        
+        <div class="card">
+          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;">פעולות</h3>
+          <button class="btn btn-secondary" onclick="exportData()" style="margin-bottom: 10px;">
+            📥 ייצא נתונים
+          </button>
+          <button class="btn btn-secondary" onclick="if(confirm('האם אתה בטוח? פעולה זו תמחק את כל הנתונים!')) { clearAllData(); }">
+            🗑️ נקה את כל הנתונים
+          </button>
+        </div>
+      </div>
+      
+      <div class="bottom-nav">
+        <button class="nav-btn" onclick="showScreen('home')">🏠 בית</button>
+        <button class="nav-btn" onclick="showScreen('history')">📊 היסטוריה</button>
+        <button class="nav-btn" onclick="showScreen('stats')">📈 סטטיסטיקות</button>
+        <button class="nav-btn active" onclick="showScreen('settings')">⚙️ הגדרות</button>
+      </div>
+    </div>
   </div>
 
-<script>
-let app={termsAccepted:false,name:'',age:null,mode:null,time:null,points:0,streak:0,skips:[],period:'week',editId:null,lang:'he'};
-let selectedCat=null;
-
-const CATS=[
-  {id:'food',name:{he:'אוכל',en:'Food'},icon:'🍔',color:'#FF6B6B'},
-  {id:'fashion',name:{he:'אופנה',en:'Fashion'},icon:'👕',color:'#9B59B6'},
-  {id:'fun',name:{he:'בילויים',en:'Entertainment'},icon:'🎬',color:'#3498DB'},
-  {id:'tech',name:{he:'טכנולוגיה',en:'Technology'},icon:'📱',color:'#1ABC9C'},
-  {id:'beauty',name:{he:'יופי',en:'Beauty'},icon:'💄',color:'#E91E63'},
-  {id:'transport',name:{he:'תחבורה',en:'Transport'},icon:'🚗',color:'#FF9800'},
-  {id:'subs',name:{he:'מנויים',en:'Subscriptions'},icon:'📺',color:'#673AB7'},
-  {id:'impulse',name:{he:'אימפולסיבי',en:'Impulse'},icon:'🛒',color:'#F44336'},
-  {id:'social',name:{he:'חברתי',en:'Social'},icon:'🎁',color:'#4CAF50'},
-  {id:'other',name:{he:'אחר',en:'Other'},icon:'📦',color:'#607D8B'}
-];
-
-const PLAT_ADULT=[
-  {name:'Pillow',icon:'🛋️',desc:{he:'השקעות פסיביות',en:'Passive investments'},tags:['תיקים מוכנים'],note:{he:'מומלץ למתחילים',en:'Recommended for beginners'},cls:'gold',url:'https://www.pillow.co.il',phone:'',cat:'פסיבי'},
-  {name:'Sharesies',icon:'📊',desc:{he:'מניות וקרנות סל',en:'Stocks & ETFs'},tags:['ללא עמלות'],note:{he:'מתאים לצעירים',en:'Great for young adults'},cls:'gold',url:'https://www.sharesies.co.il',phone:'',cat:'פסיבי'},
-  {name:'eToro',icon:'🌐',desc:{he:'פלטפורמה גלובלית',en:'Global platform'},tags:['CopyTrader','קריפטו'],note:{he:'למתקדמים',en:'For advanced users'},cls:'gold',url:'https://www.etoro.com/he',phone:'',cat:'מסחר'},
-  {name:'Interactive Brokers',icon:'📈',desc:{he:'ברוקר מקצועי',en:'Professional broker'},tags:['עמלות נמוכות'],note:{he:'למשקיעים רציניים',en:'For serious investors'},cls:'gold',url:'https://www.interactivebrokers.com',phone:'',cat:'מסחר'},
-  {name:'קופת גמל - מיטב',icon:'🏦',desc:{he:'קופת גמל להשקעה',en:'Investment savings fund'},tags:['הטבות מס'],note:{he:'חיסכון פנסיוני',en:'Pension savings'},cls:'gold',url:'https://www.meitav.co.il',phone:'*6411',cat:'פנסיה'},
-  {name:'Bit2C',icon:'₿',desc:{he:'בורסת קריפטו ישראלית',en:'Israeli crypto exchange'},tags:['ביטקוין'],note:{he:'קריפטו בישראל',en:'Crypto in Israel'},cls:'gold',url:'https://www.bit2c.co.il',phone:'',cat:'קריפטו'}
-];
-
-const PLAT_MINOR=[
-  {name:{he:'חיסכון לכל ילד',en:'Child Savings Plan'},icon:'👶',desc:{he:'תוכנית ממשלתית',en:'Government program'},tags:['מובטח'],note:{he:'כל ילד זכאי!',en:'Every child is eligible!'},cls:'green',url:'https://www.btl.gov.il',phone:'*6050',cat:'ממשלתי'},
-  {name:{he:'בנק הפועלים - נוער',en:'Bank Hapoalim - Youth'},icon:'🏦',desc:{he:'חשבון נוער',en:'Youth account'},tags:['כרטיס אשראי'],note:{he:'ללא עמלות',en:'No fees'},cls:'green',url:'https://www.bankhapoalim.co.il',phone:'*2407',cat:'בנק'},
-  {name:{he:'בנק לאומי - נוער',en:'Bank Leumi - Youth'},icon:'🏛️',desc:{he:'חשבון צעירים',en:'Youth account'},tags:['הטבות'],note:{he:'מגיל 12',en:'From age 12'},cls:'green',url:'https://www.leumi.co.il',phone:'*5522',cat:'בנק'},
-  {name:{he:'קופת גמל - מיטב',en:'Meitav - Savings Fund'},icon:'🎓',desc:{he:'חיסכון לטווח ארוך',en:'Long-term savings'},tags:['הטבות מס'],note:{he:'ההורים פותחים',en:'Parents open'},cls:'green',url:'https://www.meitav.co.il',phone:'*6411',cat:'חיסכון'}
-];
-
-const T={
-  noData:{he:'עדיין אין נתונים',en:'No data yet'},
-  noSkips:{he:'עדיין לא דילגת.',en:"You haven't skipped yet."},
-  clickSkip:{he:'לחץ על ⏭️!',en:'Click ⏭️!'},
-  pts:{he:'נק׳',en:'pts'},
-  solo:{he:'יחיד',en:'Solo'},
-  group:{he:'קבוצה',en:'Group'},
-  weekly:{he:'שבועי',en:'Weekly'},
-  monthly:{he:'חודשי',en:'Monthly'},
-  yearly:{he:'שנתי',en:'Yearly'},
-  enterName:{he:'יש להזין שם',en:'Please enter your name'},
-  enterAge:{he:'יש להזין גיל תקין (10-99)',en:'Please enter a valid age (10-99)'},
-  enterItem:{he:'יש להזין על מה דילגת',en:'Please enter what you skipped'},
-  enterPrice:{he:'יש להזין מחיר',en:'Please enter the price'},
-  selectCat:{he:'יש לבחור קטגוריה',en:'Please select a category'},
-  confirmReset:{he:'להתחיל מחדש? כל הנתונים יימחקו לצמיתות.',en:'Start over? All data will be permanently deleted.'},
-  tip1:{he:'וואו! חסכת סכום משמעותי! זה הזמן לחשוב על השקעה אמיתית.',en:'Wow! You saved a significant amount! Time to think about real investments.'},
-  tip2:{he:'יפה מאוד! המשך כך ותגיע לסכומים גדולים.',en:'Great job! Keep going and reach bigger amounts.'},
-  tip3:{he:'אתה על הדרך הנכונה! המשך לדלג ולצבור נקודות.',en:"You're on the right track! Keep skipping and earning points."},
-  tip4:{he:'התחלה טובה! המשך לתרגל את כישורי החיסכון שלך.',en:'Good start! Keep practicing your saving skills.'},
-  shareText:{he:'היי! אני משתמש/ת ב-SKIP. צברתי {pts} נקודות (₪{money}) מ-{skips} דילוגים! הצטרפו גם: {url}',en:'Hey! I use SKIP. I earned {pts} points (₪{money}) from {skips} skips! Join too: {url}'},
-  shareAchieve:{he:'🏆 הישג ב-SKIP!\n\n⏭️ {skips} דילוגים\n⭐ {pts} נקודות\n💰 ₪{money} נחסך\n🔥 {streak} רצף\n\nהצטרפו גם!',en:'🏆 SKIP Achievement!\n\n⏭️ {skips} skips\n⭐ {pts} points\n💰 ₪{money} saved\n🔥 {streak} streak\n\nJoin us!'},
-  groupInvite:{he:'היי! בוא/י נשחק יחד ב-SKIP ונתחרה מי חוסך יותר! 💰⏭️',en:"Hey! Let's play SKIP together and compete who saves more! 💰⏭️"},
-  copied:{he:'הלינק הועתק!',en:'Link copied!'}
-};
-
-function t(key){return T[key]?T[key][app.lang]||T[key].he:key;}
-function save(){try{localStorage.setItem('skip_data',JSON.stringify(app));}catch(e){}}
-function load(){try{const d=localStorage.getItem('skip_data');if(d){app=JSON.parse(d);return true;}}catch(e){}return false;}
-
-function setLang(lang){
-  app.lang=lang;
-  save();
-  document.body.classList.toggle('en',lang==='en');
-  document.documentElement.lang=lang;
-  document.documentElement.dir=lang==='he'?'rtl':'ltr';
-  
-  document.querySelectorAll('[data-'+lang+']').forEach(el=>{
-    el.textContent=el.getAttribute('data-'+lang);
-  });
-  document.querySelectorAll('[data-'+lang+'-placeholder]').forEach(el=>{
-    el.placeholder=el.getAttribute('data-'+lang+'-placeholder');
-  });
-  
-  updateTermsBtn();
-  if(document.getElementById('setLang'))document.getElementById('setLang').textContent=lang==='he'?'עברית':'English';
-}
-
-function goTo(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  const el=document.getElementById(id);if(el)el.classList.add('active');
-  if(id==='s-dash')updateDash();if(id==='s-set')updateSet();if(id==='s-inv')updateInv();if(id==='s-summary')updateSummary();
-}
-
-function updateTermsBtn(){
-  const chk=document.getElementById('chkTerms');const btn=document.getElementById('btnAccept');
-  const onKey='data-'+app.lang+'-on',offKey='data-'+app.lang+'-off';
-  if(chk.checked){btn.classList.add('enabled');btn.textContent=btn.getAttribute(onKey);}
-  else{btn.classList.remove('enabled');btn.textContent=btn.getAttribute(offKey);}
-}
-function acceptTerms(){if(!document.getElementById('chkTerms').checked){alert(app.lang==='he'?'יש לסמן את תיבת האישור':'Please check the agreement box');return;}app.termsAccepted=true;save();goTo('s-splash');}
-function saveName(){const v=document.getElementById('inName').value.trim();if(!v){alert(t('enterName'));return;}app.name=v;save();goTo('s-age');}
-function checkAge(){const age=parseInt(document.getElementById('inAge').value);document.getElementById('u18info').classList.toggle('hidden',!(age>0&&age<18));}
-function saveAge(){const age=parseInt(document.getElementById('inAge').value);if(!age||age<10||age>99){alert(t('enterAge'));return;}app.age=age;document.getElementById('greetName').textContent=app.name;save();goTo('s-mode');}
-function setMode(m){app.mode=m;if(m==='group'){document.getElementById('groupShare').classList.remove('hidden');}else{save();goTo('s-time');}}
-function continueFromMode(){save();goTo('s-time');}
-function setTime(ti){app.time=ti;save();goTo('s-dash');}
-
-function updateDash(){
-  document.getElementById('dashName').textContent=app.name;
-  document.getElementById('streakN').textContent=app.streak;
-  document.getElementById('totPts').textContent=app.points;
-  document.getElementById('totMoney').textContent='₪'+Math.round(app.points*0.5);
-  document.getElementById('totSkips').textContent=app.skips.length;
-  updatePeriod();updateSkips();
-}
-function switchTab(tab){
-  document.getElementById('tabSum').classList.toggle('on',tab==='sum');
-  document.getElementById('tabHis').classList.toggle('on',tab==='his');
-  document.getElementById('sumContent').classList.toggle('hidden',tab!=='sum');
-  document.getElementById('hisContent').classList.toggle('hidden',tab!=='his');
-}
-function setPeriod(p){
-  app.period=p;
-  document.getElementById('pWeek').classList.toggle('on',p==='week');
-  document.getElementById('pMonth').classList.toggle('on',p==='month');
-  document.getElementById('pYear').classList.toggle('on',p==='year');
-  const lbls={week:{he:'השבוע',en:'This Week'},month:{he:'החודש',en:'This Month'},year:{he:'השנה',en:'This Year'}};
-  document.getElementById('prdLbl').textContent=lbls[p][app.lang];
-  updatePeriod();
-}
-function updatePeriod(){
-  const now=new Date();
-  const filtered=app.skips.filter(s=>{const d=new Date(s.date);if(app.period==='week')return d>=new Date(now.getTime()-7*24*60*60*1000);if(app.period==='month')return d>=new Date(now.getFullYear(),now.getMonth()-1,now.getDate());return d>=new Date(now.getFullYear()-1,now.getMonth(),now.getDate());});
-  const pts=filtered.reduce((sum,s)=>sum+s.pts,0);
-  document.getElementById('prdPts').textContent=pts;
-  document.getElementById('prdMoney').textContent='₪'+Math.round(pts*0.5);
-  const byCat={};filtered.forEach(s=>{byCat[s.cat]=(byCat[s.cat]||0)+s.pts;});
-  const catsList=document.getElementById('catsList');
-  if(Object.keys(byCat).length===0){catsList.innerHTML='<p style="text-align:center;color:var(--text-light);padding:15px;font-size:13px">'+t('noData')+'</p>';}
-  else{catsList.innerHTML=Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([id,pts])=>{const c=CATS.find(x=>x.id===id)||{icon:'📦',name:{he:'אחר',en:'Other'}};return'<div class="cat-item"><div class="cat-info"><span class="cat-icon">'+c.icon+'</span><span class="cat-name">'+c.name[app.lang]+'</span></div><span class="cat-pts">'+pts+' '+t('pts')+'</span></div>';}).join('');}
-}
-function updateSkips(){
-  const list=document.getElementById('skipsList');
-  if(app.skips.length===0){list.innerHTML='<div class="empty"><div class="empty-icon">🎯</div><p>'+t('noSkips')+'<br>'+t('clickSkip')+'</p></div>';}
-  else{list.innerHTML=app.skips.slice().reverse().map(s=>{const c=CATS.find(x=>x.id===s.cat)||{icon:'📦',name:{he:'אחר',en:'Other'},color:'#607D8B'};return'<div class="skip" data-id="'+s.id+'"><div class="skip-icon" style="background:'+c.color+'20">'+c.icon+'</div><div class="skip-det"><p class="skip-name">'+s.item+'</p><p class="skip-meta">₪'+s.price+' • '+c.name[app.lang]+'</p></div><span class="skip-pts">+'+s.pts+'</span></div>';}).join('');document.querySelectorAll('.skip').forEach(el=>{el.addEventListener('click',()=>openEdit(parseInt(el.dataset.id)));});}
-}
-function buildCats(){
-  const grid=document.getElementById('catsGrid');
-  grid.innerHTML=CATS.map(c=>'<div class="cat-opt" data-id="'+c.id+'"><div class="cat-opt-icon">'+c.icon+'</div><div class="cat-opt-name">'+c.name[app.lang]+'</div></div>').join('');
-  document.querySelectorAll('.cat-opt').forEach(el=>{el.addEventListener('click',()=>pickCat(el.dataset.id));});
-}
-function pickCat(id){selectedCat=id;document.querySelectorAll('.cat-opt').forEach(el=>el.classList.toggle('sel',el.dataset.id===id));}
-function updatePreview(){
-  const price=parseFloat(document.getElementById('inPrice').value);const prev=document.getElementById('ptsPreview');
-  if(price>0){const pts=Math.round(price*0.5);document.getElementById('prevPts').textContent='+'+pts+' '+(app.lang==='he'?'נקודות':'points');document.getElementById('prevMoney').textContent='(₪'+Math.round(pts*0.5)+')';prev.classList.remove('hidden');}else{prev.classList.add('hidden');}
-}
-function openAdd(){
-  app.editId=null;selectedCat=null;
-  document.getElementById('modalTitle').textContent=app.lang==='he'?'⏭️ דילגת?':'⏭️ Skipped?';
-  document.getElementById('modalDel').classList.add('hidden');
-  document.getElementById('btnSave').textContent=app.lang==='he'?'הוסף ⏭️':'Add ⏭️';
-  document.getElementById('prevLbl').textContent=app.lang==='he'?'תצבור':"You'll earn";
-  document.getElementById('inItem').value='';document.getElementById('inPrice').value='';
-  document.getElementById('ptsPreview').classList.add('hidden');
-  document.querySelectorAll('.cat-opt').forEach(el=>el.classList.remove('sel'));
-  buildCats();document.getElementById('addModal').classList.add('on');
-}
-function openEdit(id){
-  const s=app.skips.find(x=>x.id===id);if(!s)return;
-  app.editId=id;selectedCat=s.cat;
-  document.getElementById('modalTitle').textContent=app.lang==='he'?'✏️ עריכה':'✏️ Edit';
-  document.getElementById('modalDel').classList.remove('hidden');
-  document.getElementById('btnSave').textContent=app.lang==='he'?'שמור':'Save';
-  document.getElementById('prevLbl').textContent=app.lang==='he'?'נקודות':'Points';
-  document.getElementById('inItem').value=s.item;document.getElementById('inPrice').value=s.price;
-  buildCats();document.querySelector('.cat-opt[data-id="'+s.cat+'"]').classList.add('sel');
-  updatePreview();document.getElementById('addModal').classList.add('on');
-}
-function closeAdd(){document.getElementById('addModal').classList.remove('on');}
-function saveSkip(){
-  const item=document.getElementById('inItem').value.trim();const price=parseFloat(document.getElementById('inPrice').value);
-  if(!item){alert(t('enterItem'));return;}if(!price||price<=0){alert(t('enterPrice'));return;}if(!selectedCat){alert(t('selectCat'));return;}
-  const pts=Math.round(price*0.5);
-  if(app.editId){const s=app.skips.find(x=>x.id===app.editId);if(s){app.points-=s.pts;app.points+=pts;s.item=item;s.price=price;s.pts=pts;s.cat=selectedCat;}}
-  else{app.skips.push({id:Date.now(),item:item,price:price,pts:pts,cat:selectedCat,date:new Date().toISOString()});app.points+=pts;app.streak++;}
-  save();closeAdd();updateDash();
-}
-function openDel(){const s=app.skips.find(x=>x.id===app.editId);if(s)document.getElementById('delName').textContent='"'+s.item+'" '+(app.lang==='he'?'יימחק.':'will be deleted.');document.getElementById('delConfirm').classList.add('on');}
-function closeDel(){document.getElementById('delConfirm').classList.remove('on');}
-function doDel(){const s=app.skips.find(x=>x.id===app.editId);if(s){app.points-=s.pts;app.skips=app.skips.filter(x=>x.id!==app.editId);}save();closeDel();closeAdd();updateDash();}
-function updateSet(){
-  document.getElementById('setName').textContent=app.name||'-';
-  document.getElementById('setAge').textContent=app.age||'-';
-  const mTxt=app.mode==='solo'?t('solo'):t('group');
-  const tTxt={week:t('weekly'),month:t('monthly'),year:t('yearly')}[app.time]||'-';
-  document.getElementById('setMode').textContent=mTxt+' • '+tTxt;
-  document.getElementById('setSkips').textContent=app.skips.length;
-  document.getElementById('setPts').textContent=app.points;
-  document.getElementById('setMoney').textContent='₪'+Math.round(app.points*0.5);
-  document.getElementById('setLang').textContent=app.lang==='he'?'עברית':'English';
-}
-function openReset(){document.getElementById('resetConfirm').classList.add('on');}
-function closeReset(){document.getElementById('resetConfirm').classList.remove('on');}
-function doReset(){localStorage.removeItem('skip_data');app={termsAccepted:false,name:'',age:null,mode:null,time:null,points:0,streak:0,skips:[],period:'week',editId:null,lang:'he'};document.getElementById('inName').value='';document.getElementById('inAge').value='';document.getElementById('chkTerms').checked=false;closeReset();goTo('s-lang');}
-function updateInv(){
-  document.getElementById('invTot').textContent='₪'+Math.round(app.points*0.5);
-  const isAdult=app.age>=18;const plats=isAdult?PLAT_ADULT:PLAT_MINOR;
-  document.getElementById('u18inv').classList.toggle('hidden',isAdult);
-  document.getElementById('btnShare').classList.toggle('hidden',isAdult);
-  const grouped={};plats.forEach(p=>{if(!grouped[p.cat])grouped[p.cat]=[];grouped[p.cat].push(p);});
-  const titles=isAdult?{'פסיבי':'🛋️','מסחר':'📈','פנסיה':'🏦','קריפטו':'₿'}:{'ממשלתי':'🏛️','בנק':'🏦','חיסכון':'💰'};
-  let html='';
-  Object.entries(grouped).forEach(([cat,items])=>{
-    html+='<h3 class="sec-title">'+titles[cat]+' '+cat+'</h3>';
-    items.forEach(p=>{
-      const name=typeof p.name==='object'?p.name[app.lang]:p.name;
-      const desc=typeof p.desc==='object'?p.desc[app.lang]:p.desc;
-      const note=typeof p.note==='object'?p.note[app.lang]:p.note;
-      let tags='';if(p.tags)tags='<div class="plat-tags">'+p.tags.map(t=>'<span class="plat-tag">'+t+'</span>').join('')+'</div>';
-      const icon=p.cls==='gold'?'✨':'📝';
-      let links='<div class="plat-links">';if(p.url)links+='<a href="'+p.url+'" target="_blank" class="plat-link">🌐 '+(app.lang==='he'?'לאתר':'Website')+'</a>';if(p.phone)links+='<a href="tel:'+p.phone.replace('*','')+'" class="plat-link">📞 '+p.phone+'</a>';links+='</div>';
-      html+='<div class="plat"><div class="plat-icon">'+p.icon+'</div><div class="plat-info"><p class="plat-name">'+name+'</p><p class="plat-desc">'+desc+'</p>'+tags+'<p class="plat-note '+p.cls+'">'+icon+' '+note+'</p>'+links+'</div></div>';
+  <script>
+    // Hebrew calendar library (simplified)
+    const hebrewMonths = ['תשרי', 'חשוון', 'כסלו', 'טבת', 'שבט', 'אדר', 'ניסן', 'אייר', 'סיוון', 'תמוז', 'אב', 'אלול'];
+    const hebrewDays = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+    
+    // Simple Hebrew date conversion (approximate)
+    function getHebrewDate(date = new Date()) {
+      const dayOfWeek = hebrewDays[date.getDay()];
+      const year = 5785; // Simplified - current Hebrew year
+      const month = hebrewMonths[date.getMonth() % 12];
+      const day = date.getDate();
+      
+      return `יום ${dayOfWeek}, ${day} ${month} ${year}`;
+    }
+    
+    function getGregorianDate(date = new Date()) {
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString('he-IL', options);
+    }
+    
+    // Update all dates on screen
+    function updateDates() {
+      const now = new Date();
+      const hebrew = getHebrewDate(now);
+      const gregorian = getGregorianDate(now);
+      
+      // Update all date displays
+      const hebrewElements = document.querySelectorAll('[id$="HebrewDate"]');
+      const gregorianElements = document.querySelectorAll('[id$="GregorianDate"]');
+      
+      hebrewElements.forEach(el => el.textContent = hebrew);
+      gregorianElements.forEach(el => el.textContent = gregorian);
+    }
+    
+    // Data storage
+    let skipsData = JSON.parse(localStorage.getItem('skipapp_data') || '[]');
+    
+    // Show screen
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      
+      // Update nav buttons
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      
+      // Update dates when switching screens
+      updateDates();
+      
+      // Load data for specific screens
+      if (screenId === 'home') {
+        loadHomeData();
+      } else if (screenId === 'history') {
+        loadHistory();
+      } else if (screenId === 'stats') {
+        loadStats();
+      } else if (screenId === 'addSkip') {
+        updateDates();
+      }
+    }
+    
+    // Add skip
+    function addSkip(event) {
+      event.preventDefault();
+      
+      const category = document.getElementById('category').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      const description = document.getElementById('description').value;
+      
+      const skip = {
+        id: Date.now(),
+        category,
+        amount,
+        description,
+        date: new Date().toISOString(),
+        hebrewDate: getHebrewDate(),
+        gregorianDate: getGregorianDate(),
+        points: Math.round(amount * 0.5)
+      };
+      
+      skipsData.unshift(skip);
+      localStorage.setItem('skipapp_data', JSON.stringify(skipsData));
+      
+      // Reset form
+      document.getElementById('skipForm').reset();
+      
+      // Show success and go home
+      showScreen('home');
+      
+      // Show temporary success message
+      const homeContent = document.querySelector('#home .content');
+      const successMsg = document.createElement('div');
+      successMsg.className = 'success-msg';
+      successMsg.textContent = `כל הכבוד! הרווחת ${skip.points} נקודות! 🎉`;
+      homeContent.insertBefore(successMsg, homeContent.firstChild);
+      
+      setTimeout(() => successMsg.remove(), 3000);
+    }
+    
+    // Load home data
+    function loadHomeData() {
+      const totalPoints = skipsData.reduce((sum, skip) => sum + skip.points, 0);
+      const today = new Date().toDateString();
+      const todaySkips = skipsData.filter(skip => new Date(skip.date).toDateString() === today).length;
+      const totalSavings = skipsData.reduce((sum, skip) => sum + skip.amount, 0);
+      
+      // Calculate streak (simplified)
+      const weekStreak = calculateStreak();
+      
+      document.getElementById('totalPoints').textContent = totalPoints.toLocaleString();
+      document.getElementById('todaySkips').textContent = todaySkips;
+      document.getElementById('weekStreak').textContent = weekStreak;
+      document.getElementById('totalSavings').textContent = `₪${totalSavings.toLocaleString()}`;
+      
+      // Load recent skips
+      const recentSkipsContainer = document.getElementById('recentSkips');
+      const recentSkips = skipsData.slice(0, 5);
+      
+      if (recentSkips.length === 0) {
+        recentSkipsContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📝</div>
+            <div class="empty-text">עדיין אין דילוגים</div>
+          </div>
+        `;
+      } else {
+        recentSkipsContainer.innerHTML = recentSkips.map(skip => `
+          <div class="skip-entry">
+            <div class="skip-header">
+              <div class="skip-category">${skip.category}</div>
+              <div class="skip-amount">₪${skip.amount.toLocaleString()}</div>
+            </div>
+            <div class="skip-date">
+              <div>${skip.hebrewDate}</div>
+              <div style="font-size: 11px; margin-top: 2px;">${skip.gregorianDate}</div>
+            </div>
+            ${skip.description ? `<div class="skip-description">${skip.description}</div>` : ''}
+          </div>
+        `).join('');
+      }
+    }
+    
+    // Calculate streak
+    function calculateStreak() {
+      if (skipsData.length === 0) return 0;
+      
+      let streak = 0;
+      let currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+      
+      for (let i = 0; i < 30; i++) {
+        const dateStr = currentDate.toDateString();
+        const hasSkipOnDate = skipsData.some(skip => 
+          new Date(skip.date).toDateString() === dateStr
+        );
+        
+        if (hasSkipOnDate) {
+          streak++;
+        } else if (i > 0) {
+          break;
+        }
+        
+        currentDate.setDate(currentDate.getDate() - 1);
+      }
+      
+      return streak;
+    }
+    
+    // Load history
+    function loadHistory() {
+      const allSkipsContainer = document.getElementById('allSkips');
+      
+      if (skipsData.length === 0) {
+        allSkipsContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📝</div>
+            <div class="empty-text">עדיין אין דילוגים</div>
+          </div>
+        `;
+      } else {
+        allSkipsContainer.innerHTML = skipsData.map(skip => `
+          <div class="skip-entry">
+            <div class="skip-header">
+              <div class="skip-category">${skip.category}</div>
+              <div class="skip-amount">₪${skip.amount.toLocaleString()}</div>
+            </div>
+            <div class="skip-date">
+              <div>${skip.hebrewDate}</div>
+              <div style="font-size: 11px; margin-top: 2px;">${skip.gregorianDate}</div>
+            </div>
+            ${skip.description ? `<div class="skip-description">${skip.description}</div>` : ''}
+            <div style="margin-top: 10px;">
+              <span class="category-badge">+${skip.points} נקודות</span>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+    
+    // Load stats
+    function loadStats() {
+      const now = new Date();
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      
+      const statsTotal = skipsData.length;
+      const statsWeek = skipsData.filter(skip => new Date(skip.date) >= weekAgo).length;
+      const statsMonth = skipsData.filter(skip => new Date(skip.date) >= monthAgo).length;
+      const statsAvg = skipsData.length > 0 
+        ? Math.round(skipsData.reduce((sum, skip) => sum + skip.amount, 0) / skipsData.length)
+        : 0;
+      
+      document.getElementById('statsTotal').textContent = statsTotal;
+      document.getElementById('statsWeek').textContent = statsWeek;
+      document.getElementById('statsMonth').textContent = statsMonth;
+      document.getElementById('statsAvg').textContent = `₪${statsAvg.toLocaleString()}`;
+      
+      // Category stats
+      const categoryCount = {};
+      skipsData.forEach(skip => {
+        categoryCount[skip.category] = (categoryCount[skip.category] || 0) + 1;
+      });
+      
+      const topCategories = Object.entries(categoryCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+      
+      const topCategoriesContainer = document.getElementById('topCategories');
+      
+      if (topCategories.length === 0) {
+        topCategoriesContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <div class="empty-text">אין מספיק נתונים</div>
+          </div>
+        `;
+      } else {
+        topCategoriesContainer.innerHTML = topCategories.map(([category, count]) => `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+            <div style="font-size: 15px; color: var(--text);">${category}</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--primary-dark);">${count}</div>
+          </div>
+        `).join('');
+      }
+    }
+    
+    // Export data
+    function exportData() {
+      const dataStr = JSON.stringify(skipsData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `skipapp-data-${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+    
+    // Clear all data
+    function clearAllData() {
+      skipsData = [];
+      localStorage.removeItem('skipapp_data');
+      showScreen('home');
+    }
+    
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', () => {
+      updateDates();
+      loadHomeData();
+      
+      // Update dates every minute
+      setInterval(updateDates, 60000);
     });
-  });
-  document.getElementById('platList').innerHTML=html;
-}
-function shareApp(method){
-  const url='https://skip-app.netlify.app';
-  const text=t('groupInvite')+'\n'+url;
-  if(method==='whatsapp'){window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');}
-  else if(method==='email'){window.open('mailto:?subject=SKIP App&body='+encodeURIComponent(text),'_blank');}
-  else{navigator.clipboard.writeText(url).then(()=>alert(t('copied')));}
-}
-function share(){
-  const txt=t('shareText').replace('{pts}',app.points).replace('{money}',Math.round(app.points*0.5)).replace('{skips}',app.skips.length).replace('{url}','https://skip-app.netlify.app');
-  if(navigator.share)navigator.share({title:'SKIP',text:txt});else alert(txt);
-}
-function updateSummary(){
-  document.getElementById('sumSkips').textContent=app.skips.length;
-  document.getElementById('sumPts').textContent=app.points;
-  document.getElementById('sumMoney').textContent='₪'+Math.round(app.points*0.5);
-  document.getElementById('sumStreak').textContent=app.streak;
-  const money=Math.round(app.points*0.5);let tip='';
-  if(money>=500)tip=t('tip1');else if(money>=100)tip=t('tip2');else if(app.skips.length>=10)tip=t('tip3');else tip=t('tip4');
-  document.getElementById('sumTip').textContent=tip;
-}
-function shareSummary(){
-  const txt=t('shareAchieve').replace('{skips}',app.skips.length).replace('{pts}',app.points).replace('{money}',Math.round(app.points*0.5)).replace('{streak}',app.streak);
-  if(navigator.share)navigator.share({title:'SKIP',text:txt});else alert(txt);
-}
-function newGame(){if(confirm(t('confirmReset'))){doReset();}}
-
-function setupEvents(){
-  document.getElementById('btnLangHe').addEventListener('click',()=>{setLang('he');goTo('s-terms');});
-  document.getElementById('btnLangEn').addEventListener('click',()=>{setLang('en');goTo('s-terms');});
-  document.getElementById('chkTerms').addEventListener('change',updateTermsBtn);
-  document.getElementById('btnAccept').addEventListener('click',acceptTerms);
-  document.getElementById('backToTerms').addEventListener('click',()=>goTo('s-terms'));
-  document.getElementById('btnStart').addEventListener('click',()=>goTo('s-name'));
-  document.getElementById('backToSplash').addEventListener('click',()=>goTo('s-splash'));
-  document.getElementById('btnName').addEventListener('click',saveName);
-  document.getElementById('backToName').addEventListener('click',()=>goTo('s-name'));
-  document.getElementById('inAge').addEventListener('input',checkAge);
-  document.getElementById('btnAge').addEventListener('click',saveAge);
-  document.getElementById('backToAge').addEventListener('click',()=>goTo('s-age'));
-  document.getElementById('modeSolo').addEventListener('click',()=>{setMode('solo');});
-  document.getElementById('modeGroup').addEventListener('click',()=>{setMode('group');});
-  document.getElementById('shareWhatsapp').addEventListener('click',()=>{shareApp('whatsapp');continueFromMode();});
-  document.getElementById('shareEmail').addEventListener('click',()=>{shareApp('email');continueFromMode();});
-  document.getElementById('shareCopy').addEventListener('click',()=>{shareApp('copy');continueFromMode();});
-  document.getElementById('backToMode').addEventListener('click',()=>goTo('s-mode'));
-  document.getElementById('timeWeek').addEventListener('click',()=>setTime('week'));
-  document.getElementById('timeMonth').addEventListener('click',()=>setTime('month'));
-  document.getElementById('timeYear').addEventListener('click',()=>setTime('year'));
-  document.getElementById('btnSettings').addEventListener('click',()=>goTo('s-set'));
-  document.getElementById('tabSum').addEventListener('click',()=>switchTab('sum'));
-  document.getElementById('tabHis').addEventListener('click',()=>switchTab('his'));
-  document.getElementById('tabInv').addEventListener('click',()=>goTo('s-inv'));
-  document.getElementById('pWeek').addEventListener('click',()=>setPeriod('week'));
-  document.getElementById('pMonth').addEventListener('click',()=>setPeriod('month'));
-  document.getElementById('pYear').addEventListener('click',()=>setPeriod('year'));
-  document.getElementById('fabAdd').addEventListener('click',openAdd);
-  document.getElementById('backFromDash').addEventListener('click',()=>{save();goTo('s-splash');});
-  document.getElementById('inPrice').addEventListener('input',updatePreview);
-  document.getElementById('btnSave').addEventListener('click',saveSkip);
-  document.getElementById('btnCancelAdd').addEventListener('click',closeAdd);
-  document.getElementById('modalDel').addEventListener('click',openDel);
-  document.getElementById('btnCancelDel').addEventListener('click',closeDel);
-  document.getElementById('btnConfirmDel').addEventListener('click',doDel);
-  document.getElementById('backFromSet').addEventListener('click',()=>goTo('s-dash'));
-  document.getElementById('btnTerms').addEventListener('click',()=>goTo('s-terms'));
-  document.getElementById('btnChangeLang').addEventListener('click',()=>goTo('s-lang'));
-  document.getElementById('btnReset').addEventListener('click',openReset);
-  document.getElementById('btnCancelReset').addEventListener('click',closeReset);
-  document.getElementById('btnConfirmReset').addEventListener('click',doReset);
-  document.getElementById('backFromInv').addEventListener('click',()=>goTo('s-dash'));
-  document.getElementById('btnShare').addEventListener('click',share);
-  document.getElementById('btnFinish').addEventListener('click',()=>goTo('s-summary'));
-  document.getElementById('backFromSummary').addEventListener('click',()=>goTo('s-inv'));
-  document.getElementById('btnBackToDash').addEventListener('click',()=>{save();goTo('s-dash');});
-  document.getElementById('btnNewGame').addEventListener('click',newGame);
-  document.getElementById('btnShareSum').addEventListener('click',shareSummary);
-}
-
-function init(){
-  setupEvents();
-  if(load()&&app.termsAccepted){
-    setLang(app.lang||'he');
-    if(app.time)goTo('s-dash');
-    else if(app.age){document.getElementById('greetName').textContent=app.name;goTo('s-mode');}
-    else if(app.name)goTo('s-age');
-    else goTo('s-splash');
-  }
-}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(e=>console.log('SW error:',e));}
-init();
-</script>
+    
+    // Service Worker registration
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
 </body>
 </html>
