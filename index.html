@@ -87,7 +87,6 @@
       to { opacity: 1; transform: translateY(0); } 
     }
     
-    /* Header */
     .header {
       background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       color: white;
@@ -95,6 +94,7 @@
       text-align: center;
       border-radius: 0 0 30px 30px;
       box-shadow: 0 4px 20px rgba(168, 213, 186, 0.3);
+      position: relative;
     }
     
     .header h1 {
@@ -110,7 +110,6 @@
       font-weight: 400;
     }
     
-    /* Play Icon */
     .play-icon {
       width: 120px;
       height: 120px;
@@ -139,7 +138,6 @@
       margin-right: -5px;
     }
     
-    /* Content */
     .content {
       flex: 1;
       overflow-y: auto;
@@ -147,21 +145,14 @@
       -webkit-overflow-scrolling: touch;
     }
     
-    /* Cards */
     .card {
       background: var(--card-bg);
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 15px;
       box-shadow: 0 2px 15px rgba(0,0,0,0.06);
-      transition: all 0.3s ease;
     }
     
-    .card:active {
-      transform: scale(0.98);
-    }
-    
-    /* Buttons */
     .btn {
       width: 100%;
       padding: 16px;
@@ -183,7 +174,6 @@
     
     .btn-primary:active {
       transform: translateY(2px);
-      box-shadow: 0 3px 10px rgba(168, 213, 186, 0.3);
     }
     
     .btn-secondary {
@@ -192,7 +182,12 @@
       box-shadow: 0 6px 20px rgba(255, 217, 160, 0.3);
     }
     
-    /* Input */
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, #FF8080 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(255, 155, 155, 0.3);
+    }
+    
     input, select {
       width: 100%;
       padding: 15px;
@@ -210,7 +205,6 @@
       box-shadow: 0 0 0 4px rgba(168, 213, 186, 0.1);
     }
     
-    /* Stats */
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -239,7 +233,6 @@
       font-weight: 500;
     }
     
-    /* Date Display */
     .date-display {
       background: linear-gradient(135deg, #F5F5F5 0%, #FAFAFA 100%);
       padding: 15px;
@@ -262,7 +255,6 @@
       font-weight: 500;
     }
     
-    /* Skip Entry */
     .skip-entry {
       background: white;
       padding: 18px;
@@ -304,7 +296,6 @@
       line-height: 1.5;
     }
     
-    /* Form Group */
     .form-group {
       margin-bottom: 18px;
     }
@@ -317,7 +308,6 @@
       font-size: 15px;
     }
     
-    /* Bottom Nav */
     .bottom-nav {
       background: white;
       padding: 12px 20px;
@@ -345,7 +335,6 @@
       background: rgba(168, 213, 186, 0.1);
     }
     
-    /* Back Button */
     .back-btn {
       position: absolute;
       top: 20px;
@@ -367,31 +356,8 @@
     
     .back-btn:active {
       transform: scale(0.9);
-      background: rgba(255,255,255,0.4);
     }
     
-    /* Loading */
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: var(--text-light);
-    }
-    
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid #E8E8E8;
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* Empty State */
     .empty-state {
       text-align: center;
       padding: 60px 20px;
@@ -406,10 +372,8 @@
     
     .empty-text {
       font-size: 16px;
-      margin-bottom: 10px;
     }
     
-    /* Success Message */
     .success-msg {
       background: linear-gradient(135deg, var(--success) 0%, #7FC99C 100%);
       color: white;
@@ -421,7 +385,6 @@
       box-shadow: 0 4px 15px rgba(144, 212, 168, 0.3);
     }
     
-    /* Category Badge */
     .category-badge {
       display: inline-block;
       padding: 6px 12px;
@@ -433,7 +396,6 @@
       margin-left: 8px;
     }
     
-    /* Welcome Screen Specific */
     .welcome-content {
       text-align: center;
       padding: 40px 30px;
@@ -491,6 +453,70 @@
       color: var(--text);
       text-align: right;
     }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 15px;
+    }
+    
+    .modal-text {
+      font-size: 16px;
+      color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .modal-buttons .btn {
+      flex: 1;
+    }
+    
+    .user-greeting {
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
@@ -528,7 +554,46 @@
             </div>
           </div>
           
-          <button class="btn btn-primary" onclick="showScreen('home')">בואו נתחיל!</button>
+          <button class="btn btn-primary" onclick="checkRegistration()">בואו נתחיל!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registration Screen -->
+    <div class="screen" id="register">
+      <div class="header">
+        <button class="back-btn" onclick="showScreen('welcome')">←</button>
+        <h1>הרשמה</h1>
+        <div class="subtitle">בואו נכיר!</div>
+      </div>
+      
+      <div class="content">
+        <div class="card">
+          <form id="registerForm" onsubmit="saveRegistration(event)">
+            <div class="form-group">
+              <label>שם פרטי</label>
+              <input type="text" id="firstName" placeholder="איך קוראים לך?" required>
+            </div>
+            
+            <div class="form-group">
+              <label>גיל</label>
+              <input type="number" id="age" placeholder="כמה אתה בן/בת?" required min="1" max="120">
+            </div>
+            
+            <div class="form-group">
+              <label>מטרת חיסכון (אופציונלי)</label>
+              <input type="text" id="goal" placeholder="למה אתה חוסך?">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">התחל לחסוך! 🚀</button>
+          </form>
+        </div>
+        
+        <div class="card" style="margin-top: 15px; background: #F5F5F5;">
+          <p style="font-size: 14px; color: var(--text-light); line-height: 1.6;">
+            ℹ️ הנתונים שלך נשמרים במכשיר שלך בלבד ולא נשלחים לשום מקום.
+            אתה תמיד יכול למחוק או לאפס את הנתונים בהגדרות.
+          </p>
         </div>
       </div>
     </div>
@@ -537,7 +602,7 @@
     <div class="screen" id="home">
       <div class="header">
         <h1>SKIPAPP</h1>
-        <div class="subtitle">שלום, משתמש!</div>
+        <div class="subtitle">שלום, <span id="userName">משתמש</span>!</div>
       </div>
       
       <div class="content">
@@ -591,7 +656,7 @@
     <!-- Add Skip Screen -->
     <div class="screen" id="addSkip">
       <div class="header">
-        <button class="back-btn" onclick="showScreen('home')">←</button>
+        <button class="back-btn" onclick="confirmNavigation('home', 'addSkip')">←</button>
         <h1>דילוג חדש</h1>
         <div class="subtitle">תעד רכישה שדילגת עליה</div>
       </div>
@@ -649,9 +714,9 @@
         </div>
         
         <div id="allSkips">
-          <div class="loading">
-            <div class="spinner"></div>
-            <div>טוען נתונים...</div>
+          <div class="empty-state">
+            <div class="empty-icon">📝</div>
+            <div class="empty-text">עדיין אין דילוגים</div>
           </div>
         </div>
       </div>
@@ -719,13 +784,22 @@
       
       <div class="content">
         <div class="card">
+          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;">פרופיל שלי</h3>
+          <div id="userProfile" style="color: var(--text-light); line-height: 1.8;">
+            <p><strong>שם:</strong> <span id="profileName">-</span></p>
+            <p><strong>גיל:</strong> <span id="profileAge">-</span></p>
+            <p><strong>מטרה:</strong> <span id="profileGoal">-</span></p>
+          </div>
+        </div>
+        
+        <div class="card">
           <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;">אודות SKIPAPP</h3>
           <p style="color: var(--text-light); line-height: 1.6; margin-bottom: 10px;">
             SKIPAPP היא אפליקציה חינוכית שמבוססת על מחקר בכלכלה התנהגותית. 
             האפליקציה מלמדת אוריינות פיננסית באמצעות תיעוד הוצאות שנמנעו.
           </p>
           <p style="color: var(--text-light); line-height: 1.6;">
-            גרסה: 2.0<br>
+            גרסה: 3.0<br>
             פותח על ידי: ד"ר אלירן<br>
             מבוסס על מתודולוגיית AST
           </p>
@@ -736,8 +810,8 @@
           <button class="btn btn-secondary" onclick="exportData()" style="margin-bottom: 10px;">
             📥 ייצא נתונים
           </button>
-          <button class="btn btn-secondary" onclick="if(confirm('האם אתה בטוח? פעולה זו תמחק את כל הנתונים!')) { clearAllData(); }">
-            🗑️ נקה את כל הנתונים
+          <button class="btn btn-danger" onclick="confirmReset()">
+            🔄 אפס הכל והרשם מחדש
           </button>
         </div>
       </div>
@@ -751,18 +825,28 @@
     </div>
   </div>
 
+  <!-- Modal for confirmations -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-content">
+      <div class="modal-title" id="modalTitle">האם לשמור?</div>
+      <div class="modal-text" id="modalText">יש לך שינויים שלא נשמרו. האם לשמור אותם?</div>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" id="modalCancel">ביטול</button>
+        <button class="btn btn-primary" id="modalConfirm">אישור</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Hebrew calendar library (simplified)
+    // Hebrew calendar
     const hebrewMonths = ['תשרי', 'חשוון', 'כסלו', 'טבת', 'שבט', 'אדר', 'ניסן', 'אייר', 'סיוון', 'תמוז', 'אב', 'אלול'];
     const hebrewDays = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
     
-    // Simple Hebrew date conversion (approximate)
     function getHebrewDate(date = new Date()) {
       const dayOfWeek = hebrewDays[date.getDay()];
-      const year = 5785; // Simplified - current Hebrew year
+      const year = 5785;
       const month = hebrewMonths[date.getMonth() % 12];
       const day = date.getDate();
-      
       return `יום ${dayOfWeek}, ${day} ${month} ${year}`;
     }
     
@@ -771,43 +855,145 @@
       return date.toLocaleDateString('he-IL', options);
     }
     
-    // Update all dates on screen
     function updateDates() {
       const now = new Date();
       const hebrew = getHebrewDate(now);
       const gregorian = getGregorianDate(now);
       
-      // Update all date displays
-      const hebrewElements = document.querySelectorAll('[id$="HebrewDate"]');
-      const gregorianElements = document.querySelectorAll('[id$="GregorianDate"]');
-      
-      hebrewElements.forEach(el => el.textContent = hebrew);
-      gregorianElements.forEach(el => el.textContent = gregorian);
+      document.querySelectorAll('[id$="HebrewDate"]').forEach(el => el.textContent = hebrew);
+      document.querySelectorAll('[id$="GregorianDate"]').forEach(el => el.textContent = gregorian);
     }
     
     // Data storage
+    let userData = JSON.parse(localStorage.getItem('skipapp_user') || 'null');
     let skipsData = JSON.parse(localStorage.getItem('skipapp_data') || '[]');
+    let formDirty = false;
+    
+    // Check registration
+    function checkRegistration() {
+      if (userData) {
+        showScreen('home');
+        updateUserGreeting();
+      } else {
+        showScreen('register');
+      }
+    }
+    
+    // Save registration
+    function saveRegistration(event) {
+      event.preventDefault();
+      
+      const firstName = document.getElementById('firstName').value;
+      const age = document.getElementById('age').value;
+      const goal = document.getElementById('goal').value;
+      
+      userData = {
+        firstName,
+        age: parseInt(age),
+        goal: goal || 'לעתיד טוב יותר',
+        registeredAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem('skipapp_user', JSON.stringify(userData));
+      
+      showScreen('home');
+      updateUserGreeting();
+      
+      // Welcome message
+      const homeContent = document.querySelector('#home .content');
+      const successMsg = document.createElement('div');
+      successMsg.className = 'success-msg';
+      successMsg.textContent = `ברוך הבא ${firstName}! בואו נתחיל לחסוך! 🎉`;
+      homeContent.insertBefore(successMsg, homeContent.firstChild);
+      setTimeout(() => successMsg.remove(), 3000);
+    }
+    
+    // Update user greeting
+    function updateUserGreeting() {
+      if (userData) {
+        document.getElementById('userName').textContent = userData.firstName;
+        document.getElementById('profileName').textContent = userData.firstName;
+        document.getElementById('profileAge').textContent = userData.age;
+        document.getElementById('profileGoal').textContent = userData.goal;
+      }
+    }
+    
+    // Track form changes
+    document.addEventListener('DOMContentLoaded', () => {
+      const skipForm = document.getElementById('skipForm');
+      if (skipForm) {
+        skipForm.addEventListener('input', () => formDirty = true);
+      }
+    });
+    
+    // Confirm navigation with unsaved changes
+    function confirmNavigation(toScreen, fromScreen) {
+      if (formDirty && fromScreen === 'addSkip') {
+        showModal(
+          'שינויים לא נשמרו',
+          'האם לשמור את הדילוג לפני שחוזרים?',
+          () => {
+            // Save
+            document.getElementById('skipForm').requestSubmit();
+          },
+          () => {
+            // Don't save
+            formDirty = false;
+            document.getElementById('skipForm').reset();
+            showScreen(toScreen);
+          },
+          'שמור',
+          'אל תשמור'
+        );
+      } else {
+        showScreen(toScreen);
+      }
+    }
+    
+    // Show modal
+    function showModal(title, text, onConfirm, onCancel, confirmText = 'אישור', cancelText = 'ביטול') {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalText').textContent = text;
+      document.getElementById('modalConfirm').textContent = confirmText;
+      document.getElementById('modalCancel').textContent = cancelText;
+      
+      const modal = document.getElementById('confirmModal');
+      modal.classList.add('active');
+      
+      document.getElementById('modalConfirm').onclick = () => {
+        modal.classList.remove('active');
+        if (onConfirm) onConfirm();
+      };
+      
+      document.getElementById('modalCancel').onclick = () => {
+        modal.classList.remove('active');
+        if (onCancel) onCancel();
+      };
+      
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+          if (onCancel) onCancel();
+        }
+      };
+    }
     
     // Show screen
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
-      
-      // Update nav buttons
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
       
-      // Update dates when switching screens
       updateDates();
       
-      // Load data for specific screens
       if (screenId === 'home') {
         loadHomeData();
       } else if (screenId === 'history') {
         loadHistory();
       } else if (screenId === 'stats') {
         loadStats();
-      } else if (screenId === 'addSkip') {
-        updateDates();
+      } else if (screenId === 'settings') {
+        updateUserGreeting();
       }
     }
     
@@ -833,13 +1019,11 @@
       skipsData.unshift(skip);
       localStorage.setItem('skipapp_data', JSON.stringify(skipsData));
       
-      // Reset form
+      formDirty = false;
       document.getElementById('skipForm').reset();
       
-      // Show success and go home
       showScreen('home');
       
-      // Show temporary success message
       const homeContent = document.querySelector('#home .content');
       const successMsg = document.createElement('div');
       successMsg.className = 'success-msg';
@@ -855,8 +1039,6 @@
       const today = new Date().toDateString();
       const todaySkips = skipsData.filter(skip => new Date(skip.date).toDateString() === today).length;
       const totalSavings = skipsData.reduce((sum, skip) => sum + skip.amount, 0);
-      
-      // Calculate streak (simplified)
       const weekStreak = calculateStreak();
       
       document.getElementById('totalPoints').textContent = totalPoints.toLocaleString();
@@ -864,7 +1046,6 @@
       document.getElementById('weekStreak').textContent = weekStreak;
       document.getElementById('totalSavings').textContent = `₪${totalSavings.toLocaleString()}`;
       
-      // Load recent skips
       const recentSkipsContainer = document.getElementById('recentSkips');
       const recentSkips = skipsData.slice(0, 5);
       
@@ -967,7 +1148,6 @@
       document.getElementById('statsMonth').textContent = statsMonth;
       document.getElementById('statsAvg').textContent = `₪${statsAvg.toLocaleString()}`;
       
-      // Category stats
       const categoryCount = {};
       skipsData.forEach(skip => {
         categoryCount[skip.category] = (categoryCount[skip.category] || 0) + 1;
@@ -998,33 +1178,52 @@
     
     // Export data
     function exportData() {
-      const dataStr = JSON.stringify(skipsData, null, 2);
+      const exportObj = {
+        user: userData,
+        skips: skipsData,
+        exportDate: new Date().toISOString()
+      };
+      const dataStr = JSON.stringify(exportObj, null, 2);
       const dataBlob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `skipapp-data-${new Date().toISOString().split('T')[0]}.json`;
+      link.download = `skipapp-${userData?.firstName || 'user'}-${new Date().toISOString().split('T')[0]}.json`;
       link.click();
       URL.revokeObjectURL(url);
     }
     
-    // Clear all data
-    function clearAllData() {
-      skipsData = [];
-      localStorage.removeItem('skipapp_data');
-      showScreen('home');
+    // Confirm reset
+    function confirmReset() {
+      showModal(
+        'איפוס מלא',
+        'האם אתה בטוח? פעולה זו תמחק את כל הנתונים שלך ותחזיר אותך למסך ההרשמה.',
+        () => resetAll(),
+        null,
+        'אפס הכל',
+        'ביטול'
+      );
     }
     
-    // Initialize app
+    // Reset all
+    function resetAll() {
+      localStorage.removeItem('skipapp_user');
+      localStorage.removeItem('skipapp_data');
+      userData = null;
+      skipsData = [];
+      showScreen('welcome');
+    }
+    
+    // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       updateDates();
-      loadHomeData();
-      
-      // Update dates every minute
+      if (userData) {
+        updateUserGreeting();
+      }
       setInterval(updateDates, 60000);
     });
     
-    // Service Worker registration
+    // Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
