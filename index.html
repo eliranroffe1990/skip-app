@@ -1,18 +1,279 @@
+
 <!DOCTYPE html>
-<html lang='he' dir='rtl'>
+<html lang="he" dir="rtl">
 <head>
-<meta charset='utf-8'/>
-<meta name='viewport' content='width=device-width, initial-scale=1'/>
-<title>SKIPAPP - משחק החיסכון</title>
-<meta name='theme-color' content='#A8D5BA'/>
-<link rel='manifest' href='/manifest.json'/>
-<link rel='apple-touch-icon' href='/icons/icon-180.png'/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SKIPAPP - משחק החיסכון</title>
+  <meta name="theme-color" content="#A8D5BA" />
+  /manifest.json
+  /icons/icon-180.png
+  https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&family=Heebo:wght@300;400;700&display=swap
+  <style>
+    :root { --bg:#FFFCF7; --primary:#5B8A72; --primary2:#7BA896; --text:#2D3436; --muted:#636E72; --danger:#E74C3C; --accent:#F4A261; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:'Poppins','Heebo',system-ui,-apple-system; background:var(--bg); color:var(--text); }
+    header { background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff; padding:24px; border-radius:0 0 24px 24px; }
+    .wrap { max-width:520px; margin:0 auto; padding:20px; }
+    .card { background:#fff; border-radius:16px; padding:20px; box-shadow:0 8px 30px rgba(0,0,0,0.08); }
+    .btn { appearance:none; border:none; padding:14px 18px; border-radius:14px; cursor:pointer; font-weight:700; }
+    .btn-primary { background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff; }
+    .btn-outline { background:#fff; border:2px solid #E0E0E0; }
+    .hint { color:var(--muted); font-size:14px; }
+    .topbar { display:flex; align-items:center; gap:10px; }
+    .back { border:none; background:#fff; border-radius:12px; padding:8px 12px; cursor:pointer; font-weight:600; }
+    .list { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+    .item { display:flex; align-items:center; gap:12px; padding:12px; border:1px solid #eee; border-radius:12px; }
+    .item img { width:32px; height:32px; border-radius:50%; }
+    .item a { color:var(--primary); text-decoration:none; font-weight:700; }
+    .view { opacity:0; transform:translateY(12px); animation:routeIn .35s ease both; }
+    @keyframes routeIn { from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:translateY(0);} }
+  </style>
 </head>
 <body>
-<h1>SKIPAPP</h1>
-<p>גרסה סופית עם השקעות, לוגואים, מסך סיכום ורענון אוטומטי.</p>
-<script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}
-</script>
+  <header class="wrap">
+    <div class="topbar">
+      <button id="backBtn" class="back" onclick="App.goBack()" style="display:none">← <span data-i18n="back">חזרה</span></button>
+      <h1 style="margin:0;">SKIPAPP</h1>
+    </div>
+    <p style="margin:4px 0 0;opacity:.9"><span data-i18n="tagline">דלג על הוצאה. צבור לעתיד.</span></p>
+  </header>
+
+  <main id="app" class="wrap"></main>
+
+  <script>
+  const LAST_UPDATED = '2025-12-07';
+
+  const strings = {
+    he: {
+      back:'חזרה', tagline:'דלג על הוצאה. צבור לעתיד.',
+      terms_title:'תנאי שימוש והצהרת אחריות',
+      terms_text:'האפליקציה מיועדת ללמידה בלבד ואינה ייעוץ פיננסי. שימוש באפליקציה באחריות המשתמש. קראתי ואני מסכים לתנאים.',
+      accept_terms:'אני מסכים לתנאים', continue:'המשך',
+      choose_lang:'בחירת שפה', lang_he:'עברית', lang_en:'English',
+      register_title:'הרשמה', name:'שם', age:'גיל', goal:'מטרת חיסכון',
+      start_saving:'התחל לחסוך!', dashboard_title:'הבית',
+      add_skip:'הוסף דילוג', history:'היסטוריה', stats:'סטטיסטיקות',
+      investments:'אפיקי השקעה', settings:'הגדרות',
+      amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור',
+      reset_all:'איפוס והרשמה מחדש',
+      installed_hint:'להתקנה בנייד: תפריט הדפדפן → הוסף למסך הבית',
+      invest_title:'אפיקי השקעה מוצעים',
+      invest_disclaimer:'המידע להדגמה בלבד, אינו ייעוץ פיננסי. בדוק תנאים ועלויות לפני החלטה.',
+      finish:'סיום והמשך לסיכום',
+      summary_title:'סיכום',
+      summary_about:'SKIPAPP היא אפליקציה חינוכית שמסייעת לזהות הוצאות קטנות שאפשר לדלג עליהן ולהמיר אותן לחיסכון ולמודעות פיננסית.',
+      go_home:'חזרה לדף הבית', last_updated:'תאריך שדרוג אחרון'
+    },
+    en: {
+      back:'Back', tagline:'Skip the expense. Save for tomorrow.',
+      terms_title:'Terms of Use & Disclaimer',
+      terms_text:'This app is for learning only and is not financial advice. Use at your own risk. I have read and agree to the terms.',
+      accept_terms:'I accept the terms', continue:'Continue',
+      choose_lang:'Choose language', lang_he:'עברית', lang_en:'English',
+      register_title:'Sign up', name:'First name', age:'Age', goal:'Saving goal',
+      start_saving:'Start saving!', dashboard_title:'Home',
+      add_skip:'Add Skip', history:'History', stats:'Statistics',
+      investments:'Investments', settings:'Settings',
+      amount:'Amount (₪)', description:'Description', category:'Category', save:'Save',
+      reset_all:'Reset & re-register',
+      installed_hint:'Install on mobile: browser menu → Add to Home screen',
+      invest_title:'Suggested investment channels',
+      invest_disclaimer:'For demo only, not financial advice. Check terms & fees before decisions.',
+      finish:'Finish & go to summary',
+      summary_title:'Summary',
+      summary_about:'SKIPAPP helps you spot small expenses you can skip and turn them into savings & awareness.',
+      go_home:'Back to Home', last_updated:'Last update'
+    }
+  };
+
+  const App = {
+    state:{ screen:'terms', history:[], user:null, lang:'he', data:[] },
+    t(key){ return strings[this.state.lang][key] || key; },
+    setLang(l){ this.state.lang=l; localStorage.setItem('skipapp_lang',l);
+      document.documentElement.lang=(l==='he'?'he':'en');
+      document.documentElement.dir=(l==='he'?'rtl':'ltr'); this.render();
+    },
+    push(s){ this.state.history.push(this.state.screen); this.state.screen=s; this.render(); },
+    goBack(){ if(this.state.history.length){ this.state.screen=this.state.history.pop(); this.render(); } },
+    saveUser(u){ localStorage.setItem('skipapp_user',JSON.stringify(u)); this.state.user=u; },
+    load(){
+      const u=localStorage.getItem('skipapp_user');
+      const l=localStorage.getItem('skipapp_lang');
+      const c=localStorage.getItem('skipapp_terms');
+      if(l) this.state.lang=l;
+      document.documentElement.lang=(this.state.lang==='he'?'he':'en');
+      document.documentElement.dir=(this.state.lang==='he'?'rtl':'ltr');
+      if(u){ this.state.user=JSON.parse(u); }
+      const d=localStorage.getItem('skipapp_data'); if(d){ this.state.data=JSON.parse(d); }
+      if(c && this.state.user){ this.state.screen='dashboard'; }
+      this.render();
+    },
+    saveData(){ localStorage.setItem('skipapp_data',JSON.stringify(this.state.data)); },
+    addSkip(item){ this.state.data.push(item); this.saveData(); this.push('investments'); },
+    reset(){
+      localStorage.removeItem('skipapp_user');
+      localStorage.removeItem('skipapp_data');
+      localStorage.removeItem('skipapp_terms');
+      this.state={ screen:'terms', history:[], user:null, lang:(localStorage.getItem('skipapp_lang')||'he'), data:[] };
+      this.render();
+    },
+    investments(){
+      const list=[
+        {key:'ibi',name:'IBI Digital',url:'https://www.ibi.co.il/digital'},
+        {key:'meitav',name:'Meitav Digital',url:'https://digital.meitav.co.il'},
+        {key:'harel',name:'Harel Digital',url:'https://digital.harel-group.co.il'},
+        {key:'psagot',name:'Psagot Digital',url:'https://digital.psagot.co.il'},
+        {key:'altshuler',name:'Altshuler Shaham',url:'https://www.as-invest.co.il'},
+        {key:'phoenix',name:'Phoenix Investments',url:'https://www.thephoenix.co.il'},
+        {key:'etoro',name:'eToro',url:'https://www.etoro.com'},
+        {key:'ibkr',name:'Interactive Brokers',url:'https://www.interactivebrokers.com'},
+        {key:'clal',name:'Clal Finance',url:'https://www.clal-finance.co.il'},
+        {key:'more',name:'More Digital',url:'https://www.moreinvest.co.il'}
+      ];
+      return list.sort((a,b)=>a.name.localeCompare(b.name));
+    },
+    render(){
+      const backBtn=document.getElementById('backBtn');
+      backBtn.style.display=this.state.history.length?'inline-block':'none';
+      const el=document.getElementById('app'); const L=(k)=>this.t(k); let html='';
+      if(this.state.screen==='terms'){
+        html=`<section class='card view'>
+          <h2>${L('terms_title')}</h2>
+          <p class='hint'>${L('terms_text')}</p>
+          <label style='display:flex;gap:8px;align-items:center;margin:12px 0;'>
+            <input type='checkbox' id='accept'> <span>${L('accept_terms')}</span>
+          </label>
+          <button class='btn btn-primary' onclick="(function(){
+            if(!document.getElementById('accept').checked){ alert('נא לאשר תנאים'); return;}
+            localStorage.setItem('skipapp_terms','1'); App.push('lang');
+          })()">${L('continue')}</button>
+        </section>`;
+      }
+      else if(this.state.screen==='lang'){
+        html=`<section class='card view'>
+          <h2>${L('choose_lang')}</h2>
+          <div style='display:flex;gap:8px;margin:10px 0;'>
+            <button class='btn btn-outline' onclick="App.setLang('he')">${strings['he']['lang_he']}</button>
+            <button class='btn btn-outline' onclick="App.setLang('en')">${strings['en']['lang_en']}</button>
+          </div>
+          <button class='btn btn-primary' onclick="App.push('${this.state.user?'dashboard':'register'}')">${L('continue')}</button>
+        </section>`;
+      }
+      else if(this.state.screen==='register'){
+        const u=this.state.user||{firstName:'',age:'',goal:''};
+        html=`<section class='card view'>
+          <h2>${L('register_title')}</h2>
+          <label class='hint'>${L('name')}</label>
+          <input id='fn' type='text' value='${u.firstName||''}' style='width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;' />
+          <label class='hint' style='margin-top:8px'>${L('age')}</label>
+          <input id='age' type='number' min='10' max='99' value='${u.age||''}' style='width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;' />
+          <label class='hint' style='margin-top:8px'>${L('goal')}</label>
+          <input id='goal' type='text' value='${u.goal||''}' style='width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;' />
+          <button class='btn btn-primary' style='margin-top:12px' onclick="(function(){
+            const user={ firstName:document.getElementById('fn').value.trim(), age:parseInt(document.getElementById('age').value||0), goal:document.getElementById('goal').value.trim(), registeredAt:new Date().toISOString() };
+            if(!user.firstName||!user.age||!user.goal){ alert('אנא מלא/י את כל השדות'); return;}
+            App.saveUser(user); App.push('dashboard');
+          })()">${L('start_saving')}</button>
+        </section>`;
+      }
+      else if(this.state.screen==='dashboard'){
+        const totalPoints=App.state.data.reduce((s,x)=>s+Math.round((x.amount||0)*0.5),0);
+        const moneyValue=(totalPoints*0.5).toFixed(2);
+        html=`<section class='card view'>
+          <h2>${L('dashboard_title')}</h2>
+          <p class='hint'>${L('installed_hint')}</p>
+          <div style='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap'>
+            <button class='btn btn-primary' onclick="App.push('addSkip')">${L('add_skip')}</button>
+            <button class='btn btn-outline' onclick="App.push('history')">${L('history')}</button>
+            <button class='btn btn-outline' onclick="App.push('stats')">${L('stats')}</button>
+            <button class='btn btn-outline' onclick="App.push('investments')">${L('investments')}</button>
+            <button class='btn btn-outline' onclick="App.push('settings')">${L('settings')}</button>
+          </div>
+          <div style='margin-top:16px' class='hint'>נקודות: ${totalPoints} • שווי כסף: ₪${moneyValue}</div>
+        </section>`;
+      }
+      else if(this.state.screen==='addSkip'){
+        html=`<section class='card view'>
+          <h2>${L('add_skip')}</h2>
+          <label class='hint'>${L('amount')}</label>
+          <input id='amt' type='number' min='1' style='width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;' />
+          <label class='hint' style='margin-top:8px'>${L('description')}</label>
+          <input id='desc' type='text' style='width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;' />
+          <label class='hint' style='margin-top:8px'>${L('category')}</label>
+          <select id='cat' style='width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;'>
+            <option>אוכל ושתייה</option><option>אופנה</option><option>בילויים</option>
+            <option>טכנולוגיה</option><option>יופי וטיפוח</option><option>תחבורה</option>
+            <option>מנויים</option><option>קניות אימפולסיביות</option><option>חברתי</option><option>אחר</option>
+          </select>
+          <div style='display:flex;gap:8px;margin-top:12px'>
+            <button class='btn btn-primary' onclick="(function(){
+              const item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() };
+              if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;}
+              App.addSkip(item);
+            })()">${L('save')}</button>
+          </div>
+        </section>`;
+      }
+      else if(this.state.screen==='history'){
+        html=`<section class='card view'><h2>${L('history')}</h2>`+
+          (this.state.data.length? this.state.data.slice().reverse().map(s=>`<div class='hint'>${new Date(s.date).toLocaleString()} • ₪${s.amount} • ${s.category} • ${s.description}</div>`).join('') : `<div class='hint'>אין רישומים עדיין</div>`)+`</section>`;
+      }
+      else if(this.state.screen==='stats'){
+        const total=this.state.data.reduce((sum,x)=>sum+(x.amount||0),0).toFixed(2);
+        const points=this.state.data.reduce((sum,x)=>sum+Math.round((x.amount||0)*0.5),0);
+        html=`<section class='card view'>
+          <h2>${L('stats')}</h2>
+          <div class='hint'>סה\"כ סכום שנחסך (מדילוגים): ₪${total}</div>
+          <div class='hint'>נקודות: ${points}</div>
+        </section>`;
+      }
+      else if(this.state.screen==='investments'){
+        const items=this.investments();
+        html=`<section class='card view'>
+          <h2>${L('invest_title')}</h2>
+          <p class='hint'>${L('invest_disclaimer')}</p>
+          <div class='list'>${items.map(i=>`<div class='item'>
+              /logos/${i.key}.png
+              <div style='flex:1'>${i.url}${i.name}</a></div>
+            </div>`).join('')}</div>
+          <button class='btn btn-primary' style='margin-top:12px' onclick="App.push('summary')">${L('finish')}</button>
+        </section>`;
+      }
+      else if(this.state.screen==='settings'){
+        const u=this.state.user||{firstName:'',age:'',goal:''};
+        html=`<section class='card view'>
+          <h2>${L('settings')}</h2>
+          <div class='hint'>פרופיל: ${u.firstName||'-'}, ${u.age||'-'}, ${u.goal||'-'}</div>
+          <button class='btn btn-outline' style='margin-top:12px' onclick='App.reset()'>${L('reset_all')}</button>
+        </section>`;
+      }
+      else if(this.state.screen==='summary'){
+        const total=this.state.data.reduce((sum,x)=>sum+(x.amount||0),0).toFixed(2);
+        const points=this.state.data.reduce((sum,x)=>sum+Math.round((x.amount||0)*0.5),0);
+        const count=this.state.data.length;
+        const about=(this.state.lang==='he'?strings.he.summary_about:strings.en.summary_about);
+        const last=`${new Date(LAST_UPDATED).toLocaleDateString(this.state.lang==='he'?'he-IL':'en-US')}`;
+        html=`<section class='card view'>
+          <h2>${L('summary_title')}</h2>
+          <div class='hint'>דילוגים שבוצעו: ${count}</div>
+          <div class='hint'>סה\"כ סכום שנחסך: ₪${total}</div>
+          <div class='hint'>נקודות: ${points}</div>
+          <hr style='margin:14px 0;border:none;border-top:1px solid #eee' />
+          <p class='hint'>${about}</p>
+          <div class='hint'>${strings[this.state.lang].last_updated}: ${last}</div>
+          <div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;'>
+            <button class='btn btn-primary' onclick="App.push('dashboard')">${strings[this.state.lang].go_home||'Home'}</button>
+            <button class='btn btn-outline' onclick='App.reset()'>${strings[this.state.lang].reset_all}</button>
+          </div>
+        </section>`;
+      }
+      el.innerHTML=html;
+    }
+  };
+
+  if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(console.error); }
+  App.load();
+  </script>
 </body>
 </html>
