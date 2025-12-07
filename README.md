@@ -1,10 +1,1 @@
-<img width="96" height="96" alt="psagot" src="https://github.com/user-attachments/assets/7a826326-f817-482b-ace9-fc46483ad725" />
-<img width="96" height="96" alt="phoenix" src="https://github.com/user-attachments/assets/68be82d8-d235-4b71-bf2a-f3c79ff30eb8" />
-<img width="96" height="96" alt="more" src="https://github.com/user-attachments/assets/ce38208b-349d-4a2b-95bb-0fc3d9ddc616" />
-<img width="96" height="96" alt="meitav" src="https://github.com/user-attachments/assets/992dc2de-738a-40a0-95e2-8c3915374bee" />
-<img width="96" height="96" alt="ibkr" src="https://github.com/user-attachments/assets/fa414169-4b52-463e-8007-6e05410160f3" />
-<img width="96" height="96" alt="ibi" src="https://github.com/user-attachments/assets/d3b5f33d-df80-4ae9-b339-26d152a75639" />
-<img width="96" height="96" alt="harel" src="https://github.com/user-attachments/assets/be0e9f43-08e4-4e3b-85f9-47e52372e638" />
-<img width="96" height="96" alt="etoro" src="https://github.com/user-attachments/assets/89f284bb-fcab-4da4-af9c-c0a30794f2ce" />
-<img width="96" height="96" alt="clal" src="https://github.com/user-attachments/assets/8aacf8d8-0489-49ea-a568-37d96d9e5f98" />
-<img width="96" height="96" alt="altshuler" src="https://github.com/user-attachments/assets/b7b91f47-94a0-41de-a2e5-7c9e032bc5f0" />
+
