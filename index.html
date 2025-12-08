@@ -1,33 +1,21 @@
-
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SKIPAPP - משחק החיסכון</title>
-
-  <!-- צבע ערכת נושא לדפדפן/PWA -->
   <meta name="theme-color" content="#A8D5BA" />
-
-  <!-- ===== iOS Standalone (פתיחה כ-App מהמסך הבית) ===== -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="SKIPAPP" />
-  /icons/icon-180.png
-
-  <!-- מניפסט ל-Android + PWA -->
-  /manifest.json
-
-  <!-- פונטים מגוגל (תג תקין, לא טקסט גלוי) -->
-  https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&family=Heebo:wght@300;400;700&display=swap
-
+  <link rel="apple-touch-icon" href="/icons/icon-180.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&family=Heebo:wght@300;400;700&display=swap" rel="stylesheet" />
   <style>
     :root { --bg:#FFFCF7; --primary:#5B8A72; --primary2:#7BA896; --text:#2D3436; --muted:#636E72; --danger:#E74C3C; --accent:#F4A261; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family:'Poppins','Heebo',system-ui,-apple-system; background:var(--bg); color:var(--text); }
-
-    header { background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff; padding:16px 24px;
-             border-radius:0 0 24px 24px; position:sticky; top:0; z-index:9; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:'Poppins','Heebo',system-ui,-apple-system; background: radial-gradient(80% 100% at 10% 0%, #dfeee4 0%, #fffcf7 70%); color:var(--text); }
+    header { background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff; padding:16px 24px; border-radius:0 0 24px 24px; position:sticky; top:0; z-index:9; }
     .wrap { max-width:520px; margin:0 auto; padding:20px; }
     .card { background:#fff; border-radius:16px; padding:20px; box-shadow:0 8px 30px rgba(0,0,0,0.08); }
     .btn { appearance:none; border:none; padding:12px 16px; border-radius:14px; cursor:pointer; font-weight:700; }
@@ -36,18 +24,16 @@
     .hint { color:var(--muted); font-size:14px; }
     .topbar { display:flex; align-items:center; gap:10px; justify-content:space-between; }
     .back { border:none; background:#fff; color:#2D3436; border-radius:12px; padding:8px 12px; cursor:pointer; font-weight:600; }
-
-    /* רשימת השקעות + הבטחת קליקים */
+    .hero { background:url('images/hero.jpg') center/cover no-repeat, linear-gradient(135deg,#eaf6ef,#fffcf7); border-radius:16px; min-height:160px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
     .list { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
-    .item { position:relative; display:flex; align-items:center; gap:12px; padding:12px; border:1px solid #eee; border-radius:12px; }
-    .item img { width:32px; height:32px; border-radius:50%; }
-    .item a { color:var(--primary); text-decoration:none; font-weight:700; pointer-events:auto; position:relative; z-index:2; }
-
-    /* אנימציית מעבר בין מסכים */
-    .view { opacity:0; transform:translateY(12px); animation:routeIn .35s ease both; }
-    @keyframes routeIn { from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:translateY(0);} }
-
-    /* טיימליין צעדים בסיכום */
+    .item { position:relative; display:flex; align-items:center; gap:12px; padding:12px; border:1px solid #eee; border-radius:12px; background:#fff; }
+    .item img.logo { width:40px; height:40px; border-radius:8px; object-fit:cover; }
+    .item a.link { color:var(--primary); text-decoration:none; font-weight:700; pointer-events:auto; position:relative; z-index:2; }
+    .item a.link:hover { text-decoration:underline; }
+    .chartWrap { background:#fff; border-radius:16px; padding:12px; box-shadow:0 8px 30px rgba(0,0,0,0.06); }
+    canvas { width:100%; height:160px; }
+    .view { opacity:0; transform:translateY(16px) scale(0.98); animation:routeIn .45s ease both; }
+    @keyframes routeIn { from{opacity:0; transform:translateY(16px) scale(0.98);} to{opacity:1; transform:translateY(0) scale(1);} }
     .timeline { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
     .step { padding:10px; border:1px dashed #d9d9d9; border-radius:12px; font-size:14px; color:#4b4b4b; }
   </style>
@@ -63,355 +49,14 @@
       <div></div>
     </div>
   </header>
-
   <main id="app" class="wrap"></main>
-
   <script>
   const LAST_UPDATED = '2025-12-07';
-
-  const strings = {
-    he: {
-      back:'חזרה',
-      terms_title:'תנאי שימוש והצהרת אחריות',
-      terms_text:'האפליקציה מיועדת ללמידה בלבד ואינה ייעוץ פיננסי. שימוש באפליקציה באחריות המשתמש. קראתי ואני מסכים לתנאים.',
-      accept_terms:'אני מסכים לתנאים', continue:'המשך',
-      choose_lang:'בחירת שפה', lang_he:'עברית', lang_en:'English',
-      register_title:'הרשמה', name:'שם', age:'גיל', goal:'מטרת חיסכון',
-      start_saving:'התחל לחסוך!', dashboard_title:'הבית',
-      add_skip:'הוסף דילוג', history:'היסטוריה', stats:'סטטיסטיקות',
-      investments:'אפיקי השקעה', settings:'הגדרות',
-      amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור',
-      reset_all:'איפוס והרשמה מחדש',
-      installed_hint:'להתקנה בנייד: תפריט הדפדפן → הוסף למסך הבית',
-      invest_title:'אפיקי השקעה מוצעים',
-      invest_disclaimer:'המידע להדגמה בלבד, אינו ייעוץ פיננסי. בדוק תנאים ועלויות לפני החלטה.',
-      finish:'סיום והמשך לסיכום',
-      summary_title:'סיכום',
-      summary_about:'SKIPAPP מסייעת לזהות הוצאות קטנות שאפשר לדלג עליהן ולהמיר אותן לחיסכון ומודעות פיננסית.',
-      go_home:'חזרה לדף הבית',
-      last_updated:'תאריך שדרוג אחרון'
-    },
-    en: {
-      back:'Back',
-      terms_title:'Terms of Use & Disclaimer',
-      terms_text:'This app is for learning only and is not financial advice. Use at your own risk.',
-      accept_terms:'I accept the terms', continue:'Continue',
-      choose_lang:'Choose language', lang_he:'עברית', lang_en:'English',
-      register_title:'Sign up', name:'First name', age:'Age', goal:'Saving goal',
-      start_saving:'Start saving!', dashboard_title:'Home',
-      add_skip:'Add Skip', history:'History', stats:'Statistics',
-      investments:'Investments', settings:'Settings',
-      amount:'Amount (₪)', description:'Description', category:'Category', save:'Save',
-      reset_all:'Reset & re-register',
-      installed_hint:'Install on mobile: Add to Home screen',
-      invest_title:'Suggested investment channels',
-      invest_disclaimer:'For demo only, not financial advice.',
-      finish:'Finish & go to summary',
-      summary_title:'Summary',
-      summary_about:'SKIPAPP helps you turn skipped expenses into savings.',
-      go_home:'Back to Home',
-      last_updated:'Last update'
-    }
-  };
-
-  // ===== Utilities =====
-  function formatDate(iso, lang='he') {
-    try {
-      const d = new Date(iso);
-      if (isNaN(d.getTime())) return '—';
-      return d.toLocaleString(lang==='he'?'he-IL':'en-US',
-        { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
-    } catch { return '—'; }
-  }
-
-  const App = {
-    state: { screen:'terms', history:[], user:null, lang:'he', data:[] },
-    t(k){ return strings[this.state.lang][k] || k; },
-    setLang(l){
-      this.state.lang = l;
-      localStorage.setItem('skipapp_lang', l);
-      document.documentElement.lang = l==='he'?'he':'en';
-      document.documentElement.dir  = l==='he'?'rtl':'ltr';
-      this.render();
-    },
-    push(s){ this.state.history.push(this.state.screen); this.state.screen = s; this.render(); },
-    goBack(){
-      // תמיד ניתן לחזור, למעט מסך תנאים ראשון
-      if (this.state.history.length) {
-        this.state.screen = this.state.history.pop();
-        this.render();
-      } else if (this.state.screen!=='terms') {
-        this.state.screen = 'dashboard';
-        this.render();
-      }
-    },
-    saveUser(u){ localStorage.setItem('skipapp_user', JSON.stringify(u)); this.state.user = u; },
-    load(){
-      const u = localStorage.getItem('skipapp_user');
-      const l = localStorage.getItem('skipapp_lang');
-      const c = localStorage.getItem('skipapp_terms');
-      if(l) this.state.lang = l;
-      document.documentElement.lang = this.state.lang==='he'?'he':'en';
-      document.documentElement.dir  = this.state.lang==='he'?'rtl':'ltr';
-      if(u) this.state.user = JSON.parse(u);
-      const d = localStorage.getItem('skipapp_data');
-      if(d) this.state.data = JSON.parse(d);
-      if(c && this.state.user) this.state.screen = 'dashboard';
-      this.render();
-    },
-    saveData(){ localStorage.setItem('skipapp_data', JSON.stringify(this.state.data)); },
-    addSkip(item){ this.state.data.push(item); this.saveData(); this.push('investments'); },
-    reset(){
-      localStorage.removeItem('skipapp_user');
-      localStorage.removeItem('skipapp_data');
-      localStorage.removeItem('skipapp_terms');
-      this.state = { screen:'terms', history:[], user:null, lang:(localStorage.getItem('skipapp_lang')||'he'), data:[] };
-      this.render();
-    },
-
-    // ===== Investment channels (with clickable links + logos) =====
-    investments(){
-      const list = [
-        {key:'ibi',       name:'IBI Digital',            url:'https://www.ibi.co.il/digital'},
-        {key:'meitav',    name:'Meitav Digital',         url:'https://digital.meitav.co.il'},
-        {key:'harel',     name:'Harel Digital',          url:'https://digital.harel-group.co.il'},
-        {key:'psagot',    name:'Psagot Digital',         url:'https://digital.psagot.co.il'},
-        {key:'altshuler', name:'Altshuler Shaham',       url:'https://www.as-invest.co.il'},
-        {key:'phoenix',   name:'Phoenix Investments',     url:'https://www.thephoenix.co.il'},
-        {key:'etoro',     name:'eToro',                   url:'https://www.etoro.com'},
-        {key:'ibkr',      name:'Interactive Brokers',     url:'https://www.interactivebrokers.com'},
-        {key:'clal',      name:'Clal Finance',            url:'https://www.clal-finance.co.il'},
-        {key:'more',      name:'More Digital',            url:'https://www.moreinvest.co.il'}
-      ];
-      return list.sort((a,b)=> a.name.localeCompare(b.name));
-    },
-
-    render(){
-      const backBtn = document.getElementById('backBtn');
-      backBtn.style.visibility = (this.state.screen==='terms') ? 'hidden' : 'visible';
-
-      const el = document.getElementById('app');
-      const L = (k)=>this.t(k);
-      let html = '';
-
-      // ===== Screens =====
-      if(this.state.screen==='terms'){
-        html = `
-        <section class="card view">
-          <h2>${L('terms_title')}</h2>
-          <p class="hint">${L('terms_text')}</p>
-          <label style="display:flex;gap:8px;align-items:center;margin:12px 0;">
-            <input type="checkbox" id="accept"> <span>${L('accept_terms')}</span>
-          </label>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-primary" onclick="(function(){
-              const ok = document.getElementById('accept').checked;
-              if(!ok){ alert('נא לאשר תנאים'); return; }
-              localStorage.setItem('skipapp_terms','1');
-              App.push('lang');
-            })()">${L('continue')}</button>
-            <button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button>
-          </div>
-        </section>`;
-      }
-      else if(this.state.screen==='lang'){
-        html = `
-        <section class="card view">
-          <h2>${L('choose_lang')}</h2>
-          <div style="display:flex;gap:8px;margin:10px 0;">
-            <button class="btn btn-outline" onclick="App.setLang('he')">${strings['he']['lang_he']}</button>
-            <button class="btn btn-outline" onclick="App.setLang('en')">${strings['en']['lang_en']}</button>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-primary" onclick="App.push('${this.state.user?'dashboard':'register'}')">${L('continue')}</button>
-            <button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button>
-          </div>
-        </section>`;
-      }
-      else if(this.state.screen==='register'){
-        const u = this.state.user || { firstName:'', age:'', goal:'' };
-        html = `
-        <section class="card view">
-          <h2>${L('register_title')}</h2>
-          <label class="hint">${L('name')}</label>
-          <input id="fn" type="text" value="${u.firstName||''}" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;" />
-          <label class="hint" style="margin-top:8px">${L('age')}</label>
-          <input id="age" type="number" min="10" max="99" value="${u.age||''}" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;" />
-          <label class="hint" style="margin-top:8px">${L('goal')}</label>
-          <input id="goal" type="text" value="${u.goal||''}" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;" />
-          <div style="display:flex;gap:8px;margin-top:12px">
-            <button class="btn btn-primary" onclick="(function(){
-              const user = {
-                firstName: document.getElementById('fn').value.trim(),
-                age: parseInt(document.getElementById('age').value||0),
-                goal: document.getElementById('goal').value.trim(),
-                registeredAt: new Date().toISOString()
-              };
-              if(!user.firstName || !user.age || !user.goal){ alert('אנא מלא/י את כל השדות'); return; }
-              App.saveUser(user);
-              App.push('dashboard');
-            })()">${L('start_saving')}</button>
-            <button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button>
-          </div>
-        </section>`;
-      }
-      else if(this.state.screen==='dashboard'){
-        const points = this.state.data.reduce((s,x)=>s + Math.round((x.amount||0)*0.5),0);
-        const moneyValue = (points*0.5).toFixed(2);
-        html = `
-        <section class="card view">
-          <h2>${L('dashboard_title')}</h2>
-          <p class="hint">${L('installed_hint')}</p>
-          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="App.push('addSkip')">${L('add_skip')}</button>
-            <button class="btn btn-outline" onclick="App.push('history')">${L('history')}</button>
-            <button class="btn btn-outline" onclick="App.push('stats')">${L('stats')}</button>
-            <button class="btn btn-outline" onclick="App.push('investments')">${L('investments')}</button>
-            <button class="btn btn-outline" onclick="App.push('settings')">${L('settings')}</button>
-          </div>
-          <div style="margin-top:16px" class="hint">נקודות: ${points} • שווי כסף: ₪${moneyValue}</div>
-        </section>`;
-      }
-      else if(this.state.screen==='addSkip'){
-        html = `
-        <section class="card view">
-          <h2>${L('add_skip')}</h2>
-          <label class="hint">${L('amount')}</label>
-          <input id="amt" type="number" min="1" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;" />
-          <label class="hint" style="margin-top:8px">${L('description')}</label>
-          <input id="desc" type="text" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;" />
-          <label class="hint" style="margin-top:8px">${L('category')}</label>
-          <select id="cat" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;">
-            <option>אוכל ושתייה</option>
-            <option>אופנה</option>
-            <option>בילויים</option>
-            <option>טכנולוגיה</option>
-            <option>יופי וטיפוח</option>
-            <option>תחבורה</option>
-            <option>מנויים</option>
-            <option>קניות אימפולסיביות</option>
-            <option>חברתי</option>
-            <option>אחר</option>
-          </select>
-          <div style="display:flex;gap:8px;margin-top:12px">
-            <button class="btn btn-primary" onclick="(function(){
-              const item = {
-                amount: parseFloat(document.getElementById('amt').value||0),
-                description: document.getElementById('desc').value.trim(),
-                category: document.getElementById('cat').value,
-                date: new Date().toISOString()
-              };
-              if(!item.amount || !item.description){ alert('נא להזין סכום ותיאור'); return; }
-              App.addSkip(item);
-            })()">${L('save')}</button>
-            <button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button>
-          </div>
-        </section>`;
-      }
-      else if(this.state.screen==='history'){
-        html = `
-        <section class="card view">
-          <h2>${L('history')}</h2>
-          <div class="timeline">
-            ${
-              this.state.data.length
-              ? this.state.data.slice().reverse().map(s=>`
-                 <div class="step">${formatDate(s.date, App.state.lang)} • ₪${s.amount} • ${s.category} • ${s.description}</div>
-               `).join('')
-              : `<div class="hint">אין רישומים עדיין</div>`
-            }
-          </div>
-          <div style="display:flex;gap:8px;margin-top:12px">
-            <button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button>
-          </div>
-        </section>`;
-      }
-      else if(this.state.screen==='stats'){
-        const total = this.state.data.reduce((sum,x)=>sum+(x.amount||0),0).toFixed(2);
-        const points = this.state.data.reduce((sum,x)=>sum+Math.round((x.amount||0)*0.5),0);
-        html = `
-        <section class="card view">
-          <h2>${L('stats')}</h2>
-          <div class="hint">סה"כ סכום שנחסך (מדילוגים): ₪${total}</div>
-          <div class="hint">נקודות: ${points}</div>
-          <div style="display:flex;gap:8px;margin-top:12px">
-            <button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button>
-          </div>
-        </section>`;
-      }
-      else if(this.state.screen==='investments'){
-        const items = this.investments();
-        html = `
-        <section class="card view">
-          <h2>${L('invest_title')}</h2>
-          <p class="hint">${L('invest_disclaimer')}</p>
-          <div class="list">
-            ${items.map(i=>`
-              <div class="item">
-                logos/${i.key}.png
-                <div style="flex:1">
-                  ${i.url}${i.name}</a>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-          <div style="display:flex;gap:8px;margin-top:12px">
-            <button class="btn btn-primary" onclick="App.push('summary')">${L('finish')}</button>
-            <button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button>
-          </div>
-        </section>`;
-      }
-      else if(this.state.screen==='settings'){
-        const u = this.state.user || { firstName:'', age:'', goal:'' };
-        html = `
-        <section class="card view">
-          <h2>${L('settings')}</h2>
-          <div class="hint">פרופיל: ${u.firstName||'-'}, ${u.age||'-'}, ${u.goal||'-'}</div>
-          <div style="display:flex;gap:8px;margin-top:12px">
-            <button class="btn btn-outline" onclick="App.reset()">${L('reset_all')}</button>
-            <button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button>
-          </div>
-        </section>`;
-      }
-      else if(this.state.screen==='summary'){
-        const total = this.state.data.reduce((sum,x)=>sum+(x.amount||0),0).toFixed(2);
-        const points = this.state.data.reduce((sum,x)=>sum+Math.round((x.amount||0)*0.5),0);
-        const count  = this.state.data.length;
-        const about  = this.state.lang==='he' ? strings.he.summary_about : strings.en.summary_about;
-        const last   = formatDate(LAST_UPDATED, this.state.lang);
-        html = `
-        <section class="card view">
-          <h2>${L('summary_title')}</h2>
-          <div class="hint">דילוגים שבוצעו: ${count}</div>
-          <div class="hint">סה"כ סכום שנחסך: ₪${total}</div>
-          <div class="hint">נקודות: ${points}</div>
-          <div class="timeline">
-            ${this.state.data.length
-              ? this.state.data.map((s,idx)=>`
-                  <div class="step">${idx+1}. ${formatDate(s.date, App.state.lang)} • ₪${s.amount} • ${s.category} • ${s.description}</div>
-                `).join('')
-              : `<div class="hint">עוד לא נוספו דילוגים</div>`
-            }
-          </div>
-          <hr style="margin:14px 0;border:none;border-top:1px solid #eee" />
-          <p class="hint">${about}</p>
-          <div class="hint">${L('last_updated')}: ${last}</div>
-          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="App.push('dashboard')">${L('go_home')}</button>
-            <button class="btn btn-outline" onclick="App.reset()">${L('reset_all')}</button>
-            <button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button>
-          </div>
-        </section>`;
-      }
-
-      el.innerHTML = html;
-    }
-  };
-
-  // Service Worker (PWA + רענון אוטומטי בעדכון)
+  const strings = { he: { back:'חזרה', terms_title:'תנאי שימוש והצהרת אחריות', terms_text:'האפליקציה מיועדת ללמידה בלבד ואינה ייעוץ פיננסי. שימוש באפליקציה באחריות המשתמש.', accept_terms:'אני מסכים לתנאים', continue:'המשך', choose_lang:'בחירת שפה', lang_he:'עברית', lang_en:'English', register_title:'הרשמה', name:'שם', age:'גיל', goal:'מטרת חיסכון', start_saving:'התחל לחסוך!', dashboard_title:'הבית', add_skip:'הוסף דילוג', history:'היסטוריה', stats:'סטטיסטיקות', investments:'אפיקי השקעה', settings:'הגדרות', amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור', reset_all:'איפוס והרשמה מחדש', installed_hint:'להתקנה בנייד: תפריט הדפדפן → הוסף למסך הבית', invest_title:'אפיקי השקעה מוצעים', invest_disclaimer:'המידע להדגמה בלבד, אינו ייעוץ פיננסי.', finish:'סיום והמשך לסיכום', summary_title:'סיכום', summary_about:'SKIPAPP מסייעת להפוך דילוגים קטנים לחיסכון ומודעות.', go_home:'חזרה לדף הבית', last_updated:'תאריך שדרוג אחרון' } };
+  function formatDate(iso){ try{ const d=new Date(iso); if(isNaN(d.getTime())) return '—'; return d.toLocaleString('he-IL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return '—';} }
+  function drawSavingsChart(canvas,data){ if(!canvas) return; const ctx=canvas.getContext('2d'); const w=canvas.width=canvas.clientWidth*devicePixelRatio; const h=canvas.height=canvas.clientHeight*devicePixelRatio; ctx.scale(devicePixelRatio,devicePixelRatio); const days={}; (data||[]).forEach(x=>{ const d=new Date(x.date); if(isNaN(d)) return; const key=d.toISOString().slice(0,10); days[key]=(days[key]||0)+(x.amount||0); }); const keys=Object.keys(days).sort(); const series=[]; let acc=0; keys.forEach(k=>{ acc+=days[k]; series.push({label:k,value:acc}); }); if(series.length===0){ series.push({label:formatDate(new Date().toISOString()), value:0}); } const pad=20, maxV=Math.max(...series.map(s=>s.value))||1; ctx.clearRect(0,0,w,h); ctx.strokeStyle='#dfe4ea'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pad,h/2); ctx.lineTo(w-pad,h/2); ctx.stroke(); ctx.strokeStyle='#5B8A72'; ctx.lineWidth=2; ctx.beginPath(); series.forEach((s,i)=>{ const x=pad+i*((w-2*pad)/Math.max(1,(series.length-1))); const y=h-pad-(s.value/maxV)*(h-2*pad); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.stroke(); ctx.fillStyle='#5B8A72'; series.forEach((s,i)=>{ const x=pad+i*((w-2*pad)/Math.max(1,(series.length-1))); const y=h-pad-(s.value/maxV)*(h-2*pad); ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill(); }); }
+  const App = { state:{ screen:'terms', history:[], user:null, lang:'he', data:[] }, t(k){ return strings[this.state.lang][k]||k; }, setLang(l){ this.state.lang=l; localStorage.setItem('skipapp_lang',l); document.documentElement.lang=l==='he'?'he':'en'; document.documentElement.dir=l==='he'?'rtl':'ltr'; this.render(); }, push(s){ this.state.history.push(this.state.screen); this.state.screen=s; this.render(); }, goBack(){ if(this.state.history.length){ this.state.screen=this.state.history.pop(); this.render(); } else if(this.state.screen!=='terms'){ this.state.screen='dashboard'; this.render(); } }, saveUser(u){ localStorage.setItem('skipapp_user',JSON.stringify(u)); this.state.user=u; }, load(){ const u=localStorage.getItem('skipapp_user'); const l=localStorage.getItem('skipapp_lang'); const c=localStorage.getItem('skipapp_terms'); if(l) this.state.lang=l; document.documentElement.lang=this.state.lang==='he'?'he':'en'; document.documentElement.dir=this.state.lang==='he'?'rtl':'ltr'; if(u) this.state.user=JSON.parse(u); const d=localStorage.getItem('skipapp_data'); if(d) this.state.data=JSON.parse(d); if(c && this.state.user) this.state.screen='dashboard'; this.render(); }, saveData(){ localStorage.setItem('skipapp_data', JSON.stringify(this.state.data)); }, addSkip(item){ this.state.data.push(item); this.saveData(); this.push('investments'); }, reset(){ localStorage.removeItem('skipapp_user'); localStorage.removeItem('skipapp_data'); localStorage.removeItem('skipapp_terms'); this.state={ screen:'terms', history:[], user:null, lang:(localStorage.getItem('skipapp_lang')||'he'), data:[] }; this.render(); }, investments(){ const list=[ {key:'ibi',name:'IBI Digital',url:'https://www.ibi.co.il/digital'}, {key:'meitav',name:'Meitav Digital',url:'https://digital.meitav.co.il'}, {key:'harel',name:'Harel Digital',url:'https://digital.harel-group.co.il'}, {key:'psagot',name:'Psagot Digital',url:'https://digital.psagot.co.il'}, {key:'altshuler',name:'Altshuler Shaham',url:'https://www.as-invest.co.il'}, {key:'phoenix',name:'Phoenix Investments',url:'https://www.thephoenix.co.il'}, {key:'etoro',name:'eToro',url:'https://www.etoro.com'}, {key:'ibkr',name:'Interactive Brokers',url:'https://www.interactivebrokers.com'}, {key:'clal',name:'Clal Finance',url:'https://www.clal-finance.co.il'}, {key:'more',name:'More Digital',url:'https://www.moreinvest.co.il'} ]; return list.sort((a,b)=>a.name.localeCompare(b.name)); }, render(){ const backBtn=document.getElementById('backBtn'); backBtn.style.visibility=(this.state.screen==='terms')?'hidden':'visible'; const el=document.getElementById('app'); const L=(k)=>this.t(k); let html=''; if(this.state.screen==='terms'){ html=`<section class="view"><div class="hero"></div><div class="card"><h2>${L('terms_title')}</h2><p class="hint">${L('terms_text')}</p><label style="display:flex;gap:8px;align-items:center;margin:12px 0;"><input type="checkbox" id="accept"> <span>${L('accept_terms')}</span></label><div style="display:flex;gap:8px;"><button class="btn btn-primary" onclick="(function(){ const ok=document.getElementById('accept').checked; if(!ok){ alert('נא לאשר תנאים'); return;} localStorage.setItem('skipapp_terms','1'); App.push('lang'); })()">${L('continue')}</button><button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button></div></div></section>`; } else if(this.state.screen==='lang'){ html=`<section class="card view"><h2>${L('choose_lang')}</h2><div style="display:flex;gap:8px;margin:10px 0;"><button class="btn btn-outline" onclick="App.setLang('he')">עברית</button><button class="btn btn-outline" onclick="App.setLang('en')">English</button></div><div style="display:flex;gap:8px;"><button class="btn btn-primary" onclick="App.push('${this.state.user?'dashboard':'register'}')">${L('continue')}</button><button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button></div></section>`; } else if(this.state.screen==='register'){ const u=this.state.user||{firstName:'',age:'',goal:''}; html=`<section class="card view"><h2>${L('register_title')}</h2><label class="hint">${L('name')}</label><input id="fn" type="text" value="${u.firstName||''}" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;" /><label class="hint" style="margin-top:8px">${L('age')}</label><input id="age" type="number" min="10" max="99" value="${u.age||''}" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;" /><label class="hint" style="margin-top:8px">${L('goal')}</label><input id="goal" type="text" value="${u.goal||''}" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;" /><div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-primary" onclick="(function(){ const user={ firstName:document.getElementById('fn').value.trim(), age:parseInt(document.getElementById('age').value||0), goal:document.getElementById('goal').value.trim(), registeredAt:new Date().toISOString() }; if(!user.firstName||!user.age||!user.goal){ alert('אנא מלא/י את כל השדות'); return;} App.saveUser(user); App.push('dashboard'); })()">${L('start_saving')}</button><button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button></div></section>`; } else if(this.state.screen==='dashboard'){ const points=this.state.data.reduce((s,x)=>s+Math.round((x.amount||0)*0.5),0); const moneyValue=(points*0.5).toFixed(2); html=`<section class="view"><div class="card"><h2>${L('dashboard_title')}</h2><p class="hint">${L('installed_hint')}</p><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn btn-primary" onclick="App.push('addSkip')">${L('add_skip')}</button><button class="btn btn-outline" onclick="App.push('history')">${L('history')}</button><button class="btn btn-outline" onclick="App.push('stats')">${L('stats')}</button><button class="btn btn-outline" onclick="App.push('investments')">${L('investments')}</button><button class="btn btn-outline" onclick="App.push('settings')">${L('settings')}</button></div><div style="margin-top:16px" class="hint">נקודות: ${points} • שווי כסף: ₪${moneyValue}</div></div><div class="chartWrap" style="margin-top:16px"><canvas id="savingsChart"></canvas></div></section>`; setTimeout(()=>drawSavingsChart(document.getElementById('savingsChart'), App.state.data),0); } else if(this.state.screen==='addSkip'){ html=`<section class="card view"><h2>${L('add_skip')}</h2><label class="hint">${L('amount')}</label><input id="amt" type="number" min="1" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;" /><label class="hint" style="margin-top:8px">${L('description')}</label><input id="desc" type="text" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;" /><label class="hint" style="margin-top:8px">${L('category')}</label><select id="cat" style="width:100%;padding:12px;border:2px solid #E0E0E0;border-radius:12px;"><option>אוכל ושתייה</option><option>אופנה</option><option>בילויים</option><option>טכנולוגיה</option><option>יופי וטיפוח</option><option>תחבורה</option><option>מנויים</option><option>קניות אימפולסיביות</option><option>חברתי</option><option>אחר</option></select><div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-primary" onclick="(function(){ const item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() }; if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;} App.addSkip(item); })()">${L('save')}</button><button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button></div></section>`; } else if(this.state.screen==='history'){ html=`<section class="card view"><h2>${L('history')}</h2>${ (App.state.data.length? App.state.data.slice().reverse().map(s=>`<div class='hint'>${formatDate(s.date)} • ₪${s.amount} • ${s.category} • ${s.description}</div>`).join('') : `<div class='hint'>אין רישומים עדיין</div>` ) }<div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button></div></section>`; } else if(this.state.screen==='stats'){ const total=App.state.data.reduce((sum,x)=>sum+(x.amount||0),0).toFixed(2); const points=App.state.data.reduce((sum,x)=>sum+Math.round((x.amount||0)*0.5),0); html=`<section class="view"><div class="card"><h2>${L('stats')}</h2><div class="hint">סה"כ סכום שנחסך (מדילוגים): ₪${total}</div><div class="hint">נקודות: ${points}</div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button></div></div><div class="chartWrap" style="margin-top:16px"><canvas id="savingsChart2"></canvas></div></section>`; setTimeout(()=>drawSavingsChart(document.getElementById('savingsChart2'), App.state.data),0); } else if(this.state.screen==='investments'){ const items=App.investments(); html=`<section class="card view"><h2>${L('invest_title')}</h2><p class="hint">${L('invest_disclaimer')}</p><div class="list">${items.map(i=>{ const imgSrc='images/invest_'+i.key+'.jpg'; const fallbackLogo='logos/'+i.key+'.png'; return `<div class='item'><img class='logo' src='${imgSrc}' onerror="this.src='${fallbackLogo}'" alt='${i.name} logo' /><div style='flex:1'><a class='link' href='${i.url}' target='_blank' rel='noopener' aria-label='פתח ${i.name}'>${i.name}</a></div></div>`; }).join('')}</div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-primary" onclick="App.push('summary')">${L('finish')}</button><button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button></div></section>`; } else if(this.state.screen==='settings'){ const u=App.state.user||{firstName:'',age:'',goal:''}; html=`<section class="card view"><h2>${L('settings')}</h2><div class="hint">פרופיל: ${u.firstName||'-'}, ${u.age||'-'}, ${u.goal||'-'}</div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-outline" onclick="App.reset()">${L('reset_all')}</button><button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button></div></section>`; } else if(this.state.screen==='summary'){ const total=App.state.data.reduce((sum,x)=>sum+(x.amount||0),0).toFixed(2); const points=App.state.data.reduce((sum,x)=>sum+Math.round((x.amount||0)*0.5),0); const count=App.state.data.length; const about=strings.he.summary_about; const last=formatDate(LAST_UPDATED); html=`<section class="view"><div class="card"><h2>${L('summary_title')}</h2><div class="hint">דילוגים שבוצעו: ${count}</div><div class="hint">סה"כ סכום שנחסך: ₪${total}</div><div class="hint">נקודות: ${points}</div><hr style='margin:14px 0;border:none;border-top:1px solid #eee' /><p class="hint">${about}</p><div class="hint">${L('last_updated')}: ${last}</div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn btn-primary" onclick="App.push('dashboard')">${L('go_home')}</button><button class="btn btn-outline" onclick="App.reset()">${L('reset_all')}</button><button class="btn btn-outline" onclick="App.goBack()">← ${L('back')}</button></div></div><div class="chartWrap" style="margin-top:16px"><canvas id="savingsChart3"></canvas></div></section>`; setTimeout(()=>drawSavingsChart(document.getElementById('savingsChart3'), App.state.data),0); } el.innerHTML=html; } };
   if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(console.error); }
-
-  // התחלה
   App.load();
   </script>
 </body>
