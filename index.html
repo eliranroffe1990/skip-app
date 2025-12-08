@@ -1,2 +1,111 @@
-<!-- index.html מעודכן -->
-<html><body><h1>SKIPAPP גרסה מעודכנת</h1></body></html>
+<!DOCTYPE html>
+<html lang='he' dir='rtl'>
+<head>
+  <meta charset='utf-8'/>
+  <meta name='viewport' content='width=device-width, initial-scale=1'/>
+  <title>SKIPAPP - משחק החיסכון</title>
+  <meta name='theme-color' content='#A8D5BA'/>
+  <meta name='apple-mobile-web-app-capable' content='yes'/>
+  <meta name='apple-mobile-web-app-status-bar-style' content='black-translucent'/>
+  <meta name='apple-mobile-web-app-title' content='SKIPAPP'/>
+  <link rel='apple-touch-icon' href='/icons/icon-180.png'/>
+  <link rel='manifest' href='/manifest.json'/>
+  <link href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&family=Heebo:wght@300;400;700&display=swap' rel='stylesheet'>
+  <style>
+    :root{--bg:#FFFCF7;--primary:#5B8A72;--primary2:#7BA896;--text:#2D3436;--muted:#636E72;--warm:#FFB085;--border:#EAEAEA;}
+    *{box-sizing:border-box}
+    html{font-size:17px}
+    body{margin:0;font-family:'Heebo','Poppins',system-ui,-apple-system;background:radial-gradient(80% 100% at 10% 0%,#e9f3ed 0%,#fffcf7 70%);color:var(--text);line-height:1.5}
+    header{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;padding:18px 24px;border-radius:0 0 28px 28px;position:sticky;top:0;z-index:9}
+    .wrap{max-width:640px;margin:0 auto;padding:20px}
+    .card{background:#fff;border-radius:18px;padding:22px;box-shadow:0 10px 36px rgba(0,0,0,.08)}
+    .btn{appearance:none;border:none;padding:14px 18px;border-radius:14px;cursor:pointer;font-weight:700;min-height:44px}
+    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--warm));color:#fff}
+    .btn-outline{background:#fff;border:2px solid var(--border);color:var(--text)}
+    .hint{color:var(--muted);font-size:.95rem}
+    .topbar{display:flex;align-items:center;gap:10px;justify-content:space-between}
+    .back{border:none;background:#fff;color:#2D3436;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:600;min-height:44px}
+    .hero{background:url('images/hero.jpg') center/cover no-repeat,linear-gradient(135deg,#eaf6ef,#fffcf7);border-radius:18px;min-height:180px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 8px 28px rgba(0,0,0,.06)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+    .grid .tile{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;font-weight:700;color:var(--primary);box-shadow:0 6px 22px rgba(0,0,0,.04);cursor:pointer}
+    .list{display:flex;flex-direction:column;gap:12px;margin-top:10px}
+    .item-link{display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border:1px solid var(--border);border-radius:14px;text-decoration:none;color:var(--text);box-shadow:0 6px 22px rgba(0,0,0,.04)}
+    .item-link:hover{outline:2px solid rgba(255,176,133,.25)}
+    .logo{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:0 0 44px}
+    .name{font-weight:700;color:var(--primary)}
+    .chev{margin-inline-start:auto;color:#b0b0b0;font-weight:700}
+    .chartWrap{background:#fff;border-radius:16px;padding:12px;box-shadow:0 8px 30px rgba(0,0,0,.06);border:1px solid var(--border)}
+    .chartTitle{font-weight:700;margin:0 0 6px;color:#3b3b3b}
+    canvas{width:100%;height:200px}
+    .view{opacity:0;transform:translateY(16px) scale(.98);animation:routeIn .45s ease both}
+    @keyframes routeIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .splash{position:fixed;inset:0;background:linear-gradient(135deg,var(--primary),var(--warm));color:#fff;display:flex;align-items:center;justify-content:center;z-index:9999}
+    .splash .box{text-align:center;padding:24px}
+    .splash h1{margin:0 0 6px}
+  </style>
+</head>
+<body>
+  <div id='splash' class='splash' style='display:none'>
+    <div class='box'>
+      <h1>SKIPAPP</h1>
+      <p id='welcomeLine' class='hint' style='color:#fff'>ברוך השב!</p>
+      <button id='startBtn' class='btn btn-primary' style='margin-top:12px'>התחל</button>
+    </div>
+  </div>
+  <header>
+    <div class='topbar wrap'>
+      <button id='backBtn' class='back' onclick='App.goBack()'>← חזרה</button>
+      <div>
+        <h1 style='margin:0;'>SKIPAPP</h1>
+        <p style='margin:2px 0 0;opacity:.9' class='hint'>דלג על הוצאה. צבור לעתיד.</p>
+      </div>
+      <div></div>
+    </div>
+  </header>
+  <main id='app' class='wrap'></main>
+  <script>
+  const LAST_UPDATED='2025-12-07';
+  const strings={he:{back:'חזרה',terms_title:'תנאי שימוש והצהרת אחריות',terms_text:'האפליקציה מיועדת ללמידה בלבד ואינה ייעוץ פיננסי. שימוש באפליקציה באחריות המשתמש.',accept_terms:'אני מסכים לתנאים',continue:'המשך',choose_lang:'בחירת שפה',lang_he:'עברית',lang_en:'English',register_title:'הרשמה',name:'שם',age:'גיל',goal:'מטרת חיסכון',start_saving:'התחל לחסוך!',dashboard_title:'הבית',add_skip:'הוסף דילוג',history:'היסטוריה',stats:'סטטיסטיקות',investments:'אפיקי השקעה',settings:'הגדרות',amount:'סכום (₪)',description:'תיאור',category:'קטגוריה',save:'שמור',reset_all:'איפוס והרשמה מחדש',installed_hint:'להתקנה בנייד: תפריט הדפדפן → הוסף למסך הבית',invest_title:'אפיקי השקעה מוצעים',invest_disclaimer:'המידע להדגמה בלבד, אינו ייעוץ פיננסי.',finish:'סיום והמשך לסיכום',summary_title:'סיכום',summary_about:'SKIPAPP מסייעת להפוך דילוגים קטנים לחיסכון ומודעות.',go_home:'חזרה לדף הבית',last_updated:'תאריך שדרוג אחרון'}};
+  function formatDate(iso){try{const d=new Date(iso);if(isNaN(d.getTime()))return '—';return d.toLocaleString('he-IL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return '—';}}
+  function prepCanvas(canvas,h=200){const dpr=window.devicePixelRatio||1;const cssW=canvas.clientWidth,cssH=h;canvas.width=Math.max(1,cssW*dpr);canvas.height=Math.max(1,cssH*dpr);const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);return ctx;}
+  function drawSavingsLine(canvas,data){if(!canvas)return;const ctx=prepCanvas(canvas,200);const w=canvas.clientWidth,h=200,pad=24;const days={};(data||[]).forEach(x=>{const d=new Date(x.date);if(isNaN(d))return;const key=d.toISOString().slice(0,10);days[key]=(days[key]||0)+(x.amount||0);});const keys=Object.keys(days).sort();const series=[];let acc=0;keys.forEach(k=>{acc+=days[k];series.push({label:k,value:acc});});if(series.length===0){series.push({label:formatDate(new Date().toISOString()),value:0});}const maxV=Math.max(...series.map(s=>s.value))||1;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#e9e9e9';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,h-pad);ctx.lineTo(w-pad,h-pad);ctx.stroke();ctx.strokeStyle='#5B8A72';ctx.lineWidth=2;ctx.beginPath();series.forEach((s,i)=>{const x=pad+i*((w-2*pad)/Math.max(1,(series.length-1)));const y=h-pad-(s.value/maxV)*(h-2*pad);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();ctx.fillStyle='#FFB085';series.forEach((s,i)=>{const x=pad+i*((w-2*pad)/Math.max(1,(series.length-1)));const y=h-pad-(s.value/maxV)*(h-2*pad);ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();});}
+  function drawMonthlyBars(canvas,data){if(!canvas)return;const ctx=prepCanvas(canvas,200);const w=canvas.clientWidth,h=200,pad=24;const months={};(data||[]).forEach(x=>{const d=new Date(x.date);if(isNaN(d))return;const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');months[key]=(months[key]||0)+(x.amount||0);});const keys=Object.keys(months).sort();if(keys.length===0){keys.push('—');months['—']=0;}const values=keys.map(k=>months[k]);const maxV=Math.max(...values,1);ctx.clearRect(0,0,w,h);ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);const barW=(w-2*pad)/keys.length*0.6;keys.forEach((k,i)=>{const v=months[k];const x=pad+i*((w-2*pad)/keys.length)+((w-2*pad)/keys.length-barW)/2;const barH=(v/maxV)*(h-2*pad);const y=h-pad-barH;ctx.fillStyle='#FFB085';ctx.fillRect(x,y,barW,barH);ctx.strokeStyle='#e4e4e4';ctx.strokeRect(x,y,barW,barH);});}
+  function drawCategoryDonut(canvas,data){if(!canvas)return;const ctx=prepCanvas(canvas,200);const w=canvas.clientWidth,h=200,cx=w/2,cy=h/2,r=70,inner=40;const cats={};(data||[]).forEach(x=>{const c=x.category||'אחר';cats[c]=(cats[c]||0)+(x.amount||0);});const entries=Object.entries(cats);const total=entries.reduce((s,[_k,v])=>s+v,0);if(total===0){ctx.fillStyle='#aaa';ctx.fillText('אין נתונים',cx-30,cy);return;}const palette=['#5B8A72','#FFB085','#F4A261','#7BA896','#52A5D9','#C575D1','#E06F6F','#7C8EA6'];let start=-Math.PI/2;entries.forEach(([k,v],i)=>{const angle=(v/total)*Math.PI*2;ctx.beginPath();ctx.fillStyle=palette[i%palette.length];ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+angle);ctx.closePath();ctx.fill();start+=angle;});ctx.globalCompositeOperation='destination-out';ctx.beginPath();ctx.arc(cx,cy,inner,0,Math.PI*2);ctx.fill();ctx.globalCompositeOperation='source-over';}
+
+  const App={
+    state:{screen:'splash',history:[],user:null,lang:'he',data:[]},
+    t(k){return strings[this.state.lang][k]||k},
+    setLang(l){this.state.lang=l;localStorage.setItem('skipapp_lang',l);document.documentElement.lang=l==='he'?'he':'en';document.documentElement.dir=l==='he'?'rtl':'ltr';this.render()},
+    push(s){this.state.history.push(this.state.screen);this.state.screen=s;this.render()},
+    goBack(){if(this.state.history.length){this.state.screen=this.state.history.pop();this.render()}else if(this.state.screen!=='terms'){this.state.screen='dashboard';this.render()}},
+    saveUser(u){localStorage.setItem('skipapp_user',JSON.stringify(u));this.state.user=u},
+    saveData(){localStorage.setItem('skipapp_data',JSON.stringify(this.state.data))},
+    addSkip(item){this.state.data.push(item);this.saveData();this.push('investments')},
+    reset(){localStorage.removeItem('skipapp_user');localStorage.removeItem('skipapp_data');localStorage.removeItem('skipapp_terms');this.state={screen:'terms',history:[],user:null,lang:(localStorage.getItem('skipapp_lang')||'he'),data:[]};this.render()},
+    load(){const u=localStorage.getItem('skipapp_user');const l=localStorage.getItem('skipapp_lang');const c=localStorage.getItem('skipapp_terms');if(l)this.state.lang=l;document.documentElement.lang=this.state.lang==='he'?'he':'en';document.documentElement.dir=this.state.lang==='he'?'rtl':'ltr';if(u)this.state.user=JSON.parse(u);const d=localStorage.getItem('skipapp_data');if(d)this.state.data=JSON.parse(d);this.renderSplash();},
+    renderSplash(){const el=document.getElementById('splash');el.style.display='flex';const wl=document.getElementById('welcomeLine');wl.textContent=this.state.user?`ברוך השב, ${this.state.user.firstName}!`:'ברוך השב!';document.getElementById('startBtn').onclick=()=>{el.style.display='none';const hasTerms=!!localStorage.getItem('skipapp_terms');if(hasTerms&&this.state.user){this.state.screen='dashboard'}else{this.state.screen='terms'};this.render();};},
+    investments(){return[ {key:'ibi',name:'IBI Digital',url:'https://www.ibi.co.il/digital'}, {key:'meitav',name:'Meitav Digital',url:'https://digital.meitav.co.il'}, {key:'harel',name:'Harel Digital',url:'https://digital.harel-group.co.il'}, {key:'psagot',name:'Psagot Digital',url:'https://digital.psagot.co.il'}, {key:'altshuler',name:'Altshuler Shaham',url:'https://www.as-invest.co.il'}, {key:'phoenix',name:'Phoenix Investments',url:'https://www.thephoenix.co.il'}, {key:'etoro',name:'eToro',url:'https://www.etoro.com'}, {key:'ibkr',name:'Interactive Brokers',url:'https://www.interactivebrokers.com'}, {key:'clal',name:'Clal Finance',url:'https://www.clal-finance.co.il'}, {key:'more',name:'More Digital',url:'https://www.moreinvest.co.il'}].sort((a,b)=>a.name.localeCompare(b.name))},
+    render(){const backBtn=document.getElementById('backBtn');backBtn.style.visibility=(this.state.screen==='terms')?'hidden':'visible';const el=document.getElementById('app');const L=(k)=>this.t(k);let html='';
+      if(this.state.screen==='terms'){html=`<section class='view'><div class='hero'></div><div class='card'><h2>${L('terms_title')}</h2><p class='hint'>${L('terms_text')}</p><label style='display:flex;gap:8px;align-items:center;margin:12px 0;'><input type='checkbox' id='accept'> <span>${L('accept_terms')}</span></label><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-primary' onclick="(function(){const ok=document.getElementById('accept').checked;if(!ok){alert('נא לאשר תנאים');return;}localStorage.setItem('skipapp_terms','1');App.push('${this.state.user?'dashboard':'lang'}');})()">${L('continue')}</button></div></div></section>`}
+      else if(this.state.screen==='lang'){html=`<section class='card view'><h2>${L('choose_lang')}</h2><div style='display:flex;gap:8px;margin:10px 0;flex-wrap:wrap'><button class='btn btn-outline' onclick="App.setLang('he')">עברית</button><button class='btn btn-outline' onclick="App.setLang('en')">English</button></div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-primary' onclick="App.push('${this.state.user?'dashboard':'register'}')">${L('continue')}</button><button class='btn btn-outline' onclick='App.goBack()'>← ${L('back')}</button></div></section>`}
+      else if(this.state.screen==='register'){const u=this.state.user||{firstName:'',age:'',goal:''};html=`<section class='card view'><h2>${L('register_title')}</h2><label class='hint'>${L('name')}</label><input id='fn' type='text' value='${u.firstName||''}' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'/><label class='hint' style='margin-top:8px'>${L('age')}</label><input id='age' type='number' min='10' max='99' value='${u.age||''}' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'/><label class='hint' style='margin-top:8px'>${L('goal')}</label><input id='goal' type='text' value='${u.goal||''}' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'/><div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap'><button class='btn btn-primary' onclick="(function(){const user={firstName:fn.value.trim(),age:parseInt(age.value||0),goal:goal.value.trim(),registeredAt:new Date().toISOString()};if(!user.firstName||!user.age||!user.goal){alert('אנא מלא/י את כל השדות');return;}App.saveUser(user);App.push('dashboard');})()">${L('start_saving')}</button><button class='btn btn-outline' onclick='App.goBack()'>← ${L('back')}</button></div></section>`}
+      else if(this.state.screen==='dashboard'){const points=this.state.data.reduce((s,x)=>s+Math.round((x.amount||0)*0.5),0);const moneyValue=(points*0.5).toFixed(2);html=`<section class='view'><div class='card'><h2>${L('dashboard_title')}</h2><p class='hint'>${L('installed_hint')}</p><div class='grid' style='margin-top:10px'><div class='tile' onclick="App.push('addSkip')">${L('add_skip')}</div><div class='tile' onclick="App.push('history')">${L('history')}</div><div class='tile' onclick="App.push('stats')">${L('stats')}</div><div class='tile' onclick="App.push('investments')">${L('investments')}</div><div class='tile' onclick="App.push('settings')">${L('settings')}</div></div><div style='margin-top:16px' class='hint'>נקודות: ${points} • שווי כסף: ₪${moneyValue}</div></div><div class='chartWrap' style='margin-top:16px'><h3 class='chartTitle'>חיסכון מצטבר</h3><canvas id='lineDash'></canvas></div></section>`;requestAnimationFrame(()=>drawSavingsLine(document.getElementById('lineDash'),App.state.data));}
+      else if(this.state.screen==='addSkip'){html=`<section class='card view'><h2>${L('add_skip')}</h2><label class='hint'>${L('amount')}</label><input id='amt' type='number' min='1' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'/><label class='hint' style='margin-top:8px'>${L('description')}</label><input id='desc' type='text' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'/><label class='hint' style='margin-top:8px'>${L('category')}</label><select id='cat' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'><option>אוכל ושתייה</option><option>אופנה</option><option>בילויים</option><option>טכנולוגיה</option><option>יופי וטיפוח</option><option>תחבורה</option><option>מנויים</option><option>קניות אימפולסיביות</option><option>חברתי</option><option>אחר</option></select><div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap'><button class='btn btn-primary' onclick="(function(){const item={amount:parseFloat(amt.value||0),description:desc.value.trim(),category:cat.value,date:new Date().toISOString()};if(!item.amount||!item.description){alert('נא להזין סכום ותיאור');return;}App.addSkip(item);})()">${L('save')}</button><button class='btn btn-outline' onclick='App.goBack()'>← ${L('back')}</button></div></section>`}
+      else if(this.state.screen==='history'){html=`<section class='view'><div class='card'><h2>${L('history')}</h2>${(App.state.data.length?App.state.data.slice().reverse().map(s=>`<div class='hint'>${formatDate(s.date)} • ₪${s.amount} • ${s.category} • ${s.description}</div>`).join(''):`<div class='hint'>אין רישומים עדיין</div>`)}<div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap'><button class='btn btn-outline' onclick='App.goBack()'>← ${L('back')}</button></div></div><div class='grid' style='margin-top:16px'><div class='chartWrap'><h3 class='chartTitle'>חיסכון מצטבר</h3><canvas id='lineHist'></canvas></div><div class='chartWrap'><h3 class='chartTitle'>לפי חודש</h3><canvas id='barsMonth'></canvas></div><div class='chartWrap' style='grid-column:1/-1'><h3 class='chartTitle'>חלוקה לפי קטגוריה</h3><canvas id='donutCat'></canvas></div></div></section>`;requestAnimationFrame(()=>{drawSavingsLine(document.getElementById('lineHist'),App.state.data);drawMonthlyBars(document.getElementById('barsMonth'),App.state.data);drawCategoryDonut(document.getElementById('donutCat'),App.state.data);});}
+      else if(this.state.screen==='stats'){const total=App.state.data.reduce((sum,x)=>sum+(x.amount||0),0).toFixed(2);const points=App.state.data.reduce((sum,x)=>sum+Math.round((x.amount||0)*0.5),0);html=`<section class='view'><div class='card'><h2>${L('stats')}</h2><div class='hint'>סה"כ סכום שנחסך (מדילוגים): ₪${total}</div><div class='hint'>נקודות: ${points}</div><div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap'><button class='btn btn-outline' onclick='App.goBack()'>← ${L('back')}</button></div></div><div class='chartWrap' style='margin-top:16px'><h3 class='chartTitle'>חיסכון מצטבר</h3><canvas id='lineStats'></canvas></div></section>`;requestAnimationFrame(()=>drawSavingsLine(document.getElementById('lineStats'),App.state.data));}
+      else if(this.state.screen==='investments'){const items=App.investments();html=`<section class='card view'><h2>${L('invest_title')}</h2><p class='hint'>${L('invest_disclaimer')}</p><div class='list'>${items.map(i=>{const imgSrc='images/invest_'+i.key+'.jpg';const fallbackLogo='logos/'+i.key+'.png';return `<a class='item-link' href='${i.url}' target='_blank' rel='noopener' aria-label='פתח ${i.name}'><img class='logo' src='${imgSrc}' onerror="this.src='${fallbackLogo}'" alt='${i.name} logo'/><div class='name'>${i.name}</div><div class='chev'>›</div></a>`;}).join('')}</div><div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap'><button class='btn btn-primary' onclick="App.push('summary')">${L('finish')}</button><button class='btn btn-outline' onclick='App.goBack()'>← ${L('back')}</button></div></section>`}
+      else if(this.state.screen==='settings'){const u=App.state.user||{firstName:'',age:'',goal:''};html=`<section class='card view'><h2>${L('settings')}</h2><div class='hint'>פרופיל: ${u.firstName||'-'}, ${u.age||'-'}, ${u.goal||'-'}</div><div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap'><button class='btn btn-outline' onclick='App.reset()'>${strings.he.reset_all}</button><button class='btn btn-outline' onclick='App.goBack()'>← ${strings.he.back}</button></div></section>`}
+      else if(this.state.screen==='summary'){const total=App.state.data.reduce((sum,x)=>sum+(x.amount||0),0).toFixed(2);const points=App.state.data.reduce((sum,x)=>sum+Math.round((x.amount||0)*0.5),0);const count=App.state.data.length;const about=strings.he.summary_about;const last=formatDate(LAST_UPDATED);html=`<section class='view'><div class='card'><h2>${strings.he.summary_title}</h2><div class='hint'>דילוגים שבוצעו: ${count}</div><div class='hint'>סה"כ סכום שנחסך: ₪${total}</div><div class='hint'>נקודות: ${points}</div><hr style='margin:14px 0;border:none;border-top:1px solid var(--border)'/><p class='hint'>${about}</p><div class='hint'>${strings.he.last_updated}: ${last}</div><div class='grid' style='margin-top:10px'>${App.state.data.length?App.state.data.map((s,idx)=>`<div class='tile'>${idx+1}. ${formatDate(s.date)}<br/>₪${s.amount} • ${s.category}<br/>${s.description}</div>`).join(''):`<div class='hint'>עוד לא נוספו דילוגים</div>`}</div><div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap'><button class='btn btn-primary' onclick='App.push("dashboard")'>${strings.he.go_home}</button><button class='btn btn-outline' onclick='App.reset()'>${strings.he.reset_all}</button><button class='btn btn-outline' onclick='App.goBack()'>← ${strings.he.back}</button></div></div><div class='chartWrap' style='margin-top:16px'><h3 class='chartTitle'>חיסכון מצטבר</h3><canvas id='lineSum'></canvas></div></section>`;requestAnimationFrame(()=>drawSavingsLine(document.getElementById('lineSum'),App.state.data));}
+      document.getElementById('app').innerHTML=html;
+    }
+  };
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(console.error)}
+  App.load();
+  // רענון גרפים בעת שינוי גודל
+  new ResizeObserver(()=>{
+    const ids=['lineDash','lineHist','barsMonth','donutCat','lineStats','lineSum'];
+    ids.forEach(id=>{const c=document.getElementById(id);if(c&&c.isConnected){if(id==='barsMonth')drawMonthlyBars(c,App.state.data);else if(id==='donutCat')drawCategoryDonut(c,App.state.data);else drawSavingsLine(c,App.state.data);}});
+  }).observe(document.body);
+  </script>
+</body>
+</html>
