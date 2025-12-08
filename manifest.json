@@ -1,10 +1,9 @@
-
 {
   "name": "SKIPAPP - משחק החיסכון החכם",
   "short_name": "SKIPAPP",
   "description": "אפליקציית חיסכון חינוכית: דלג על הוצאה, צבור לעתיד.",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
   "background_color": "#FFFCF7",
   "theme_color": "#A8D5BA",
@@ -12,7 +11,17 @@
   "lang": "he",
   "dir": "rtl",
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
