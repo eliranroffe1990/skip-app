@@ -28,12 +28,13 @@
     .topbar{display:flex;align-items:center;gap:8px}
     .brand{font-weight:800;margin:0}
     .motto{font-size:.85rem;color:#fff;opacity:.9;margin:2px 0 0}
-    .navicons{margin-inline-start:auto;display:flex;gap:8px}
     .iconbtn{background:rgba(255,255,255,.15);border:none;border-radius:10px;padding:8px;cursor:pointer}
     .iconbtn svg{width:24px;height:24px;fill:#fff}
     .qnav{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:0 0 12px}
-    .tile{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center;font-weight:700;color:var(--emerald);
-           box-shadow:0 6px 22px rgba(0,0,0,.05);cursor:pointer}
+    .tile{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center;font-weight:700;color:var(--emerald);box-shadow:0 6px 22px rgba(0,0,0,.05);}
+    .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px}
+    .hero{background:#fff;border-radius:18px;padding:14px;border:1px solid var(--border);box-shadow:0 10px 28px rgba(0,0,0,.06);text-align:center}
+    .hero img{width:100%;border-radius:12px}
     table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.06);border:1px solid var(--border)}
     thead th{background:linear-gradient(135deg,#e8f4f2,#fff);color:#445;font-weight:800;padding:12px;border-bottom:1px solid var(--border)}
     tbody td{padding:12px;border-bottom:1px solid #f1f1f1;font-size:.95rem}
@@ -49,7 +50,6 @@
       <button class="iconbtn" onclick="App.goBack()" title="חזרה">↩</button>
       <h1 class="brand">SKIPAPP</h1>
       <p class="motto">דלג על הוצאה – חסוך לעתיד</p>
-      <!-- Home icon -->
       <button class="iconbtn" onclick="App.goHome()" title="מסך הבית">
         <svg viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-4v-6H10v6H6v-9H3z"/></svg>
       </button>
@@ -60,48 +60,46 @@
 
   <script>
   const LAST_UPDATED='2025-12-09';
-  const strings={he:{
-    back:'חזרה', home:'בית',
-    terms_title:'תנאי שימוש והצהרת אחריות',
-    terms_text:'האפליקציה מיועדת ללמידה בלבד ואינה ייעוץ פיננסי. שימוש באפליקציה באחריות המשתמש.',
-    accept_terms:'אני מסכים לתנאים', continue:'המשך',
-    register_title:'הרשמה', name:'שם', age:'גיל', goal:'מטרת חיסכון חודשית (₪)', start_saving:'התחל לחסוך!',
-    dashboard_title:'בחר מה תרצה לעשות', add_skip:'הוסף דילוג', history:'היסטוריה', insights:'תובנות', investments:'אפיקי השקעה', settings:'הגדרות',
-    amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור', reset_all:'איפוס והרשמה מחדש', installed_hint:'להתקנה בנייד: תפריט הדפדפן → הוסף למסך הבית',
-    invest_title:'אפיקי השקעה מוצעים', invest_intro:'חיסכון עקבי היום מייצר לך אפשרות השקעה חכמה מחר. בחר/י אפיק מתאים והמשך/י לבנות את העתיד הפיננסי שלך.', invest_disclaimer:'המידע להדגמה בלבד, אינו ייעוץ פיננסי.',
-    summary_title:'סיכום', summary_about:'SKIPAPP מסייעת להפוך דילוגים קטנים לחיסכון מודע.', go_home:'חזרה לדף הבית', last_updated:'עדכון אחרון',
-    export_csv:'ייצוא לאקסל (CSV)'
-  }};
+  const strings={
+    he:{ back:'חזרה', home:'בית', continue:'המשך',
+      welcome_back:'ברוך שובך',
+      lang_choose:'בחר/י שפה', lang_he:'עברית', lang_en:'English',
+      register_title:'הרשמה', name:'שם', age:'גיל', goal:'מטרת חיסכון חודשית (₪)', start_saving:'התחל לחסוך!',
+      goal_type:'מטרת חיסכון', goal_opts:['השקעות','קניית נכס','חיסכון חכם','אחר'],
+      dashboard_title:'בחר מה תרצה לעשות', add_skip:'הוסף דילוג', history:'היסטוריה', insights:'תובנות', investments:'אפיקי השקעה', settings:'הגדרות',
+      amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור', reset_all:'איפוס והרשמה מחדש', installed_hint:'להתקנה בנייד: תפריט הדפדפן → הוסף למסך הבית',
+      invest_title:'אפיקי השקעה מוצעים', invest_intro:'חיסכון עקבי היום מייצר לך אפשרות השקעה חכמה מחר. בחר/י אפיק מתאים והמשך/י לבנות את העתיד הפיננסי שלך.', invest_disclaimer:'המידע להדגמה בלבד, אינו ייעוץ פיננסי.',
+      export_csv:'ייצוא לאקסל (CSV)'
+    },
+    en:{ back:'Back', home:'Home', continue:'Continue',
+      welcome_back:'Welcome back',
+      lang_choose:'Choose language', lang_he:'Hebrew', lang_en:'English',
+      register_title:'Register', name:'Name', age:'Age', goal:'Monthly saving goal (₪)', start_saving:'Start saving!',
+      goal_type:'Saving purpose', goal_opts:['Investments','Buy a property','Smart saving','Other'],
+      dashboard_title:'Choose what to do', add_skip:'Add Skip', history:'History', insights:'Insights', investments:'Investments', settings:'Settings',
+      amount:'Amount (₪)', description:'Description', category:'Category', save:'Save', reset_all:'Reset & Register', installed_hint:'Install: browser menu → Add to Home screen',
+      invest_title:'Suggested Investment Channels', invest_intro:'Consistent saving today enables smarter investing tomorrow. Pick a channel and build your financial future.', invest_disclaimer:'Demo info only, not financial advice.',
+      export_csv:'Export to Excel (CSV)'
+    }
+  };
 
-  function formatDate(iso){ try{const d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleString('he-IL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return '—';}}
+  function formatDate(iso){ try{const d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleString(document.documentElement.lang==='he'?'he-IL':'en-GB',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return '—';}}
   function prepCanvas(canvas,h=200){const dpr=window.devicePixelRatio||1;const w=canvas.clientWidth,hpx=h;canvas.width=Math.max(1,w*dpr);canvas.height=Math.max(1,hpx*dpr);const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);return ctx;}
   function drawSavingsLine(canvas,data){ if(!canvas) return; const ctx=prepCanvas(canvas,200); const w=canvas.clientWidth,h=200,pad=24; const days={}; (data||[]).forEach(x=>{const d=new Date(x.date); if(isNaN(d)) return; const key=d.toISOString().slice(0,10); days[key]=(days[key]||0)+(x.amount||0);}); const keys=Object.keys(days).sort(); const series=[]; let acc=0; keys.forEach(k=>{acc+=days[k]; series.push({label:k,value:acc});}); if(series.length===0){series.push({label:formatDate(new Date().toISOString()),value:0});} const maxV=Math.max(...series.map(s=>s.value),1); ctx.clearRect(0,0,w,h); ctx.strokeStyle='#e9e9e9'; ctx.beginPath(); ctx.moveTo(pad,h-pad); ctx.lineTo(w-pad,h-pad); ctx.stroke(); ctx.strokeStyle='#0F766E'; ctx.lineWidth=2; ctx.beginPath(); series.forEach((s,i)=>{const x=pad+i*((w-2*pad)/Math.max(1,series.length-1)); const y=h-pad-(s.value/maxV)*(h-2*pad); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}); ctx.stroke();}
-  function drawMonthlyBars(canvas,data){ if(!canvas) return; const ctx=prepCanvas(canvas,200); const w=canvas.clientWidth,h=200,pad=24; const months={}; (data||[]).forEach(x=>{const d=new Date(x.date); if(isNaN(d)) return; const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); months[key]=(months[key]||0)+(x.amount||0);}); const keys=Object.keys(months).sort(); if(keys.length===0){keys.push('—'); months['—']=0;} const values=keys.map(k=>months[k]); const maxV=Math.max(...values,1); const barW=(w-2*pad)/keys.length*0.6; keys.forEach((k,i)=>{const v=months[k]; const x=pad+i*((w-2*pad)/keys.length)+((w-2*pad)/keys.length-barW)/2; const barH=(v/maxV)*(h-2*pad); const y=h-pad-barH; ctx.fillStyle='#FF9E7D'; ctx.fillRect(x,y,barW,barH); ctx.strokeStyle='#e4e4e4'; ctx.strokeRect(x,y,barW,barH);});}
 
   function openLink(url){ const isiOSStandalone = window.navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches); if(isiOSStandalone) location.href=url; else window.open(url,'_blank','noopener,noreferrer'); }
 
-  const App={ state:{screen:'dashboard',history:[],user:null,lang:'he',data:[]},
+  const App={ state:{screen:'home',history:[],user:null,lang:'he',data:[]},
     t(k){return strings[this.state.lang][k]||k},
-    push(s){this.state.history.push(this.state.screen);this.state.screen=s;this.render();},
-    goBack(){ if(this.state.history.length){this.state.screen=this.state.history.pop(); this.render();} else { this.goHome(); } },
-    goHome(){ this.state.screen='dashboard'; this.render(); },
+    setLang(l){ this.state.lang=l; localStorage.setItem('skipapp_lang',l); document.documentElement.lang=(l==='he'?'he':'en'); document.documentElement.dir=(l==='he'?'rtl':'ltr'); this.render(); },
+    push(s){ this.state.history.push(this.state.screen); this.state.screen=s; this.render(); },
+    goBack(){ if(this.state.history.length){ this.state.screen=this.state.history.pop(); this.render(); } else { this.goHome(); } },
+    goHome(){ this.state.screen='home'; this.render(); },
     saveUser(u){ localStorage.setItem('skipapp_user',JSON.stringify(u)); this.state.user=u; },
     saveData(){ localStorage.setItem('skipapp_data',JSON.stringify(this.state.data)); },
     addSkip(item){ this.state.data.push(item); this.saveData(); this.goHome(); },
-    reset(){ localStorage.removeItem('skipapp_user'); localStorage.removeItem('skipapp_data'); localStorage.removeItem('skipapp_terms'); this.state={screen:'terms',history:[],user:null,lang:(localStorage.getItem('skipapp_lang')||'he'),data:[]}; this.render(); },
-    load(){ const u=localStorage.getItem('skipapp_user'); if(u) this.state.user=JSON.parse(u); const d=localStorage.getItem('skipapp_data'); if(d) this.state.data=JSON.parse(d); this.render(); },
-    investments(){ return [
-      {key:'ibi',name:'IBI Investment House',url:'https://www.ibi.co.il/en/'},
-      {key:'meitav',name:'Meitav',url:'https://www.meitav.co.il/en/'},
-      {key:'harel',name:'Harel Group (IR)',url:'https://pr.harel-group.co.il/'},
-      {key:'psagot',name:'Psagot Trade',url:'https://www.psagotrade.com/en/'},
-      {key:'altshuler',name:'Altshuler Shaham',url:'https://www.as-invest.co.il/en/'},
-      {key:'phoenix',name:'Phoenix Financial (IR)',url:'https://www.fnx.co.il/en/investor-relations/'},
-      {key:'etoro',name:'eToro',url:'https://www.etoro.com/'},
-      {key:'ibkr',name:'Interactive Brokers',url:'https://www.interactivebrokers.com/'},
-      {key:'clal',name:'Clal Insurance & Finance',url:'https://www.clalbit.co.il/investorsrelations/aboutclalinsurance/'},
-      {key:'more',name:'More Invest',url:'https://www.moreinvest.co.il/'}
-    ].sort((a,b)=>a.name.localeCompare(b.name)); },
+    reset(){ localStorage.removeItem('skipapp_user'); localStorage.removeItem('skipapp_data'); localStorage.removeItem('skipapp_lang'); this.state={screen:'lang',history:[],user:null,lang:'he',data:[]}; document.documentElement.lang='he'; document.documentElement.dir='rtl'; this.render(); },
+    load(){ const l=localStorage.getItem('skipapp_lang'); if(l){ this.state.lang=l; document.documentElement.lang=(l==='he'?'he':'en'); document.documentElement.dir=(l==='he'?'rtl':'ltr'); } const u=localStorage.getItem('skipapp_user'); if(u) this.state.user=JSON.parse(u); const d=localStorage.getItem('skipapp_data'); if(d) this.state.data=JSON.parse(d); if(!this.state.user){ this.state.screen = l ? 'register' : 'lang'; } else { this.state.screen = 'home'; } this.render(); },
 
     qnavHTML(){ const L=(k)=>this.t(k); return `
       <div class="qnav">
@@ -112,15 +110,72 @@
         <div class="tile" onclick="App.push('settings')">${L('settings')}</div>
       </div>`; },
 
-    exportCSV(){ const rows=(this.state.data||[]).slice().reverse(); const header=['תאריך','סכום','קטגוריה','תיאור']; const lines=[header.join(',')]; rows.forEach(r=>{ lines.push([formatDate(r.date),(r.amount||0),`"${r.category||''}"`,`"${(r.description||'').replace(/"/g,'\"')}"`].join(',')); }); const blob=new Blob(["\ufeff"+lines.join('\n')],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href); },
+    exportCSV(){ const rows=(this.state.data||[]).slice().reverse(); const header=[this.t('lang')==='he'?'תאריך':'Date', this.t('lang')==='he'?'סכום':'Amount', this.t('lang')==='he'?'קטגוריה':'Category', this.t('lang')==='he'?'תיאור':'Description']; const lines=[header.join(',')]; rows.forEach(r=>{ lines.push([formatDate(r.date),(r.amount||0),`"${r.category||''}"`,`"${(r.description||'').replace(/"/g,'\"')}"`].join(',')); }); const blob=new Blob(["\ufeff"+lines.join('\n')],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href); },
 
-    render(){ const el=document.getElementById('app'); const L=(k)=>this.t(k); let html=''; const total=this.state.data.reduce((s,x)=>s+(x.amount||0),0); // FULL VALUE
+    render(){ const el=document.getElementById('app'); const L=(k)=>this.t(k); let html=''; const total=this.state.data.reduce((s,x)=>s+(x.amount||0),0);
 
-      if(this.state.screen==='dashboard'){
+      if(this.state.screen==='lang'){
         html = `
         <section>
           <div class="card">
-            <h2>${L('dashboard_title')}</h2>
+            <h2>${strings[this.state.lang].lang_choose}</h2>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <button class="btn btn-primary" onclick="App.setLang('he')">${strings.he.lang_he}</button>
+              <button class="btn btn-outline" onclick="App.setLang('en')">${strings.en.lang_en}</button>
+            </div>
+            <p class="hint" style="margin-top:8px">${strings[this.state.lang].installed_hint}</p>
+          </div>
+        </section>`;
+      }
+
+      else if(this.state.screen==='register'){
+        const u=this.state.user||{firstName:'',age:'',goal:0,purpose:''};
+        const opts=strings[this.state.lang].goal_opts;
+        html = `
+        <section>
+          <div class="card">
+            <h2>${strings[this.state.lang].register_title}</h2>
+            <label class="hint">${strings[this.state.lang].name}</label>
+            <input id="fn" type="text" value="${u.firstName||''}" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;"/>
+            <label class="hint" style="margin-top:8px">${strings[this.state.lang].age}</label>
+            <input id="age" type="number" min="10" max="99" value="${u.age||''}" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;"/>
+            <label class="hint" style="margin-top:8px">${strings[this.state.lang].goal}</label>
+            <input id="goal" type="number" min="0" value="${u.goal||''}" placeholder="לדוגמה: 1000" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;"/>
+            <label class="hint" style="margin-top:8px">${strings[this.state.lang].goal_type}</label>
+            <select id="purpose" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;">
+              ${opts.map(o=>`<option>${o}</option>`).join('')}
+            </select>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="(function(){ const user={ firstName:document.getElementById('fn').value.trim(), age:parseInt(document.getElementById('age').value||0), goal:parseFloat(document.getElementById('goal').value||0), purpose:document.getElementById('purpose').value, registeredAt:new Date().toISOString() }; if(!user.firstName||!user.age||isNaN(user.goal)){ alert('אנא מלא/י את כל השדות'); return;} App.saveUser(user); App.goHome(); })()">${strings[this.state.lang].start_saving}</button>
+            </div>
+          </div>
+        </section>`;
+      }
+
+      else if(this.state.screen==='home'){
+        const name=this.state.user?.firstName||'';
+        html = `
+        <section>
+          <div class="hero">
+            <h2>${strings[this.state.lang].welcome_back}${name?`, ${name}`:''}</h2>
+            <img src="/images/hero.jpg" alt="SKIPAPP"/>
+            <div class="grid3">
+              <div class="tile">דלג על הוצאה</div>
+              <div class="tile">חסוך לעתיד</div>
+              <div class="tile">השקעות חכמות</div>
+            </div>
+            <div style="margin-top:12px">
+              <button class="btn btn-primary" onclick="App.push('dashboard')">${strings[this.state.lang].continue}</button>
+            </div>
+          </div>
+        </section>`;
+      }
+
+      else if(this.state.screen==='dashboard'){
+        html = `
+        <section>
+          <div class="card">
+            <h2>${strings[this.state.lang].dashboard_title}</h2>
             ${this.qnavHTML()}
             <p class="hint">שווי חיסכון מלא עד כה: ₪${total.toFixed(2)}</p>
           </div>
@@ -136,12 +191,12 @@
         html = `
         <section>
           <div class="card">
-            <h2>${L('add_skip')}</h2>
-            <label class="hint">${L('amount')}</label>
+            <h2>${strings[this.state.lang].add_skip}</h2>
+            <label class="hint">${strings[this.state.lang].amount}</label>
             <input id="amt" type="number" min="1" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;"/>
-            <label class="hint" style="margin-top:8px">${L('description')}</label>
+            <label class="hint" style="margin-top:8px">${strings[this.state.lang].description}</label>
             <input id="desc" type="text" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;"/>
-            <label class="hint" style="margin-top:8px">${L('category')}</label>
+            <label class="hint" style="margin-top:8px">${strings[this.state.lang].category}</label>
             <select id="cat" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;">
               <option>אוכל ושתייה</option><option>אופנה</option><option>בילויים</option><option>טכנולוגיה</option>
               <option>יופי וטיפוח</option><option>תחבורה</option><option>מנויים</option><option>קניות אימפולסיביות</option>
@@ -149,8 +204,8 @@
             </select>
             <p class="hint" style="margin-top:10px">כסף שנצבר להשקעות באפיקים המתאימים לך.</p>
             <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-              <button class="btn btn-primary" onclick="(function(){ const item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() }; if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;} App.addSkip(item); })()">${L('save')}</button>
-              <button class="btn btn-outline" onclick="App.goHome()">${L('home')}</button>
+              <button class="btn btn-primary" onclick="(function(){ const item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() }; if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;} App.addSkip(item); })()">${strings[this.state.lang].save}</button>
+              <button class="btn btn-outline" onclick="App.goHome()">${strings[this.state.lang].home}</button>
             </div>
           </div>
           <div class="card" style="margin-top:12px">${this.qnavHTML()}</div>
@@ -162,18 +217,18 @@
         html = `
         <section>
           <div class="card">
-            <h2>${L('history')}</h2>
+            <h2>${strings[this.state.lang].history}</h2>
             ${this.qnavHTML()}
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-              <button class="btn btn-outline" onclick="App.exportCSV()">${L('export_csv')}</button>
-              <button class="btn btn-outline" onclick="App.goHome()">${L('home')}</button>
+              <button class="btn btn-outline" onclick="App.exportCSV()">${strings[this.state.lang].export_csv}</button>
+              <button class="btn btn-outline" onclick="App.goHome()">${strings[this.state.lang].home}</button>
             </div>
           </div>
           <div style="margin-top:10px">
             <table>
               <thead><tr><th>תאריך</th><th>סכום (₪)</th><th>קטגוריה</th><th>תיאור</th></tr></thead>
               <tbody>
-                ${ rows.length ? rows.map(s=>`<tr><td>${formatDate(s.date)}</td><td>${(s.amount||0).toFixed(2)}</td><td>${s.category||'-'}</td><td>${s.description||'-'}</td></tr>`).join('') : `<tr><td colspan="4" class="hint">אין רישומים עדיין</td></tr>` }
+                ${ rows.length ? rows.map(s=>`<tr><td>${formatDate(s.date)}</td><td>${(s.amount||0).toFixed(2)}</td><td>${s.category||'-'}</td><td>${s.description||'-'}</td></tr>`).join('') : `<tr><td colspan=\"4\" class=\"hint\">אין רישומים עדיין</td></tr>` }
               </tbody>
             </table>
           </div>
@@ -181,13 +236,12 @@
       }
 
       else if(this.state.screen==='insights'){
-        const goal = this.state.user?.goal || 1000;
-        const canInvest = total > 100; // rule
+        const canInvest = total > 100;
         const msg = canInvest ? 'כבר ניתן להתחיל לחסוך ולהשקיע.' : 'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.';
         html = `
         <section>
           <div class="card">
-            <h2>${L('insights')}</h2>
+            <h2>${strings[this.state.lang].insights}</h2>
             ${this.qnavHTML()}
             <p class="hint">שווי חיסכון מלא: ₪${total.toFixed(2)}</p>
             <p class="hint">${msg}</p>
@@ -195,42 +249,53 @@
               <h3 class="chartTitle">חיסכון מצטבר</h3>
               <canvas id="lineInsights"></canvas>
             </div>
-            <button class="btn btn-outline" style="margin-top:10px" onclick="App.goHome()">${L('home')}</button>
+            <button class="btn btn-outline" style="margin-top:10px" onclick="App.goHome()">${strings[this.state.lang].home}</button>
           </div>
         </section>`;
         requestAnimationFrame(()=>drawSavingsLine(document.getElementById('lineInsights'),this.state.data));
       }
 
       else if(this.state.screen==='investments'){
-        const items=this.investments();
+        const items=[
+          {name:'IBI Investment House',url:'https://www.ibi.co.il/en/'},
+          {name:'Meitav',url:'https://www.meitav.co.il/en/'},
+          {name:'Harel Group (IR)',url:'https://pr.harel-group.co.il/'},
+          {name:'Psagot Trade',url:'https://www.psagotrade.com/en/'},
+          {name:'Altshuler Shaham',url:'https://www.as-invest.co.il/en/'},
+          {name:'Phoenix Financial (IR)',url:'https://www.fnx.co.il/en/investor-relations/'},
+          {name:'eToro',url:'https://www.etoro.com/'},
+          {name:'Interactive Brokers',url:'https://www.interactivebrokers.com/'},
+          {name:'Clal Insurance & Finance',url:'https://www.clalbit.co.il/investorsrelations/aboutclalinsurance/'},
+          {name:'More Invest',url:'https://www.moreinvest.co.il/'}
+        ];
         html = `
         <section>
           <div class="card">
-            <h2>${L('invest_title')}</h2>
-            <p class="hint" style="margin-bottom:8px">${L('invest_intro')}</p>
-            <p class="hint">${L('invest_disclaimer')}</p>
+            <h2>${strings[this.state.lang].invest_title}</h2>
+            <p class="hint" style="margin-bottom:8px">${strings[this.state.lang].invest_intro}</p>
+            <p class="hint">${strings[this.state.lang].invest_disclaimer}</p>
             ${this.qnavHTML()}
             <div style="display:flex;flex-direction:column;gap:12px;margin-top:10px">
-              ${items.map(i=>`<div class="tile" onclick="openLink('${i.url}')">${i.name}</div>`).join('')}
+              ${items.map(i=>`<div class=\"tile\" onclick=\"openLink('${i.url}')\">${i.name}</div>`).join('')}
             </div>
-            <button class="btn btn-outline" style="margin-top:10px" onclick="App.goHome()">${L('home')}</button>
+            <button class="btn btn-outline" style="margin-top:10px" onclick="App.goHome()">${strings[this.state.lang].home}</button>
           </div>
         </section>`;
       }
 
       else if(this.state.screen==='settings'){
-        const u=this.state.user||{firstName:'',age:'',goal:''};
+        const u=this.state.user||{firstName:'',age:'',goal:'',purpose:''};
         html = `
         <section>
           <div class="card">
-            <h2>${L('settings')}</h2>
+            <h2>${strings[this.state.lang].settings}</h2>
             ${this.qnavHTML()}
-            <p class="hint">שם: ${u.firstName||'-'} • גיל: ${u.age||'-'} • יעד חודשי: ₪${u.goal||'-'}</p>
-            <p class="hint">${strings.he.last_updated}: ${formatDate(LAST_UPDATED)}</p>
-            <details style="margin-top:8px"><summary class="hint">${strings.he.terms_title}</summary><p class="hint">${strings.he.terms_text}</p></details>
+            <p class="hint">שם: ${u.firstName||'-'} • גיל: ${u.age||'-'} • יעד חודשי: ₪${u.goal||'-'} • מטרה: ${u.purpose||'-'}</p>
+            <p class="hint">עדכון אחרון: ${formatDate(LAST_UPDATED)}</p>
+            <details style="margin-top:8px"><summary class="hint">תנאי שימוש והצהרת אחריות</summary><p class="hint">האפליקציה מיועדת ללמידה בלבד ואינה ייעוץ פיננסי. שימוש באפליקציה באחריות המשתמש.</p></details>
             <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-              <button class="btn btn-outline" onclick="App.reset()">${L('reset_all')}</button>
-              <button class="btn btn-outline" onclick="App.goHome()">${L('home')}</button>
+              <button class="btn btn-outline" onclick="App.reset()">${strings[this.state.lang].reset_all}</button>
+              <button class="btn btn-outline" onclick="App.goHome()">${strings[this.state.lang].home}</button>
             </div>
           </div>
         </section>`;
