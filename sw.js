@@ -1,6 +1,6 @@
 
-// SKIPAPP Service Worker v3.8 (auto refresh)
-const CACHE_NAME = 'skipapp-v3.8';
+// SKIPAPP Service Worker v3.9 (auto refresh)
+const CACHE_NAME = 'skipapp-v3.9';
 const CORE_ASSETS = [
   '/',
   '/index.html',
