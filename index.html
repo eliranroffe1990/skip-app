@@ -5,84 +5,243 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>SKIPAPP - משחק החיסכון</title>
   <meta name="theme-color" content="#0F766E"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="apple-touch-icon" href="/icons/icon-180.png"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="SKIPAPP"/>
-  <link rel="apple-touch-icon" href="/icons/icon-180.png"/>
-  <link rel="manifest" href="/manifest.json"/>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;800&family=Poppins:wght@300;400;700&display=swap" rel="stylesheet"/>
   <style>
-    :root{--emerald:#0F766E; --teal:#2DD4BF; --coral:#FF9E7D; --sand:#F9F5EB; --ink:#1F2937; --muted:#6B7280; --gold:#F4D06F; --border:#EAEAEA; --card:#FFFFFF}
+    :root{--emerald:#0F766E; --coral:#FF9E7D; --sand:#F9F5EB; --ink:#1F2937; --muted:#6B7280; --border:#EAEAEA; --card:#FFFFFF}
     *{box-sizing:border-box}
     html{font-size:17px}
-    body{margin:0;color:var(--ink);font-family:'Heebo','Poppins',system-ui,-apple-system;background:radial-gradient(120% 140% at 0% 0%, rgba(47,170,160,.25) 0%, var(--sand) 40%),linear-gradient(135deg, rgba(15,118,110,.18), rgba(255,158,125,.12))}
-    header{background:linear-gradient(135deg,var(--emerald),var(--coral));color:#fff;padding:18px 24px;border-radius:0 0 28px 28px;position:sticky;top:0;z-index:9}
-    .wrap{max-width:860px;margin:0 auto;padding:20px}
-    .card{background:var(--card);border-radius:18px;padding:22px;box-shadow:0 10px 36px rgba(0,0,0,.08);border:1px solid var(--border)}
-    .btn{appearance:none;border:none;padding:14px 18px;border-radius:14px;cursor:pointer;font-weight:700;min-height:44px}
-    .btn-primary{background:linear-gradient(135deg,var(--emerald),var(--coral));color:#fff;box-shadow:0 8px 22px rgba(15,118,110,.25)}
-    .btn-outline{background:#fff;border:2px solid var(--border);color:var(--ink)}
+    body{margin:0;color:var(--ink);font-family:'Heebo','Poppins',system-ui; background:
+      radial-gradient(120% 140% at 0% 0%, rgba(47,170,160,.25) 0%, var(--sand) 40%),
+      linear-gradient(135deg, rgba(15,118,110,.14), rgba(255,158,125,.12));}
+    header{background:linear-gradient(135deg,var(--emerald),var(--coral));color:#fff;padding:14px 18px; position:sticky; top:0; z-index:9}
+    .wrap{max-width:860px;margin:0 auto;padding:18px}
+    .card{background:var(--card);border-radius:18px;padding:22px;border:1px solid var(--border);box-shadow:0 10px 28px rgba(0,0,0,.06)}
     .hint{color:var(--muted);font-size:.95rem}
-    .topbar{display:flex;align-items:center;gap:10px;justify-content:space-between}
-    .back{border:none;background:#fff;color:#2D3436;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:600;min-height:44px}
-    .motto{font-size:.85rem;color:var(--muted);margin:-6px 0 12px;display:block}
-    .splash{position:fixed;inset:0;display:none;background:linear-gradient(135deg,var(--emerald),var(--coral));color:#fff;z-index:9999;display:flex;align-items:center;justify-content:center}
-    .splash .box{text-align:center;padding:24px}
-    .splash h1{margin:0 0 6px;font-size:2.2rem;letter-spacing:.5px}
-    .splash .subtitle{opacity:.95;margin:6px 0 14px}
-    .qnav{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:0 0 12px}
-    .tile{background:#fff;border:1px solid var(--border);border-radius:16px;padding:12px;text-align:center;font-weight:700;color:var(--emerald);box-shadow:0 6px 22px rgba(0,0,0,.05);cursor:pointer}
-    .tile:hover{outline:2px solid rgba(255,158,125,.25)}
-    .list{display:flex;flex-direction:column;gap:12px;margin-top:10px}
-    .item-link{display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border:1px solid var(--border);border-radius:14px;text-decoration:none;color:var(--ink);box-shadow:0 6px 22px rgba(0,0,0,.04)}
-    .item-link:hover{outline:2px solid rgba(255,158,125,.25)}
-    .logo{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:0 0 44px}
-    .name{font-weight:700;color:var(--emerald)}
-    .chev{margin-inline-start:auto;color:#b0b0b0;font-weight:700}
-    .chartWrap{background:#fff;border-radius:16px;padding:12px;box-shadow:0 8px 30px rgba(0,0,0,.06);border:1px solid var(--border)}
-    .chartTitle{font-weight:700;margin:0 0 6px;color:#3b3b3b}
-    canvas{width:100%;height:200px}
-    .ringRow{display:grid;grid-template-columns:180px 1fr;gap:16px;align-items:center}
+    .btn{appearance:none;border:none;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700;min-height:44px}
+    .btn-primary{background:linear-gradient(135deg,var(--emerald),var(--coral)); color:#fff}
+    .btn-outline{background:#fff;border:2px solid var(--border);color:var(--ink)}
+    .topbar{display:flex;align-items:center;gap:8px}
+    .brand{font-weight:800;margin:0}
+    .motto{font-size:.85rem;color:#fff;opacity:.9;margin:2px 0 0}
+    .navicons{margin-inline-start:auto;display:flex;gap:8px}
+    .iconbtn{background:rgba(255,255,255,.15);border:none;border-radius:10px;padding:8px;cursor:pointer}
+    .iconbtn svg{width:24px;height:24px;fill:#fff}
+    .qnav{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:0 0 12px}
+    .tile{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center;font-weight:700;color:var(--emerald);
+           box-shadow:0 6px 22px rgba(0,0,0,.05);cursor:pointer}
     table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.06);border:1px solid var(--border)}
     thead th{background:linear-gradient(135deg,#e8f4f2,#fff);color:#445;font-weight:800;padding:12px;border-bottom:1px solid var(--border)}
     tbody td{padding:12px;border-bottom:1px solid #f1f1f1;font-size:.95rem}
     tbody tr:hover{background:#fafafa}
-    .view{opacity:0;transform:translateY(16px) scale(.98);animation:routeIn .45s ease both}
-    @keyframes routeIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-    .registerHero{background:radial-gradient(100% 120% at 10% 0%, rgba(45,212,191,.18) 0%, #fff 40%),linear-gradient(135deg, rgba(15,118,110,.14), rgba(255,158,125,.18));border-radius:18px;padding:22px;text-align:center;box-shadow:0 8px 28px rgba(0,0,0,.06)}
-    .regTitle{font-size:2rem;margin:0;color:var(--emerald)}
-    .regSub{color:#555;margin:6px 0 14px}
-    .benefits{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px}
-    .benefit{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;font-weight:700;color:#3b3b3b}
+    .chartWrap{background:#fff;border-radius:16px;padding:12px;border:1px solid var(--border);box-shadow:0 8px 30px rgba(0,0,0,.06)}
+    .chartTitle{font-weight:700;margin:0 0 6px;color:#3b3b3b}
+    canvas{width:100%;height:200px}
   </style>
 </head>
 <body>
-  <div id="splash" class="splash" style="display:none"><div class="box"><h1>SKIPAPP</h1><p id="welcomeLine" class="subtitle">ברוך השב!</p><button id="startBtn" class="btn btn-primary">התחל</button></div></div>
   <header>
     <div class="topbar wrap">
-      <button id="backBtn" class="back" onclick="App.goBack()">← חזרה</button>
-      <div>
-        <h1 style="margin:0;">SKIPAPP</h1>
-        <p style="margin:2px 0 0; opacity:.9" class="hint">דלג על ההוצאה – צבור לעתידך.</p>
-      </div>
-      <div></div>
+      <button class="iconbtn" onclick="App.goBack()" title="חזרה">↩</button>
+      <h1 class="brand">SKIPAPP</h1>
+      <p class="motto">דלג על הוצאה – חסוך לעתיד</p>
+      <!-- Home icon -->
+      <button class="iconbtn" onclick="App.goHome()" title="מסך הבית">
+        <svg viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-4v-6H10v6H6v-9H3z"/></svg>
+      </button>
     </div>
   </header>
+
   <main id="app" class="wrap"></main>
+
   <script>
-  const LAST_UPDATED='2025-12-07';
-  const strings={he:{back:'חזרה',terms_title:'תנאי שימוש והצהרת אחריות',terms_text:'האפליקציה מיועדת ללמידה בלבד ואינה ייעוץ פיננסי. שימוש באפליקציה באחריות המשתמש.',accept_terms:'אני מסכים לתנאים',continue:'המשך',choose_lang:'בחירת שפה',lang_he:'עברית',lang_en:'English',register_title:'הרשמה',name:'שם',age:'גיל',goal:'מטרת חיסכון חודשית (₪)',start_saving:'התחל לחסוך!',dashboard_title:'בחר מה תרצה לעשות',add_skip:'הוסף דילוג',history:'היסטוריה',stats:'סטטיסטיקות',investments:'אפיקי השקעה',settings:'הגדרות',amount:'סכום (₪)',description:'תיאור',category:'קטגוריה',save:'שמור',reset_all:'איפוס והרשמה מחדש',installed_hint:'להתקנה בנייד: תפריט הדפדפן → הוסף למסך הבית',invest_title:'אפיקי השקעה מוצעים',invest_disclaimer:'המידע להדגמה בלבד, אינו ייעוץ פיננסי.',finish:'סיום והמשך לסיכום',summary_title:'סיכום',summary_about:'SKIPAPP מסייעת להפוך דילוגים קטנים לחיסכון ומודעות.',go_home:'חזרה לדף הבית',last_updated:'תאריך שדרוג אחרון'}};
-  function formatDate(iso){try{const d=new Date(iso);if(isNaN(d.getTime()))return '—';return d.toLocaleString('he-IL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return '—';}}
-  function prepCanvas(canvas,h=200){const dpr=window.devicePixelRatio||1;const cssW=canvas.clientWidth,cssH=h;canvas.width=Math.max(1,cssW*dpr);canvas.height=Math.max(1,cssH*dpr);const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);return ctx;}
-  function drawSavingsLine(canvas,data){if(!canvas)return;const ctx=prepCanvas(canvas,200);const w=canvas.clientWidth,h=200,pad=24;const days={};(data||[]).forEach(x=>{const d=new Date(x.date);if(isNaN(d))return;const key=d.toISOString().slice(0,10);days[key]=(days[key]||0)+(x.amount||0);});const keys=Object.keys(days).sort();const series=[];let acc=0;keys.forEach(k=>{acc+=days[k];series.push({label:k,value:acc});});if(series.length===0){series.push({label:formatDate(new Date().toISOString()),value:0});}const maxV=Math.max(...series.map(s=>s.value))||1;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#e9e9e9';ctx.beginPath();ctx.moveTo(pad,h-pad);ctx.lineTo(w-pad,h-pad);ctx.stroke();ctx.strokeStyle='#0F766E';ctx.lineWidth=2;ctx.beginPath();series.forEach((s,i)=>{const x=pad+i*((w-2*pad)/Math.max(1,(series.length-1)));const y=h-pad-(s.value/maxV)*(h-2*pad);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();ctx.fillStyle='#FF9E7D';series.forEach((s,i)=>{const x=pad+i*((w-2*pad)/Math.max(1,(series.length-1)));const y=h-pad-(s.value/maxV)*(h-2*pad);ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();});}
-  function drawMonthlyBars(canvas,data){if(!canvas)return;const ctx=prepCanvas(canvas,200);const w=canvas.clientWidth,h=200,pad=24;const months={};(data||[]).forEach(x=>{const d=new Date(x.date);if(isNaN(d))return;const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');months[key]=(months[key]||0)+(x.amount||0);});const keys=Object.keys(months).sort();if(keys.length===0){keys.push('—');months['—']=0;}const values=keys.map(k=>months[k]);const maxV=Math.max(...values,1);ctx.clearRect(0,0,w,h);ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);const barW=(w-2*pad)/keys.length*0.6;keys.forEach((k,i)=>{const v=months[k];const x=pad+i*((w-2*pad)/keys.length)+((w-2*pad)/keys.length-barW)/2;const barH=(v/maxV)*(h-2*pad);const y=h-pad-barH;ctx.fillStyle='#FF9E7D';ctx.fillRect(x,y,barW,barH);ctx.strokeStyle='#e4e4e4';ctx.strokeRect(x,y,barW,barH);});}
-  function drawGoalRing(canvas,data,goal=1000){if(!canvas)return;const ctx=prepCanvas(canvas,200);const w=canvas.clientWidth,h=200;const cx=w/2,cy=h/2,r=70,inner=50;const now=new Date();const ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');const monthSum=(data||[]).filter(x=>{const d=new Date(x.date);return !isNaN(d)&&(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'))===ym;}).reduce((s,x)=>s+(x.amount||0),0);const pct=Math.min(1,goal>0?monthSum/goal:0);ctx.clearRect(0,0,w,h);ctx.strokeStyle='#e9e9e9';ctx.lineWidth=18;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#0F766E';ctx.lineWidth=18;ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+pct*2*Math.PI);ctx.stroke();ctx.fillStyle='#1F2937';ctx.font='700 16px Heebo';ctx.fillText('יעד חודשי',cx-40,cy-30);ctx.font='700 18px Heebo';ctx.fillText('₪'+monthSum.toFixed(0)+' / ₪'+goal.toFixed(0),cx-65,cy-6);ctx.font='400 14px Heebo';ctx.fillStyle='#6B7280';ctx.fillText((pct*100).toFixed(0)+'% הושלם',cx-35,cy+22);}
-  function calcStreak(data){const days=new Set((data||[]).map(x=> new Date(x.date).toISOString().slice(0,10)));if(days.size===0)return 0;let streak=0;let d=new Date();for(;;){const key=d.toISOString().slice(0,10);if(days.has(key)){streak++;d.setDate(d.getDate()-1);}else break;}return streak;}
-  function openLink(url){const isiOSStandalone=window.navigator.standalone||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches);if(isiOSStandalone)location.href=url;else window.open(url,'_blank','noopener,noreferrer');}
-  const App={state:{screen:'splash',history:[],user:null,lang:'he',data:[]},t(k){return strings[this.state.lang][k]||k},setLang(l){this.state.lang=l;localStorage.setItem('skipapp_lang',l);document.documentElement.lang=(l==='he'?'he':'en');document.documentElement.dir=(l==='he'?'rtl':'ltr');this.render()},push(s){this.state.history.push(this.state.screen);this.state.screen=s;this.render()},goBack(){if(this.state.history.length){this.state.screen=this.state.history.pop();this.render()}else if(this.state.screen!=='terms'){this.state.screen='dashboard';this.render()}},saveUser(u){localStorage.setItem('skipapp_user',JSON.stringify(u));this.state.user=u},saveData(){localStorage.setItem('skipapp_data',JSON.stringify(this.state.data))},addSkip(item){this.state.data.push(item);this.saveData();this.push('dashboard')},reset(){localStorage.removeItem('skipapp_user');localStorage.removeItem('skipapp_data');localStorage.removeItem('skipapp_terms');this.state={screen:'terms',history:[],user:null,lang:(localStorage.getItem('skipapp_lang')||'he'),data:[]};this.render()},load(){const u=localStorage.getItem('skipapp_user');const l=localStorage.getItem('skipapp_lang');const c=localStorage.getItem('skipapp_terms');if(l)this.state.lang=l;document.documentElement.lang=(this.state.lang==='he'?'he':'en');document.documentElement.dir=(this.state.lang==='he'?'rtl':'ltr');if(u)this.state.user=JSON.parse(u);const d=localStorage.getItem('skipapp_data');if(d)this.state.data=JSON.parse(d);this.renderSplash()},renderSplash(){const el=document.getElementById('splash');el.style.display='flex';const wl=document.getElementById('welcomeLine');wl.textContent=this.state.user?`ברוך השב, ${this.state.user.firstName}!`:'ברוך השב!';document.getElementById('startBtn').onclick=()=>{el.style.display='none';const hasTerms=!!localStorage.getItem('skipapp_terms');this.state.screen=(hasTerms&&this.state.user)?'dashboard':'terms';this.render();};},investments(){return[{key:'ibi',name:'IBI Investment House',url:'https://www.ibi.co.il/en/'},{key:'meitav',name:'Meitav',url:'https://www.meitav.co.il/en/'},{key:'harel',name:'Harel Group (IR)',url:'https://pr.harel-group.co.il/'},{key:'psagot',name:'Psagot Trade',url:'https://www.psagotrade.com/en/'},{key:'altshuler',name:'Altshuler Shaham',url:'https://www.as-invest.co.il/en/'},{key:'phoenix',name:'Phoenix Financial (IR)',url:'https://www.fnx.co.il/en/investor-relations/'},{key:'etoro',name:'eToro',url:'https://www.etoro.com/'},{key:'ibkr',name:'Interactive Brokers',url:'https://www.interactivebrokers.com/'},{key:'clal',name:'Clal Insurance & Finance',url:'https://www.clalbit.co.il/investorsrelations/aboutclalinsurance/'},{key:'more',name:'More Invest',url:'https://www.moreinvest.co.il/'}].sort((a,b)=>a.name.localeCompare(b.name))},qnavHTML(){const L=(k)=>this.t(k);return `<div class="qnav"><div class="tile" onclick="App.push('addSkip')">${L('add_skip')}</div><div class="tile" onclick="App.push('history')">${L('history')}</div><div class="tile" onclick="App.push('stats')">${L('stats')}</div><div class="tile" onclick="App.push('investments')">${L('investments')}</div><div class="tile" onclick="App.push('settings')">${L('settings')}</div></div>`},render(){const backBtn=document.getElementById('backBtn');backBtn.style.visibility=(this.state.screen==='terms')?'hidden':'visible';const el=document.getElementById('app');const L=(k)=>this.t(k);let html='';if(this.state.screen==='terms'){html=`<section class='view'><div class='card'><span class='motto'>דלג על ההוצאה – צבור לעתידך.</span><h2>${L('terms_title')}</h2><p class='hint'>${L('terms_text')}</p><label style='display:flex;gap:8px;align-items:center;margin:12px 0;'><input type='checkbox' id='accept'> <span>${L('accept_terms')}</span></label><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-primary' onclick="(function(){const ok=document.getElementById('accept').checked;if(!ok){ alert('נא לאשר תנאים'); return; }localStorage.setItem('skipapp_terms','1');App.push('${App.state.user?'dashboard':'register'}');})()">${L('continue')}</button></div></div></section>`} else if(this.state.screen==='register'){const u=this.state.user||{firstName:'',age:'',goal:''};html=`<section class='view'><div class='registerHero'><span class='motto' style='color:#555'>דלג על ההוצאה – צבור לעתידך.</span><h2 class='regTitle'>התחלת מסע פיננסי חכם</h2><p class='regSub'>הגדר פרופיל קצר והתחל להמיר דילוגים קטנים לחיסכון אמיתי.</p><div class='benefits'><div class='benefit'>מודעות כסף ביום‑יום</div><div class='benefit'>גרפים בזמן אמת</div><div class='benefit'>יעד חודשי ומוטיבציה</div><div class='benefit'>מעבר לאפיקי השקעה</div></div></div><div class='card' style='margin-top:14px'><h3>${L('register_title')}</h3><label class='hint'>${L('name')}</label><input id='fn' type='text' value='${u.firstName||''}' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'/><label class='hint' style='margin-top:8px'>${L('age')}</label><input id='age' type='number' min='10' max='99' value='${u.age||''}' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'/><label class='hint' style='margin-top:8px'>${L('goal')}</label><input id='goal' type='number' min='0' value='${u.goal||''}' placeholder='לדוגמה: 1000' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'/><div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap'><button class='btn btn-primary' onclick="(function(){const user={firstName:document.getElementById('fn').value.trim(),age:parseInt(document.getElementById('age').value||0),goal:parseFloat(document.getElementById('goal').value||0),registeredAt:new Date().toISOString()};if(!user.firstName||!user.age||isNaN(user.goal)){ alert('אנא מלא/י את כל השדות'); return;}App.saveUser(user);App.push('dashboard');})()">${L('start_saving')}</button><button class='btn btn-outline' onclick='App.goBack()'>← ${L('back')}</button></div></div></section>`} else if(this.state.screen==='dashboard'){const points=this.state.data.reduce((s,x)=>s+Math.round((x.amount||0)*0.5),0);const moneyValue=(points*0.5).toFixed(2);html=`<section class='view'><div class='card'><span class='motto'>דלג על ההוצאה – צבור לעתידך.</span><h2>${L('dashboard_title')}</h2><p class='hint'>${L('installed_hint')}</p>${this.qnavHTML()}<div class='hint' style='margin-top:8px'>נקודות: ${points} • אומדן שווי: ₪${moneyValue}</div></div><div class='chartWrap' style='margin-top:16px'><h3 class='chartTitle'>חיסכון מצטבר</h3><canvas id='lineDash'></canvas></div></section>`;requestAnimationFrame(()=>drawSavingsLine(document.getElementById('lineDash'),App.state.data));} else if(this.state.screen==='addSkip'){html=`<section class='view'><div class='card'><span class='motto'>דלג על ההוצאה – צבור לעתידך.</span><h2>${L('add_skip')}</h2><label class='hint'>${L('amount')}</label><input id='amt' type='number' min='1' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'/><label class='hint' style='margin-top:8px'>${L('description')}</label><input id='desc' type='text' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'/><label class='hint' style='margin-top:8px'>${L('category')}</label><select id='cat' style='width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;'><option>אוכל ושתייה</option><option>אופנה</option><option>בילויים</option><option>טכנולוגיה</option><option>יופי וטיפוח</option><option>תחבורה</option><option>מנויים</option><option>קניות אימפולסיביות</option><option>חברתי</option><option>אחר</option></select><p class='hint' style='margin-top:10px'>💡 הכסף שנצבר שלא בוזבז אפשר להשקיע באפיקים המתאימים לך.</p><div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap'><button class='btn btn-primary' onclick="(function(){const item={amount:parseFloat(document.getElementById('amt').value||0),description:document.getElementById('desc').value.trim(),category:document.getElementById('cat').value,date:new Date().toISOString()};if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;}App.addSkip(item);})()">${L('save')}</button><button class='btn btn-outline' onclick='App.goBack()'>← ${L('back')}</button></div></div><div class='card' style='margin-top:14px'>${this.qnavHTML()}</div></section>`} else if(this.state.screen==='history'){const rows=(App.state.data||[]).slice().reverse();html=`<section class='view'><div class='card'><span class='motto'>דלג על ההוצאה – צבור לעתידך.</span><h2>${L('history')}</h2>${this.qnavHTML()}</div><div style='margin-top:12px'><table><thead><tr><th>תאריך</th><th>סכום (₪)</th><th>קטגוריה</th><th>תיאור</th></tr></thead><tbody>${rows.length?rows.map(s=>`<tr><td>${formatDate(s.date)}</td><td>${(s.amount||0).toFixed(2)}</td><td>${s.category||'-'}</td><td>${s.description||'-'}</td></tr>`).join(''):`<tr><td colspan='4' class='hint'>אין רישומים עדיין</td></tr>`}</tbody></table></div><div class='chartWrap' style='margin-top:16px'><h3 class='chartTitle'>חיסכון מצטבר</h3><canvas id='lineHist'></canvas></div><div class='chartWrap' style='margin-top:12px'><h3 class='chartTitle'>לפי חודש</h3><canvas id='barsMonth'></canvas></div><div class='chartWrap' style='margin-top:12px'><h3 class='chartTitle'>חלוקה לפי קטגוריה</h3><canvas id='donutCat'></canvas></div></section>`;requestAnimationFrame(()=>{drawSavingsLine(document.getElementById('lineHist'),App.state.data);drawMonthlyBars(document.getElementById('barsMonth'),App.state.data);drawCategoryDonut(document.getElementById('donutCat'),App.state.data);});} else if(this.state.screen==='stats'){const total=App.state.data.reduce((sum,x)=>sum+(x.amount||0),0).toFixed(2);const streak=calcStreak(App.state.data);const goal=App.state.user&&App.state.user.goal?App.state.user.goal:1000;html=`<section class='view'><div class='card'><span class='motto'>דלג על ההוצאה – צבור לעתידך.</span><h2>${L('stats')}</h2>${this.qnavHTML()}<div class='hint'>סה"כ נחסך עד היום: ₪${total}</div><div class='hint'>רצף ימים עם דילוג: ${streak} ימים</div></div><div class='chartWrap' style='margin-top:16px'><div class='ringRow'><canvas id='goalRing' style='width:180px;height:180px'></canvas><div><h3 class='chartTitle'>יעד חודשי אישי</h3><p class='hint'>התקדמות אל יעד: ₪${goal.toFixed(0)} לחודש. שמור/י על רצף דילוגים והגדל/י את החיסכון.</p><ul class='hint' style='margin:0;padding-inline-start:18px'><li>מטרה יומית קטנה (לדוגמה: ₪20) עוזרת לשמור על רצף.</li><li>בכל סוף שבוע—בדיקה קצרה: מה דילגתי? מה אעשה בשבוע הבא?</li><li>כשהגעת ל‑50% יעד—בחר/י אפיק השקעה שמתאים לך.</li></ul></div></div></div><div class='chartWrap' style='margin-top:12px'><h3 class='chartTitle'>חיסכון מצטבר</h3><canvas id='lineStats'></canvas></div></section>`;requestAnimationFrame(()=>{drawGoalRing(document.getElementById('goalRing'),App.state.data,goal);drawSavingsLine(document.getElementById('lineStats'),App.state.data);});} else if(this.state.screen==='investments'){const items=App.investments();html=`<section class='view'><div class='card'><span class='motto'>דלג על ההוצאה – צבור לעתידך.</span><h2>${L('invest_title')}</h2><p class='hint'>${L('invest_disclaimer')}</p>${this.qnavHTML()}<div class='list'>${items.map(i=>{const imgSrc='images/invest_'+i.key+'.jpg';const fallbackLogo='logos/'+i.key+'.png';return `<div class='item-link' onclick="openLink('${i.url}')"><img class='logo' src='${imgSrc}' onerror="this.src='${fallbackLogo}'" alt='${i.name}'/><div class='name'>${i.name}</div><div class='chev'>›</div></div>`;}).join('')}</div></div></section>`} else if(this.state.screen==='settings'){const u=App.state.user||{firstName:'',age:'',goal:''};html=`<section class='view'><div class='card'><span class='motto'>דלג על ההוצאה – צבור לעתידך.</span><h2>${L('settings')}</h2>${this.qnavHTML()}<div class='hint'>פרופיל: ${u.firstName||'-'}, גיל: ${u.age||'-'}, יעד חודשי: ₪${(u.goal||0).toFixed?u.goal.toFixed(0):u.goal||'-'}</div><div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap'><button class='btn btn-outline' onclick='App.reset()'>${L('reset_all')}</button><button class='btn btn-outline' onclick='App.goBack()'>← ${L('back')}</button></div></div></section>`} else if(this.state.screen==='summary'){const total=App.state.data.reduce((sum,x)=>sum+(x.amount||0),0).toFixed(2);const points=App.state.data.reduce((sum,x)=>sum+Math.round((x.amount||0)*0.5),0);const count=App.state.data.length;const about=strings.he.summary_about;const last=formatDate(LAST_UPDATED);html=`<section class='view'><div class='card'><span class='motto'>דלג על ההוצאה – צבור לעתידך.</span><h2>${strings.he.summary_title}</h2>${this.qnavHTML()}<div class='hint'>דילוגים שבוצעו: ${count}</div><div class='hint'>סה"כ סכום שנחסך: ₪${total}</div><div class='hint'>נקודות: ${points}</div><hr style='margin:14px 0;border:none;border-top:1px solid var(--border)'/><p class='hint'>${about}</p><div class='hint'>${strings.he.last_updated}: ${last}</div><div style='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;'><button class='btn btn-primary' onclick='App.push("dashboard")'>${strings.he.go_home}</button><button class='btn btn-outline' onclick='App.reset()'>${strings.he.reset_all}</button><button class='btn btn-outline' onclick='App.goBack()'>← ${strings.he.back}</button></div></div><div class='chartWrap' style='margin-top:16px'><h3 class='chartTitle'>חיסכון מצטבר</h3><canvas id='lineSum'></canvas></div></section>`;requestAnimationFrame(()=>drawSavingsLine(document.getElementById('lineSum'),App.state.data));}el.innerHTML=html;}}
-  if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(console.error)}
+  const LAST_UPDATED='2025-12-09';
+  const strings={he:{
+    back:'חזרה', home:'בית',
+    terms_title:'תנאי שימוש והצהרת אחריות',
+    terms_text:'האפליקציה מיועדת ללמידה בלבד ואינה ייעוץ פיננסי. שימוש באפליקציה באחריות המשתמש.',
+    accept_terms:'אני מסכים לתנאים', continue:'המשך',
+    register_title:'הרשמה', name:'שם', age:'גיל', goal:'מטרת חיסכון חודשית (₪)', start_saving:'התחל לחסוך!',
+    dashboard_title:'בחר מה תרצה לעשות', add_skip:'הוסף דילוג', history:'היסטוריה', insights:'תובנות', investments:'אפיקי השקעה', settings:'הגדרות',
+    amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור', reset_all:'איפוס והרשמה מחדש', installed_hint:'להתקנה בנייד: תפריט הדפדפן → הוסף למסך הבית',
+    invest_title:'אפיקי השקעה מוצעים', invest_intro:'חיסכון עקבי היום מייצר לך אפשרות השקעה חכמה מחר. בחר/י אפיק מתאים והמשך/י לבנות את העתיד הפיננסי שלך.', invest_disclaimer:'המידע להדגמה בלבד, אינו ייעוץ פיננסי.',
+    summary_title:'סיכום', summary_about:'SKIPAPP מסייעת להפוך דילוגים קטנים לחיסכון מודע.', go_home:'חזרה לדף הבית', last_updated:'עדכון אחרון',
+    export_csv:'ייצוא לאקסל (CSV)'
+  }};
+
+  function formatDate(iso){ try{const d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleString('he-IL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return '—';}}
+  function prepCanvas(canvas,h=200){const dpr=window.devicePixelRatio||1;const w=canvas.clientWidth,hpx=h;canvas.width=Math.max(1,w*dpr);canvas.height=Math.max(1,hpx*dpr);const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);return ctx;}
+  function drawSavingsLine(canvas,data){ if(!canvas) return; const ctx=prepCanvas(canvas,200); const w=canvas.clientWidth,h=200,pad=24; const days={}; (data||[]).forEach(x=>{const d=new Date(x.date); if(isNaN(d)) return; const key=d.toISOString().slice(0,10); days[key]=(days[key]||0)+(x.amount||0);}); const keys=Object.keys(days).sort(); const series=[]; let acc=0; keys.forEach(k=>{acc+=days[k]; series.push({label:k,value:acc});}); if(series.length===0){series.push({label:formatDate(new Date().toISOString()),value:0});} const maxV=Math.max(...series.map(s=>s.value),1); ctx.clearRect(0,0,w,h); ctx.strokeStyle='#e9e9e9'; ctx.beginPath(); ctx.moveTo(pad,h-pad); ctx.lineTo(w-pad,h-pad); ctx.stroke(); ctx.strokeStyle='#0F766E'; ctx.lineWidth=2; ctx.beginPath(); series.forEach((s,i)=>{const x=pad+i*((w-2*pad)/Math.max(1,series.length-1)); const y=h-pad-(s.value/maxV)*(h-2*pad); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}); ctx.stroke();}
+  function drawMonthlyBars(canvas,data){ if(!canvas) return; const ctx=prepCanvas(canvas,200); const w=canvas.clientWidth,h=200,pad=24; const months={}; (data||[]).forEach(x=>{const d=new Date(x.date); if(isNaN(d)) return; const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); months[key]=(months[key]||0)+(x.amount||0);}); const keys=Object.keys(months).sort(); if(keys.length===0){keys.push('—'); months['—']=0;} const values=keys.map(k=>months[k]); const maxV=Math.max(...values,1); const barW=(w-2*pad)/keys.length*0.6; keys.forEach((k,i)=>{const v=months[k]; const x=pad+i*((w-2*pad)/keys.length)+((w-2*pad)/keys.length-barW)/2; const barH=(v/maxV)*(h-2*pad); const y=h-pad-barH; ctx.fillStyle='#FF9E7D'; ctx.fillRect(x,y,barW,barH); ctx.strokeStyle='#e4e4e4'; ctx.strokeRect(x,y,barW,barH);});}
+
+  function openLink(url){ const isiOSStandalone = window.navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches); if(isiOSStandalone) location.href=url; else window.open(url,'_blank','noopener,noreferrer'); }
+
+  const App={ state:{screen:'dashboard',history:[],user:null,lang:'he',data:[]},
+    t(k){return strings[this.state.lang][k]||k},
+    push(s){this.state.history.push(this.state.screen);this.state.screen=s;this.render();},
+    goBack(){ if(this.state.history.length){this.state.screen=this.state.history.pop(); this.render();} else { this.goHome(); } },
+    goHome(){ this.state.screen='dashboard'; this.render(); },
+    saveUser(u){ localStorage.setItem('skipapp_user',JSON.stringify(u)); this.state.user=u; },
+    saveData(){ localStorage.setItem('skipapp_data',JSON.stringify(this.state.data)); },
+    addSkip(item){ this.state.data.push(item); this.saveData(); this.goHome(); },
+    reset(){ localStorage.removeItem('skipapp_user'); localStorage.removeItem('skipapp_data'); localStorage.removeItem('skipapp_terms'); this.state={screen:'terms',history:[],user:null,lang:(localStorage.getItem('skipapp_lang')||'he'),data:[]}; this.render(); },
+    load(){ const u=localStorage.getItem('skipapp_user'); if(u) this.state.user=JSON.parse(u); const d=localStorage.getItem('skipapp_data'); if(d) this.state.data=JSON.parse(d); this.render(); },
+    investments(){ return [
+      {key:'ibi',name:'IBI Investment House',url:'https://www.ibi.co.il/en/'},
+      {key:'meitav',name:'Meitav',url:'https://www.meitav.co.il/en/'},
+      {key:'harel',name:'Harel Group (IR)',url:'https://pr.harel-group.co.il/'},
+      {key:'psagot',name:'Psagot Trade',url:'https://www.psagotrade.com/en/'},
+      {key:'altshuler',name:'Altshuler Shaham',url:'https://www.as-invest.co.il/en/'},
+      {key:'phoenix',name:'Phoenix Financial (IR)',url:'https://www.fnx.co.il/en/investor-relations/'},
+      {key:'etoro',name:'eToro',url:'https://www.etoro.com/'},
+      {key:'ibkr',name:'Interactive Brokers',url:'https://www.interactivebrokers.com/'},
+      {key:'clal',name:'Clal Insurance & Finance',url:'https://www.clalbit.co.il/investorsrelations/aboutclalinsurance/'},
+      {key:'more',name:'More Invest',url:'https://www.moreinvest.co.il/'}
+    ].sort((a,b)=>a.name.localeCompare(b.name)); },
+
+    qnavHTML(){ const L=(k)=>this.t(k); return `
+      <div class="qnav">
+        <div class="tile" onclick="App.push('addSkip')">${L('add_skip')}</div>
+        <div class="tile" onclick="App.push('history')">${L('history')}</div>
+        <div class="tile" onclick="App.push('insights')">${L('insights')}</div>
+        <div class="tile" onclick="App.push('investments')">${L('investments')}</div>
+        <div class="tile" onclick="App.push('settings')">${L('settings')}</div>
+      </div>`; },
+
+    exportCSV(){ const rows=(this.state.data||[]).slice().reverse(); const header=['תאריך','סכום','קטגוריה','תיאור']; const lines=[header.join(',')]; rows.forEach(r=>{ lines.push([formatDate(r.date),(r.amount||0),`"${r.category||''}"`,`"${(r.description||'').replace(/"/g,'\"')}"`].join(',')); }); const blob=new Blob(["\ufeff"+lines.join('\n')],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href); },
+
+    render(){ const el=document.getElementById('app'); const L=(k)=>this.t(k); let html=''; const total=this.state.data.reduce((s,x)=>s+(x.amount||0),0); // FULL VALUE
+
+      if(this.state.screen==='dashboard'){
+        html = `
+        <section>
+          <div class="card">
+            <h2>${L('dashboard_title')}</h2>
+            ${this.qnavHTML()}
+            <p class="hint">שווי חיסכון מלא עד כה: ₪${total.toFixed(2)}</p>
+          </div>
+          <div class="chartWrap" style="margin-top:12px">
+            <h3 class="chartTitle">חיסכון מצטבר</h3>
+            <canvas id="lineDash"></canvas>
+          </div>
+        </section>`;
+        requestAnimationFrame(()=>drawSavingsLine(document.getElementById('lineDash'),this.state.data));
+      }
+
+      else if(this.state.screen==='addSkip'){
+        html = `
+        <section>
+          <div class="card">
+            <h2>${L('add_skip')}</h2>
+            <label class="hint">${L('amount')}</label>
+            <input id="amt" type="number" min="1" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;"/>
+            <label class="hint" style="margin-top:8px">${L('description')}</label>
+            <input id="desc" type="text" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;"/>
+            <label class="hint" style="margin-top:8px">${L('category')}</label>
+            <select id="cat" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;">
+              <option>אוכל ושתייה</option><option>אופנה</option><option>בילויים</option><option>טכנולוגיה</option>
+              <option>יופי וטיפוח</option><option>תחבורה</option><option>מנויים</option><option>קניות אימפולסיביות</option>
+              <option>חברתי</option><option>אחר</option>
+            </select>
+            <p class="hint" style="margin-top:10px">כסף שנצבר להשקעות באפיקים המתאימים לך.</p>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="(function(){ const item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() }; if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;} App.addSkip(item); })()">${L('save')}</button>
+              <button class="btn btn-outline" onclick="App.goHome()">${L('home')}</button>
+            </div>
+          </div>
+          <div class="card" style="margin-top:12px">${this.qnavHTML()}</div>
+        </section>`;
+      }
+
+      else if(this.state.screen==='history'){
+        const rows=(this.state.data||[]).slice().reverse();
+        html = `
+        <section>
+          <div class="card">
+            <h2>${L('history')}</h2>
+            ${this.qnavHTML()}
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+              <button class="btn btn-outline" onclick="App.exportCSV()">${L('export_csv')}</button>
+              <button class="btn btn-outline" onclick="App.goHome()">${L('home')}</button>
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <table>
+              <thead><tr><th>תאריך</th><th>סכום (₪)</th><th>קטגוריה</th><th>תיאור</th></tr></thead>
+              <tbody>
+                ${ rows.length ? rows.map(s=>`<tr><td>${formatDate(s.date)}</td><td>${(s.amount||0).toFixed(2)}</td><td>${s.category||'-'}</td><td>${s.description||'-'}</td></tr>`).join('') : `<tr><td colspan="4" class="hint">אין רישומים עדיין</td></tr>` }
+              </tbody>
+            </table>
+          </div>
+        </section>`;
+      }
+
+      else if(this.state.screen==='insights'){
+        const goal = this.state.user?.goal || 1000;
+        const canInvest = total > 100; // rule
+        const msg = canInvest ? 'כבר ניתן להתחיל לחסוך ולהשקיע.' : 'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.';
+        html = `
+        <section>
+          <div class="card">
+            <h2>${L('insights')}</h2>
+            ${this.qnavHTML()}
+            <p class="hint">שווי חיסכון מלא: ₪${total.toFixed(2)}</p>
+            <p class="hint">${msg}</p>
+            <div class="chartWrap" style="margin-top:10px">
+              <h3 class="chartTitle">חיסכון מצטבר</h3>
+              <canvas id="lineInsights"></canvas>
+            </div>
+            <button class="btn btn-outline" style="margin-top:10px" onclick="App.goHome()">${L('home')}</button>
+          </div>
+        </section>`;
+        requestAnimationFrame(()=>drawSavingsLine(document.getElementById('lineInsights'),this.state.data));
+      }
+
+      else if(this.state.screen==='investments'){
+        const items=this.investments();
+        html = `
+        <section>
+          <div class="card">
+            <h2>${L('invest_title')}</h2>
+            <p class="hint" style="margin-bottom:8px">${L('invest_intro')}</p>
+            <p class="hint">${L('invest_disclaimer')}</p>
+            ${this.qnavHTML()}
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:10px">
+              ${items.map(i=>`<div class="tile" onclick="openLink('${i.url}')">${i.name}</div>`).join('')}
+            </div>
+            <button class="btn btn-outline" style="margin-top:10px" onclick="App.goHome()">${L('home')}</button>
+          </div>
+        </section>`;
+      }
+
+      else if(this.state.screen==='settings'){
+        const u=this.state.user||{firstName:'',age:'',goal:''};
+        html = `
+        <section>
+          <div class="card">
+            <h2>${L('settings')}</h2>
+            ${this.qnavHTML()}
+            <p class="hint">שם: ${u.firstName||'-'} • גיל: ${u.age||'-'} • יעד חודשי: ₪${u.goal||'-'}</p>
+            <p class="hint">${strings.he.last_updated}: ${formatDate(LAST_UPDATED)}</p>
+            <details style="margin-top:8px"><summary class="hint">${strings.he.terms_title}</summary><p class="hint">${strings.he.terms_text}</p></details>
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+              <button class="btn btn-outline" onclick="App.reset()">${L('reset_all')}</button>
+              <button class="btn btn-outline" onclick="App.goHome()">${L('home')}</button>
+            </div>
+          </div>
+        </section>`;
+      }
+
+      el.innerHTML = html;
+    }
+  };
+
+  if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
   App.load();
-  const ro=new ResizeObserver(()=>{const ids=['lineDash','lineHist','barsMonth','donutCat','lineStats','lineSum','goalRing'];ids.forEach(id=>{const c=document.getElementById(id);if(c&&c.isConnected){if(id==='barsMonth')drawMonthlyBars(c,App.state.data);else if(id==='donutCat')drawCategoryDonut(c,App.state.data);else if(id==='goalRing')drawGoalRing(c,App.state.data,App.state.user?.goal||1000);else drawSavingsLine(c,App.state.data);}});});ro.observe(document.body);
   </script>
 </body>
 </html>
