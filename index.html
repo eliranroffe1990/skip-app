@@ -4,25 +4,24 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>SKIPAPP</title>
-  <meta name="theme-color" content="#0F766E"/>
+  <meta name="theme-color" content="#FF9E7D"/>
   <link rel="manifest" href="/manifest.json"/>
   <link rel="apple-touch-icon" href="/icons/icon-180.png"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="SKIPAPP"/>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;800&family=Poppins:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root{--emerald:#0F766E; --coral:#FF9E7D; --sand:#F9F5EB; --ink:#1F2937; --muted:#6B7280; --border:#EAEAEA; --card:#FFFFFF}
+    :root{--emerald:#0F766E; --coral:#FF9E7D; --sand:#FFF0E6; --ink:#1F2937; --muted:#6B7280; --border:#EAEAEA; --card:#FFFFFF}
     *{box-sizing:border-box}
     html{font-size:17px}
-    body{margin:0;color:var(--ink);font-family:'Heebo','Poppins',system-ui; background:
-      radial-gradient(120% 140% at 0% 0%, rgba(47,170,160,.25) 0%, var(--sand) 40%),
-      linear-gradient(135deg, rgba(15,118,110,.14), rgba(255,158,125,.12));}
-    /* Minimal header to satisfy: back + home only */
+    body{margin:0;color:var(--ink);font-family:'Heebo',system-ui; background:
+      radial-gradient(120% 140% at 0% 0%, rgba(255,158,125,.20) 0%, var(--sand) 40%),
+      linear-gradient(135deg, rgba(255,158,125,.18), rgba(255,127,80,.12));}
     header{position:sticky; top:0; z-index:9; background:rgba(255,255,255,.85); backdrop-filter:blur(6px); border-bottom:1px solid var(--border)}
     .topbar{max-width:860px;margin:0 auto;display:flex;gap:8px;align-items:center;padding:8px}
     .iconbtn{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-    .iconbtn svg{width:22px;height:22px;fill:#0F766E}
+    .iconbtn svg{width:22px;height:22px;fill:var(--emerald)}
     main{max-width:860px;margin:0 auto;padding:18px}
     .card{background:var(--card);border-radius:18px;padding:22px;border:1px solid var(--border);box-shadow:0 10px 28px rgba(0,0,0,.06)}
     .btn{appearance:none;border:none;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700;min-height:44px}
@@ -31,6 +30,10 @@
     .tile{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center;font-weight:700;color:var(--emerald);box-shadow:0 6px 22px rgba(0,0,0,.05);}
     .list{display:flex;flex-direction:column;gap:10px}
     .hint{color:var(--muted);font-size:.95rem}
+    .brandWrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .brandName{font-weight:800;font-size:1.6rem;margin:0}
+    .brandLogo{width:120px;height:120px}
+    table{width:100%;border-collapse:collapse}
   </style>
 </head>
 <body>
@@ -49,141 +52,121 @@
 
   <script>
   const LAST_UPDATED='2025-12-10';
-  const strings={he:{
-    continue:'המשך', home:'בית', back:'חזרה', add_skip:'הוסף דילוג', history:'היסטוריה', insights:'תובנות', investments:'אפיקי השקעה', settings:'הגדרות',
-    amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור והמשך', reset_all:'איפוס והרשמה מחדש',
-    welcome_home:'ברוך שובך', choose_lang:'בחר/י שפה', he:'עברית', en:'English', register:'הרשמה', name:'שם', age:'גיל', goal:'יעד חיסכון חודשי (₪)', purpose:'מטרת חיסכון',
-    purpose_opts:['השקעות','קניית נכס','חיסכון חכם','אחר'], start:'התחל', total:'שווי חיסכון מלא: ₪'
-  }, en:{
-    continue:'Continue', home:'Home', back:'Back', add_skip:'Add Skip', history:'History', insights:'Insights', investments:'Investments', settings:'Settings',
-    amount:'Amount (₪)', description:'Description', category:'Category', save:'Save & Continue', reset_all:'Reset & Register',
-    welcome_home:'Welcome back', choose_lang:'Choose language', he:'Hebrew', en:'English', register:'Register', name:'Name', age:'Age', goal:'Monthly saving goal (₪)', purpose:'Saving purpose',
-    purpose_opts:['Investments','Buy a property','Smart saving','Other'], start:'Start', total:'Total saved: ₪'
-  }};
+  const strings={
+    he:{
+      continue:'המשך', home:'בית', back:'חזרה', add_skip:'הוסף דילוג', history:'היסטוריה', insights:'תובנות', investments:'אפיקי השקעה', settings:'הגדרות',
+      amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור והמשך', reset_all:'איפוס והרשמה מחדש',
+      welcome_home:'ברוך שובך', choose_lang:'בחר/י שפה', he:'עברית', register:'הרשמה', name:'שם', age:'גיל', goal:'יעד חיסכון חודשי (₪)', purpose:'מטרת חיסכון',
+      purpose_opts:['השקעות','קניית נכס','חיסכון חכם','אחר'], start:'התחל', total:'שווי חיסכון מלא: ₪',
+      explain_title:'קצת על SKIPAPP',
+      explain_text:'האפליקציה הופכת דילוגים קטנים על הוצאות לחיסכון מודע. בכל דילוג מצטבר סכום מלא שניתן להפנות להשקעות חכמות בעתיד.',
+      terms_title:'תנאי שימוש והצהרת אחריות',
+      terms_text:'האפליקציה מיועדת ללמידה ולהעצמה פיננסית בלבד ואינה מהווה ייעוץ השקעות. שימוש באפליקציה ובמידע בה באחריות המשתמש בלבד.'
+    }
+  };
 
-  function formatDate(iso){ try{const d=new Date(iso); if(isNaN(d)) return '—'; const loc=document.documentElement.lang==='he'?'he-IL':'en-GB'; return d.toLocaleString(loc,{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return '—';}}
+  function formatDate(iso){ try{const d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleString('he-IL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return '—';}}
   function openLink(url){ const isiOSStandalone = window.navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches); if(isiOSStandalone) location.href=url; else window.open(url,'_blank','noopener,noreferrer'); }
 
   const App={ state:{screen:'home',history:[],user:null,lang:'he',data:[]},
     t(k){return strings[this.state.lang][k]||k},
-    push(s){this.state.history.push(this.state.screen);this.state.screen=s;this.render();},
-    goBack(){ if(this.state.history.length){this.state.screen=this.state.history.pop();this.render();} else { this.goHome(); } },
-    goHome(){this.state.screen='home';this.render();},
-    saveUser(u){localStorage.setItem('skipapp_user',JSON.stringify(u));this.state.user=u;},
-    saveData(){localStorage.setItem('skipapp_data',JSON.stringify(this.state.data));},
+    push(s){this.state.history.push(this.state.screen); this.state.screen=s; this.render();},
+    goBack(){ if(this.state.history.length){ this.state.screen=this.state.history.pop(); this.render(); } else { this.goHome(); } },
+    goHome(){ this.state.screen='home'; this.render(); },
+    saveUser(u){ localStorage.setItem('skipapp_user',JSON.stringify(u)); this.state.user=u; },
+    saveData(){ localStorage.setItem('skipapp_data',JSON.stringify(this.state.data)); },
     reset(){ localStorage.removeItem('skipapp_user'); localStorage.removeItem('skipapp_data'); localStorage.removeItem('skipapp_lang'); this.state={screen:'lang',history:[],user:null,lang:'he',data:[]}; document.documentElement.lang='he'; document.documentElement.dir='rtl'; this.render(); },
-    load(){ const l=localStorage.getItem('skipapp_lang'); if(l){ this.state.lang=l; document.documentElement.lang=(l==='he'?'he':'en'); document.documentElement.dir=(l==='he'?'rtl':'ltr'); }
-           const u=localStorage.getItem('skipapp_user'); if(u) this.state.user=JSON.parse(u);
-           const d=localStorage.getItem('skipapp_data'); if(d) this.state.data=JSON.parse(d);
-           // First-run: only registration allowed; returning user: goes to home
-           if(!this.state.user){ this.state.screen = l ? 'register' : 'lang'; } else { this.state.screen = 'home'; }
-           this.render(); },
+    load(){ const l=localStorage.getItem('skipapp_lang'); if(l){ this.state.lang=l; document.documentElement.lang='he'; document.documentElement.dir='rtl'; } const u=localStorage.getItem('skipapp_user'); if(u) this.state.user=JSON.parse(u); const d=localStorage.getItem('skipapp_data'); if(d) this.state.data=JSON.parse(d); if(!this.state.user){ this.state.screen = l ? 'register' : 'lang'; } else { this.state.screen='home'; } this.render(); },
     addSkip(item){ this.state.data.push(item); this.saveData(); this.state.screen='history'; this.render(); },
-    exportCSV(){ const rows=this.state.data.slice().reverse(); const isHe=this.state.lang==='he'; const header=[isHe?'תאריך':'Date', isHe?'סכום':'Amount', isHe?'קטגוריה':'Category', isHe?'תיאור':'Description']; const lines=[header.join(',')]; rows.forEach(r=>{ lines.push([formatDate(r.date),(r.amount||0),`"${r.category||''}"`,`"${(r.description||'').replace(/"/g,'\"')}"`].join(',')); }); const blob=new Blob(["\ufeff"+lines.join('\n')],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href); },
+    exportCSV(){ const rows=this.state.data.slice().reverse(); const header=['תאריך','סכום','קטגוריה','תיאור']; const lines=[header.join(',')]; rows.forEach(r=>{ lines.push([formatDate(r.date),(r.amount||0),`"${r.category||''}"`,`"${(r.description||'').replace(/"/g,'"')}"`].join(',')); }); const blob=new Blob(["﻿"+lines.join('
+')],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href); },
     render(){ const el=document.getElementById('app'); const L=(k)=>this.t(k); let html=''; const total=this.state.data.reduce((s,x)=>s+(x.amount||0),0);
 
       if(this.state.screen==='lang'){
-        html = `
-        <section class="card">
-          <h2>${strings[this.state.lang].choose_lang}</h2>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-            <button class="btn btn-primary" onclick="App.state.lang='he'; localStorage.setItem('skipapp_lang','he'); document.documentElement.lang='he'; document.documentElement.dir='rtl'; App.render();">${strings.he.he}</button>
-            <button class="btn btn-outline" onclick="App.state.lang='en'; localStorage.setItem('skipapp_lang','en'); document.documentElement.lang='en'; document.documentElement.dir='ltr'; App.render();">${strings.en.en}</button>
-          </div>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="App.push('register')">${strings[this.state.lang].continue}</button></div>
-        </section>`;
+        html=`<section class="card"><h2>${strings.he.choose_lang}</h2><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-primary" onclick="localStorage.setItem('skipapp_lang','he'); App.push('register')">${strings.he.he}</button></div></section>`;
       }
-
       else if(this.state.screen==='register'){
         const u=this.state.user||{firstName:'',age:'',goal:0,purpose:''};
-        const opts=strings[this.state.lang].purpose_opts;
-        html = `
-        <section class="card">
-          <h2>${strings[this.state.lang].register}</h2>
-          <label class="hint">${strings[this.state.lang].name}</label>
+        const opts=strings.he.purpose_opts;
+        html = `<section class="card">
+          <h2>${strings.he.register}</h2>
+          <p class="hint"><strong>${strings.he.explain_title}:</strong> ${strings.he.explain_text}</p>
+          <label class="hint">${strings.he.name}</label>
           <input id="fn" type="text" value="${u.firstName||''}" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;"/>
-          <label class="hint" style="margin-top:8px">${strings[this.state.lang].age}</label>
+          <label class="hint" style="margin-top:8px">${strings.he.age}</label>
           <input id="age" type="number" min="10" max="99" value="${u.age||''}" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;"/>
-          <label class="hint" style="margin-top:8px">${strings[this.state.lang].goal}</label>
+          <label class="hint" style="margin-top:8px">${strings.he.goal}</label>
           <input id="goal" type="number" min="0" value="${u.goal||''}" placeholder="1000" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;"/>
-          <label class="hint" style="margin-top:8px">${strings[this.state.lang].purpose}</label>
+          <label class="hint" style="margin-top:8px">${strings.he.purpose}</label>
           <select id="purpose" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;">${opts.map(o=>`<option>${o}</option>`).join('')}</select>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="(function(){ const user={firstName:document.getElementById('fn').value.trim(),age:parseInt(document.getElementById('age').value||0),goal:parseFloat(document.getElementById('goal').value||0),purpose:document.getElementById('purpose').value,registeredAt:new Date().toISOString()}; if(!user.firstName||!user.age||isNaN(user.goal)){alert('אנא מלא/י את כל השדות'); return;} App.saveUser(user); App.goHome(); })()">${strings[this.state.lang].start}</button></div>
+          <details style="margin-top:8px"><summary class="hint">${strings.he.terms_title}</summary><p class="hint">${strings.he.terms_text}</p></details>
+          <div style="margin-top:12px"><button class="btn btn-primary" onclick="(function(){ const user={ firstName:document.getElementById('fn').value.trim(), age:parseInt(document.getElementById('age').value||0), goal:parseFloat(document.getElementById('goal').value||0), purpose:document.getElementById('purpose').value, registeredAt:new Date().toISOString() }; if(!user.firstName||!user.age||isNaN(user.goal)){ alert('אנא מלא/י את כל השדות'); return;} App.saveUser(user); App.goHome(); })()">${strings.he.start}</button></div>
         </section>`;
       }
-
       else if(this.state.screen==='home'){
         const name=this.state.user?.firstName||'';
-        html = `
-        <section class="card" style="text-align:center">
-          <h2>${strings[this.state.lang].welcome_home}${name?` , ${name}`:''}</h2>
+        html = `<section class="card" style="text-align:center">
+          <div class="brandWrap">
+            <h2 class="brandName">SKIPAPP${name?` · ${strings.he.welcome_home} ${name}`:''}</h2>
+            <img src="images/play_logo.png" alt="PLAY" class="brandLogo"/>
+          </div>
           <img src="images/hero.jpg" alt="SKIPAPP" style="width:100%;border-radius:12px;margin-top:8px"/>
           <div class="list" style="margin-top:12px">
-            <button class="tile" onclick="App.push('addSkip')">${strings[this.state.lang].add_skip}</button>
-            <button class="tile" onclick="App.push('history')">${strings[this.state.lang].history}</button>
-            <button class="tile" onclick="App.push('insights')">${strings[this.state.lang].insights}</button>
-            <button class="tile" onclick="App.push('investments')">${strings[this.state.lang].investments}</button>
-            <button class="tile" onclick="App.push('settings')">${strings[this.state.lang].settings}</button>
+            <button class="tile" onclick="App.push('addSkip')">${strings.he.add_skip}</button>
+            <button class="tile" onclick="App.push('history')">${strings.he.history}</button>
+            <button class="tile" onclick="App.push('insights')">${strings.he.insights}</button>
+            <button class="tile" onclick="App.push('investments')">${strings.he.investments}</button>
+            <button class="tile" onclick="App.push('settings')">${strings.he.settings}</button>
           </div>
-          <p class="hint" style="margin-top:8px">${strings[this.state.lang].total}${total.toFixed(2)}</p>
+          <p class="hint" style="margin-top:8px">${strings.he.total}${total.toFixed(2)}</p>
         </section>`;
       }
-
       else if(this.state.screen==='addSkip'){
-        html = `
-        <section class="card">
-          <h2>${strings[this.state.lang].add_skip}</h2>
-          <label class="hint">${strings[this.state.lang].amount}</label>
+        html = `<section class="card">
+          <h2>${strings.he.add_skip}</h2>
+          <label class="hint">${strings.he.amount}</label>
           <input id="amt" type="number" min="1" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;"/>
-          <label class="hint" style="margin-top:8px">${strings[this.state.lang].description}</label>
+          <label class="hint" style="margin-top:8px">${strings.he.description}</label>
           <input id="desc" type="text" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;"/>
-          <label class="hint" style="margin-top:8px">${strings[this.state.lang].category}</label>
+          <label class="hint" style="margin-top:8px">${strings.he.category}</label>
           <select id="cat" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;">
             <option>אוכל ושתייה</option><option>אופנה</option><option>בילויים</option><option>טכנולוגיה</option>
             <option>יופי וטיפוח</option><option>תחבורה</option><option>מנויים</option><option>קניות אימפולסיביות</option>
             <option>חברתי</option><option>אחר</option>
           </select>
           <p class="hint" style="margin-top:10px">כסף שנצבר להשקעות באפיקים המתאימים לך.</p>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="(function(){ const item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() }; if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;} App.addSkip(item); })()">${strings[this.state.lang].save}</button></div>
+          <div style="margin-top:12px"><button class="btn btn-primary" onclick="(function(){ const item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() }; if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;} App.addSkip(item); })()">${strings.he.save}</button></div>
         </section>`;
       }
-
       else if(this.state.screen==='history'){
         const rows=(this.state.data||[]).slice().reverse();
-        html = `
-        <section class="card">
-          <h2>${strings[this.state.lang].history}</h2>
+        html = `<section class="card">
+          <h2>${strings.he.history}</h2>
           <div style="margin-top:8px">
-            <table style="width:100%;border-collapse:collapse">
-              <thead><tr style="background:#f6faf9"><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">תאריך</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">סכום (₪)</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">קטגוריה</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">תיאור</th></tr></thead>
+            <table>
+              <thead><tr style="background:#fff6f2"><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">תאריך</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">סכום (₪)</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">קטגוריה</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">תיאור</th></tr></thead>
               <tbody>
                 ${ rows.length ? rows.map(s=>`<tr><td style='padding:8px;border-bottom:1px solid #eee'>${formatDate(s.date)}</td><td style='padding:8px;border-bottom:1px solid #eee'>${(s.amount||0).toFixed(2)}</td><td style='padding:8px;border-bottom:1px solid #eee'>${s.category||'-'}</td><td style='padding:8px;border-bottom:1px solid #eee'>${s.description||'-'}</td></tr>`).join('') : `<tr><td colspan='4' class='hint' style='padding:8px'>אין רישומים עדיין</td></tr>` }
               </tbody>
             </table>
           </div>
           <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-            <button class="btn btn-outline" onclick="App.exportCSV()">ייצוא לאקסל (CSV)</button>
-            <button class="btn btn-primary" onclick="App.push('insights')">${strings[this.state.lang].continue}</button>
+            <button class="btn btn-outline" onclick="App.exportCSV()">ייצוא ל-CSV</button>
+            <button class="btn btn-primary" onclick="App.push('insights')">${strings.he.continue}</button>
           </div>
         </section>`;
       }
-
       else if(this.state.screen==='insights'){
-        const canInvest = total > 100;
-        const msg = canInvest ? 'כבר ניתן להתחיל לחסוך ולהשקיע.' : 'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.';
-        html = `
-        <section class="card">
-          <h2>${strings[this.state.lang].insights}</h2>
-          <p class="hint">שווי חיסכון מלא: ₪${total.toFixed(2)}</p>
+        const totalSaved=total; const msg = totalSaved>100 ? 'כבר ניתן להתחיל לחסוך ולהשקיע.' : 'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.';
+        html = `<section class="card">
+          <h2>${strings.he.insights}</h2>
+          <p class="hint">שווי חיסכון מלא: ₪${totalSaved.toFixed(2)}</p>
           <p class="hint">${msg}</p>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="App.push('investments')">${strings[this.state.lang].continue}</button></div>
+          <div style="margin-top:12px"><button class="btn btn-primary" onclick="App.push('investments')">${strings.he.continue}</button></div>
         </section>`;
       }
-
       else if(this.state.screen==='investments'){
-        // Standalone minimal screen with only links as requested
-        html = `
-        <section>
+        html = `<section>
           <div class="list">
             <button class="tile" onclick="openLink('https://www.google.com/search?q=%D7%90%D7%A4%D7%99%D7%A7%D7%99+%D7%94%D7%A9%D7%A7%D7%A2%D7%94+%D7%9E%D7%95%D7%9E%D7%9C%D7%A6%D7%99%D7%9D+%D7%9C%D7%98%D7%95%D7%95%D7%97+%D7%90%D7%A8%D7%95%D7%9A')">קישור: אפיקי ההשקעה הכי טובים וחכמים</button>
             <button class="tile" onclick="openLink('https://www.google.com/search?q=%D7%9C%D7%9E%D7%94+%D7%9B%D7%93%D7%90%D7%99+%D7%9C%D7%97%D7%A1%D7%95%D7%9A+%D7%9E%D7%92%D7%99%D7%9C+%D7%A6%D7%A2%D7%99%D7%A8')">קישור: למה כדאי לחסוך מגיל צעיר ולהשקיע נכון</button>
@@ -191,34 +174,27 @@
           </div>
         </section>`;
       }
-
       else if(this.state.screen==='summary'){
         const count=this.state.data.length; const totalSaved=this.state.data.reduce((s,x)=>s+(x.amount||0),0);
-        html = `
-        <section class="card" style="text-align:center">
+        html = `<section class="card" style="text-align:center">
           <h2>סיכום</h2>
           <p class="hint">מספר דילוגים: ${count}</p>
           <p class="hint">שווי חיסכון מלא: ₪${totalSaved.toFixed(2)}</p>
           <p class="hint">מטרה: ${this.state.user?.purpose||'-'}</p>
           <div style="margin-top:12px"><button class="btn btn-primary" onclick="App.goHome()">חזרה למסך הבית</button></div>
         </section>`;
-        // גם נחזיר אוטומטית אחרי כמה שניות
         setTimeout(()=>App.goHome(), 3500);
       }
-
       else if(this.state.screen==='settings'){
         const u=this.state.user||{firstName:'',age:'',goal:'',purpose:''};
-        html = `
-        <section class="card">
-          <h2>${strings[this.state.lang].settings}</h2>
+        html = `<section class="card">
+          <h2>${strings.he.settings}</h2>
           <p class="hint">שם: ${u.firstName||'-'} • גיל: ${u.age||'-'} • יעד חודשי: ₪${u.goal||'-'} • מטרה: ${u.purpose||'-'}</p>
-          <p class="hint">עדכון אחרון: ${formatDate(LAST_UPDATED)}</p>
-          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-            <button class="btn btn-outline" onclick="App.reset()">${strings[this.state.lang].reset_all}</button>
-          </div>
+          <details style="margin:6px 0"><summary class="hint">${strings.he.terms_title}</summary><p class="hint">${strings.he.terms_text}</p></details>
+          <p class="hint">עדכון אחרון: ${new Date(LAST_UPDATED).toLocaleDateString('he-IL')}</p>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn btn-outline" onclick="App.reset()">${strings.he.reset_all}</button></div>
         </section>`;
       }
-
       el.innerHTML = html;
     }
   };
