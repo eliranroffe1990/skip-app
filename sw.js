@@ -1,7 +1,7 @@
 
-// SKIPAPP Service Worker v4.0 (auto refresh)
-const CACHE_NAME = 'skipapp-v4.0';
-const CORE_ASSETS = [ '/', '/index.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-180.png' ];
-self.addEventListener('install',(event)=>{self.skipWaiting();event.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(CORE_ASSETS)));});
-self.addEventListener('activate',async (event)=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.map(k=>k!==CACHE_NAME&&caches.delete(k)));})());self.clients.claim();const clients=await self.clients.matchAll({includeUncontrolled:true,type:'window'});for(const client of clients){client.navigate(client.url);}});
-self.addEventListener('fetch',(event)=>{const req=event.request;const isHTML=req.headers.get('accept')?.includes('text/html');if(isHTML){event.respondWith(fetch(req).then(res=>{const copy=res.clone();caches.open(CACHE_NAME).then(c=>c.put(req,copy));return res;}).catch(()=>caches.match(req).then(r=>r||caches.match('/index.html'))));}else{event.respondWith(caches.match(req).then(cached=>cached||fetch(req).then(res=>{const copy=res.clone();caches.open(CACHE_NAME).then(c=>c.put(req,copy));return res;})));}});
+// SKIPAPP Service Worker v4.2
+const CACHE_NAME='skipapp-v4.2';
+const CORE=[ '/', '/index.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-180.png', '/images/hero.jpg', '/images/play_logo.png' ];
+self.addEventListener('install',e=>{self.skipWaiting(); e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(CORE)));});
+self.addEventListener('activate',e=>{e.waitUntil((async()=>{const keys=await caches.keys(); await Promise.all(keys.map(k=>k!==CACHE_NAME&&caches.delete(k)));})()); self.clients.claim();});
+self.addEventListener('fetch',e=>{const req=e.request; const html=req.headers.get('accept')?.includes('text/html'); if(html){e.respondWith(fetch(req).then(res=>{const copy=res.clone(); caches.open(CACHE_NAME).then(c=>c.put(req,copy)); return res;}).catch(()=>caches.match(req).then(r=>r||caches.match('/index.html'))));} else {e.respondWith(caches.match(req).then(c=>c||fetch(req).then(res=>{const copy=res.clone(); caches.open(CACHE_NAME).then(cc=>cc.put(req,copy)); return res;})));}});
