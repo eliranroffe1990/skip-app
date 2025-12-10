@@ -26,7 +26,6 @@
     .card{background:var(--card);border-radius:18px;padding:22px;border:1px solid var(--border);box-shadow:0 10px 28px rgba(0,0,0,.06)}
     .btn{appearance:none;border:none;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700;min-height:44px}
     .btn-primary{background:linear-gradient(135deg,var(--emerald),var(--coral)); color:#fff}
-    .btn-outline{background:#fff;border:2px solid var(--border);color:var(--ink)}
     .tile{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center;font-weight:700;color:var(--emerald);box-shadow:0 6px 22px rgba(0,0,0,.05);}
     .list{display:flex;flex-direction:column;gap:10px}
     .hint{color:var(--muted);font-size:.95rem}
@@ -51,22 +50,18 @@
   <main id="app"></main>
 
   <script>
-  const LAST_UPDATED='2025-12-10';
-  const strings={
-    he:{
-      continue:'המשך', home:'בית', back:'חזרה', add_skip:'הוסף דילוג', history:'היסטוריה', insights:'תובנות', investments:'אפיקי השקעה', settings:'הגדרות',
-      amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור והמשך', reset_all:'איפוס והרשמה מחדש',
-      welcome_home:'ברוך שובך', choose_lang:'בחר/י שפה', he:'עברית', register:'הרשמה', name:'שם', age:'גיל', goal:'יעד חיסכון חודשי (₪)', purpose:'מטרת חיסכון',
-      purpose_opts:['השקעות','קניית נכס','חיסכון חכם','אחר'], start:'התחל', total:'שווי חיסכון מלא: ₪',
-      explain_title:'קצת על SKIPAPP',
-      explain_text:'האפליקציה הופכת דילוגים קטנים על הוצאות לחיסכון מודע. בכל דילוג מצטבר סכום מלא שניתן להפנות להשקעות חכמות בעתיד.',
-      terms_title:'תנאי שימוש והצהרת אחריות',
-      terms_text:'האפליקציה מיועדת ללמידה ולהעצמה פיננסית בלבד ואינה מהווה ייעוץ השקעות. שימוש באפליקציה ובמידע בה באחריות המשתמש בלבד.'
-    }
-  };
+  const strings={ he:{
+    continue:'המשך', home:'בית', back:'חזרה', add_skip:'הוסף דילוג', history:'היסטוריה', insights:'תובנות', investments:'אפיקי השקעה', settings:'הגדרות',
+    amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור והמשך', reset_all:'איפוס והרשמה מחדש',
+    welcome_home:'ברוך שובך', register:'הרשמה', name:'שם', age:'גיל', goal:'יעד חיסכון חודשי (₪)', purpose:'מטרת חיסכון',
+    purpose_opts:['השקעות','קניית נכס','חיסכון חכם','אחר'], start:'התחל', total:'שווי חיסכון מלא: ₪',
+    explain_title:'קצת על SKIPAPP',
+    explain_text:'האפליקציה הופכת דילוגים קטנים על הוצאות לחיסכון מודע. בכל דילוג מצטבר סכום מלא שניתן להפנות להשקעות חכמות בעתיד.',
+    terms_title:'תנאי שימוש והצהרת אחריות',
+    terms_text:'האפליקציה מיועדת ללמידה ולהעצמה פיננסית בלבד ואינה מהווה ייעוץ השקעות. שימוש באפליקציה ובמידע בה באחריות המשתמש בלבד.'
+  }};
 
   function formatDate(iso){ try{const d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleString('he-IL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return '—';}}
-  function openLink(url){ const isiOSStandalone = window.navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches); if(isiOSStandalone) location.href=url; else window.open(url,'_blank','noopener,noreferrer'); }
 
   const App={ state:{screen:'home',history:[],user:null,lang:'he',data:[]},
     t(k){return strings[this.state.lang][k]||k},
@@ -75,17 +70,11 @@
     goHome(){ this.state.screen='home'; this.render(); },
     saveUser(u){ localStorage.setItem('skipapp_user',JSON.stringify(u)); this.state.user=u; },
     saveData(){ localStorage.setItem('skipapp_data',JSON.stringify(this.state.data)); },
-    reset(){ localStorage.removeItem('skipapp_user'); localStorage.removeItem('skipapp_data'); localStorage.removeItem('skipapp_lang'); this.state={screen:'lang',history:[],user:null,lang:'he',data:[]}; document.documentElement.lang='he'; document.documentElement.dir='rtl'; this.render(); },
-    load(){ const l=localStorage.getItem('skipapp_lang'); if(l){ this.state.lang=l; document.documentElement.lang='he'; document.documentElement.dir='rtl'; } const u=localStorage.getItem('skipapp_user'); if(u) this.state.user=JSON.parse(u); const d=localStorage.getItem('skipapp_data'); if(d) this.state.data=JSON.parse(d); if(!this.state.user){ this.state.screen = l ? 'register' : 'lang'; } else { this.state.screen='home'; } this.render(); },
+    reset(){ localStorage.removeItem('skipapp_user'); localStorage.removeItem('skipapp_data'); this.state={screen:'register',history:[],user:null,lang:'he',data:[]}; this.render(); },
+    load(){ const u=localStorage.getItem('skipapp_user'); if(u){ this.state.user=JSON.parse(u); this.state.screen='home'; } else { this.state.screen='register'; } this.render(); },
     addSkip(item){ this.state.data.push(item); this.saveData(); this.state.screen='history'; this.render(); },
-    exportCSV(){ const rows=this.state.data.slice().reverse(); const header=['תאריך','סכום','קטגוריה','תיאור']; const lines=[header.join(',')]; rows.forEach(r=>{ lines.push([formatDate(r.date),(r.amount||0),`"${r.category||''}"`,`"${(r.description||'').replace(/"/g,'"')}"`].join(',')); }); const blob=new Blob(["﻿"+lines.join('
-')],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href); },
-    render(){ const el=document.getElementById('app'); const L=(k)=>this.t(k); let html=''; const total=this.state.data.reduce((s,x)=>s+(x.amount||0),0);
-
-      if(this.state.screen==='lang'){
-        html=`<section class="card"><h2>${strings.he.choose_lang}</h2><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-primary" onclick="localStorage.setItem('skipapp_lang','he'); App.push('register')">${strings.he.he}</button></div></section>`;
-      }
-      else if(this.state.screen==='register'){
+    render(){ const el=document.getElementById('app'); let html=''; const total=this.state.data.reduce((s,x)=>s+(x.amount||0),0);
+      if(this.state.screen==='register'){
         const u=this.state.user||{firstName:'',age:'',goal:0,purpose:''};
         const opts=strings.he.purpose_opts;
         html = `<section class="card">
@@ -139,7 +128,7 @@
         </section>`;
       }
       else if(this.state.screen==='history'){
-        const rows=(this.state.data||[]).slice().reverse();
+        const rows=this.state.data.slice().reverse();
         html = `<section class="card">
           <h2>${strings.he.history}</h2>
           <div style="margin-top:8px">
@@ -151,13 +140,13 @@
             </table>
           </div>
           <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-            <button class="btn btn-outline" onclick="App.exportCSV()">ייצוא ל-CSV</button>
             <button class="btn btn-primary" onclick="App.push('insights')">${strings.he.continue}</button>
           </div>
         </section>`;
       }
       else if(this.state.screen==='insights'){
-        const totalSaved=total; const msg = totalSaved>100 ? 'כבר ניתן להתחיל לחסוך ולהשקיע.' : 'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.';
+        const totalSaved=this.state.data.reduce((s,x)=>s+(x.amount||0),0);
+        const msg = totalSaved>100 ? 'כבר ניתן להתחיל לחסוך ולהשקיע.' : 'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.';
         html = `<section class="card">
           <h2>${strings.he.insights}</h2>
           <p class="hint">שווי חיסכון מלא: ₪${totalSaved.toFixed(2)}</p>
@@ -168,8 +157,8 @@
       else if(this.state.screen==='investments'){
         html = `<section>
           <div class="list">
-            <button class="tile" onclick="openLink('https://www.google.com/search?q=%D7%90%D7%A4%D7%99%D7%A7%D7%99+%D7%94%D7%A9%D7%A7%D7%A2%D7%94+%D7%9E%D7%95%D7%9E%D7%9C%D7%A6%D7%99%D7%9D+%D7%9C%D7%98%D7%95%D7%95%D7%97+%D7%90%D7%A8%D7%95%D7%9A')">קישור: אפיקי ההשקעה הכי טובים וחכמים</button>
-            <button class="tile" onclick="openLink('https://www.google.com/search?q=%D7%9C%D7%9E%D7%94+%D7%9B%D7%93%D7%90%D7%99+%D7%9C%D7%97%D7%A1%D7%95%D7%9A+%D7%9E%D7%92%D7%99%D7%9C+%D7%A6%D7%A2%D7%99%D7%A8')">קישור: למה כדאי לחסוך מגיל צעיר ולהשקיע נכון</button>
+            <button class="tile" onclick="open('https://www.google.com/search?q=%D7%90%D7%A4%D7%99%D7%A7%D7%99+%D7%94%D7%A9%D7%A7%D7%A2%D7%94+%D7%9E%D7%95%D7%9E%D7%9C%D7%A6%D7%99%D7%9D+%D7%9C%D7%98%D7%95%D7%95%D7%97+%D7%90%D7%A8%D7%95%D7%9A','_blank')">קישור: אפיקי ההשקעה הכי טובים וחכמים</button>
+            <button class="tile" onclick="open('https://www.google.com/search?q=%D7%9C%D7%9E%D7%94+%D7%9B%D7%93%D7%90%D7%99+%D7%9C%D7%97%D7%A1%D7%95%D7%9A+%D7%9E%D7%92%D7%99%D7%9C+%D7%A6%D7%A2%D7%99%D7%A8','_blank')">קישור: למה כדאי לחסוך מגיל צעיר ולהשקיע נכון</button>
             <button class="btn btn-primary" onclick="App.push('summary')">סיום וסיכום</button>
           </div>
         </section>`;
@@ -191,11 +180,10 @@
           <h2>${strings.he.settings}</h2>
           <p class="hint">שם: ${u.firstName||'-'} • גיל: ${u.age||'-'} • יעד חודשי: ₪${u.goal||'-'} • מטרה: ${u.purpose||'-'}</p>
           <details style="margin:6px 0"><summary class="hint">${strings.he.terms_title}</summary><p class="hint">${strings.he.terms_text}</p></details>
-          <p class="hint">עדכון אחרון: ${new Date(LAST_UPDATED).toLocaleDateString('he-IL')}</p>
           <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn btn-outline" onclick="App.reset()">${strings.he.reset_all}</button></div>
         </section>`;
       }
-      el.innerHTML = html;
+      document.getElementById('app').innerHTML = html;
     }
   };
 
