@@ -1,35 +1,37 @@
 <!DOCTYPE html>
-<html lang="ה" dir="rtl">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>SKIPAPP</title>
-  <meta name="theme-color" content="#FF9E7D"/>
+  <meta name="theme-color" content="#FFD8BE"/>
   <link rel="manifest" href="/manifest.json"/>
   <link rel="apple-touch-icon" href="/icons/icon-180.png"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="SKIPAPP"/>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet"/>
   <style>
-    :root{--emerald:#0F766E; --coral:#FF9E7D; --sand:#FFF0E6; --ink:#1F2937; --muted:#6B7280; --border:#EAEAEA; --card:#FFFFFF}
+    :root{--cream:#FFF4E6; --peach:#FFD8BE; --blush:#F9C6C9; --sage:#DDE8D1; --lav:#E6D7FF; --sand:#EAD6C4; --coral:#F7BFB4; --mint:#D9F5E3; --honey:#F6D8AE; --text:#1A202C; --muted:#64748B; --card:#FFFFFF; --border:#E2E8F0; --accent:#06B6D4; --accent2:#4F46E5}
     *{box-sizing:border-box}
-    body{margin:0;color:var(--ink);font-family:system-ui; background:
-      radial-gradient(120% 140% at 0% 0%, rgba(255,158,125,.20) 0%, var(--sand) 40%),
-      linear-gradient(135deg, rgba(255,158,125,.18), rgba(255,127,80,.12));}
-    header{position:sticky; top:0; z-index:9; background:rgba(255,255,255,.85); backdrop-filter:blur(6px); border-bottom:1px solid var(--border)}
-    .topbar{max-width:860px;margin:0 auto;display:flex;gap:8px;align-items:center;padding:8px}
-    .iconbtn{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer}
-    .iconbtn svg{width:22px;height:22px;fill:var(--emerald)}
-    main{max-width:860px;margin:0 auto;padding:18px}
-    .card{background:#fff;border-radius:18px;padding:22px;border:1px solid var(--border)}
-    .btn{appearance:none;border:none;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700;min-height:44px}
-    .btn-primary{background:linear-gradient(135deg,var(--emerald),var(--coral)); color:#fff}
-    .tile{display:block;text-decoration:none;background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center;font-weight:700;color:var(--emerald)}
+    body{margin:0;color:var(--text);font-family:'Heebo',system-ui; background: var(--cream)}
+    header{position:sticky; top:0; z-index:10; background:rgba(255,255,255,.86); backdrop-filter:blur(8px); border-bottom:1px solid var(--border)}
+    .topbar{max-width:940px;margin:0 auto;display:flex;gap:8px;align-items:center;padding:10px}
+    .iconbtn{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer;box-shadow:0 6px 16px rgba(17,24,39,.08)}
+    .iconbtn svg{width:22px;height:22px;fill:#0F766E}
+    main{max-width:940px;margin:0 auto;padding:20px}
+    .card{background:var(--card);border-radius:16px;padding:22px;border:1px solid var(--border);box-shadow:0 10px 24px rgba(17,24,39,.08)}
+    .btn{appearance:none;border:none;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#fff;padding:12px 18px;cursor:pointer;font-weight:700; box-shadow:0 10px 24px rgba(79,70,229,.18)}
+    .tile{display:block;text-decoration:none;background:linear-gradient(180deg,#FFFFFF,#FAFAFF);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;font-weight:700;color:#0F766E;box-shadow:0 8px 18px rgba(17,24,39,.08)}
     .list{display:flex;flex-direction:column;gap:10px}
     .hint{color:var(--muted);font-size:.95rem}
-    .brandWrap{display:flex;flex-direction:column;align-items:center;gap:6px}
-    .brandName{font-weight:800;font-size:1.6rem;margin:0}
+    .brandWrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+    .brandName{font-weight:800;font-size:1.6rem;margin:0;color:#0F766E}
     .brandLogo{width:120px;height:120px}
+    table{width:100%;border-collapse:collapse}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px}
+    .stat{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{background:#F1F5F9;border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:.9rem}
   </style>
 </head>
 <body>
@@ -49,39 +51,42 @@
   <script>
   const strings={ he:{
     continue:'המשך', home:'בית', back:'חזרה', add_skip:'הוסף דילוג', history:'היסטוריה', insights:'תובנות', investments:'אפיקי השקעה', settings:'הגדרות',
-    amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור והמשך', reset_all:'איפוס והרשמה מחדש',
+    amount:'סכום (₪)', description:'תיאור', category:'קטגוריה', save:'שמור והמשך', reset_all:'איפוס נתונים',
     welcome_home:'ברוך שובך', register:'הרשמה', name:'שם', age:'גיל', goal:'יעד חיסכון חודשי (₪)', purpose:'מטרת חיסכון',
     purpose_opts:['השקעות','קניית נכס','חיסכון חכם','אחר'], start:'התחל', total:'שווי חיסכון מלא: ₪'
   }};
 
-  function formatDate(iso){ try{const d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleString('he-IL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return '—';}}
+  function formatDate(iso){ try{const d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleDateString('he-IL');}catch{return '—';}}
 
-  const App={ state:{screen:'home',history:[],user:null,lang:'he',data:[]},
+  const App={ state:{screen:'home',historyStack:[],user:null,lang:'he',data:[]},
     t(k){return strings[this.state.lang][k]||k},
-    push(s){this.state.history.push(this.state.screen); this.state.screen=s; this.render();},
-    goBack(){ if(this.state.history.length){ this.state.screen=this.state.history.pop(); this.render(); } else { this.goHome(); } },
+    push(s){this.state.historyStack.push(this.state.screen); this.state.screen=s; this.render();},
+    goBack(){ if(this.state.historyStack.length){ this.state.screen=this.state.historyStack.pop(); this.render(); } else { this.goHome(); } },
     goHome(){ this.state.screen='home'; this.render(); },
     saveUser(u){ localStorage.setItem('skipapp_user',JSON.stringify(u)); this.state.user=u; },
     saveData(){ localStorage.setItem('skipapp_data',JSON.stringify(this.state.data)); },
-    load(){ const u=localStorage.getItem('skipapp_user'); if(u){ this.state.user=JSON.parse(u); this.state.screen='home'; } else { this.state.screen='register'; } this.render(); },
+    exportCSV(){ const rows=this.state.data.slice().reverse(); const header=['תאריך','סכום','קטגוריה','תיאור']; const lines=[header.join(',')]; rows.forEach(r=>lines.push([formatDate(r.date),(r.amount||0),`"${r.category||''}"`,`"${(r.description||'').replace(/"/g,'"')}"`].join(','))); const blob=new Blob(["﻿"+lines.join('
+')],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href); },
+    exportJSON(){ const blob=new Blob([JSON.stringify(this.state.data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.json'; a.click(); URL.revokeObjectURL(a.href); },
+    reset(){ if(!confirm('לאפס את כל הנתונים?')) return; localStorage.removeItem('skipapp_data'); this.state.data=[]; this.saveData(); this.render(); },
+    load(){ const u=localStorage.getItem('skipapp_user'); if(u) this.state.user=JSON.parse(u); const d=localStorage.getItem('skipapp_data'); if(d) this.state.data=JSON.parse(d); if(!this.state.user){ this.state.screen='register'; } else { this.state.screen='home'; } this.render(); },
     addSkip(item){ this.state.data.push(item); this.saveData(); this.state.screen='history'; this.render(); },
     render(){ const el=document.getElementById('app'); let html=''; const total=this.state.data.reduce((s,x)=>s+(x.amount||0),0);
       if(this.state.screen==='register'){
         const u=this.state.user||{firstName:'',age:'',goal:0,purpose:''};
         const opts=strings.he.purpose_opts;
         html = `<section class="card">
-          <h2>${strings.he.register}</h2>
-          <p class="hint"><strong>קצת על SKIPAPP:</strong> האפליקציה הופכת דילוגים קטנים על הוצאות לחיסכון מודע. בכל דילוג מצטבר סכום מלא שניתן להפנות להשקעות חכמות בעתיד.</p>
+          <h2>הרשמה</h2>
+          <p class="hint">האפליקציה הופכת דילוגים קטנים על הוצאות לחיסכון מודע. ההיסטוריה נשמרת אוטומטית לכל כניסה ושימוש.</p>
           <label class="hint">${strings.he.name}</label>
-          <input id="fn" type="text" value="${u.firstName||''}" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;"/>
+          <input id="fn" type="text" value="${u.firstName||''}" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;"/>
           <label class="hint" style="margin-top:8px">${strings.he.age}</label>
-          <input id="age" type="number" min="10" max="99" value="${u.age||''}" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;"/>
+          <input id="age" type="number" min="10" max="99" value="${u.age||''}" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;"/>
           <label class="hint" style="margin-top:8px">${strings.he.goal}</label>
-          <input id="goal" type="number" min="0" value="${u.goal||''}" placeholder="1000" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;"/>
+          <input id="goal" type="number" min="0" value="${u.goal||''}" placeholder="1000" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;"/>
           <label class="hint" style="margin-top:8px">${strings.he.purpose}</label>
-          <select id="purpose" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;">${opts.map(o=>`<option>${o}</option>`).join('')}</select>
-          <details style="margin-top:8px"><summary class="hint">תנאי שימוש והצהרת אחריות</summary><p class="hint">האפליקציה מיועדת ללמידה ולהעצמה פיננסית בלבד ואינה מהווה ייעוץ השקעות. שימוש באפליקציה ובמידע בה באחריות המשתמש בלבד.</p></details>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="(function(){ const user={ firstName:document.getElementById('fn').value.trim(), age:parseInt(document.getElementById('age').value||0), goal:parseFloat(document.getElementById('goal').value||0), purpose:document.getElementById('purpose').value, registeredAt:new Date().toISOString() }; if(!user.firstName||!user.age||isNaN(user.goal)){ alert('אנא מלא/י את כל השדות'); return;} App.saveUser(user); App.goHome(); })()">${strings.he.start}</button></div>
+          <select id="purpose" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;">${opts.map(o=>`<option>${o}</option>`).join('')}</select>
+          <div style="margin-top:12px"><button class="btn" onclick="(function(){ const user={ firstName:document.getElementById('fn').value.trim(), age:parseInt(document.getElementById('age').value||0), goal:parseFloat(document.getElementById('goal').value||0), purpose:document.getElementById('purpose').value, registeredAt:new Date().toISOString() }; if(!user.firstName||!user.age||isNaN(user.goal)){ alert('אנא מלא/י את כל השדות'); return;} App.saveUser(user); App.goHome(); })()">${strings.he.start}</button></div>
         </section>`;
       }
       else if(this.state.screen==='home'){
@@ -93,11 +98,11 @@
           </div>
           <img src="images/hero.jpg" alt="SKIPAPP" style="width:100%;border-radius:12px;margin-top:8px"/>
           <div class="list" style="margin-top:12px">
-            <button class="tile" onclick="App.push('addSkip')">${strings.he.add_skip}</button>
-            <button class="tile" onclick="App.push('history')">${strings.he.history}</button>
-            <button class="tile" onclick="App.push('insights')">${strings.he.insights}</button>
-            <button class="tile" onclick="App.push('investments')">${strings.he.investments}</button>
-            <button class="tile" onclick="App.push('settings')">${strings.he.settings}</button>
+            <a class="tile" href="#" onclick="App.push('addSkip')">${strings.he.add_skip}</a>
+            <a class="tile" href="#" onclick="App.push('history')">${strings.he.history}</a>
+            <a class="tile" href="#" onclick="App.push('insights')">${strings.he.insights}</a>
+            <a class="tile" href="#" onclick="App.push('investments')">${strings.he.investments}</a>
+            <a class="tile" href="#" onclick="App.push('settings')">${strings.he.settings}</a>
           </div>
           <p class="hint" style="margin-top:8px">${strings.he.total}${total.toFixed(2)}</p>
         </section>`;
@@ -106,53 +111,61 @@
         html = `<section class="card">
           <h2>${strings.he.add_skip}</h2>
           <label class="hint">${strings.he.amount}</label>
-          <input id="amt" type="number" min="1" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;"/>
+          <input id="amt" type="number" min="1" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;"/>
           <label class="hint" style="margin-top:8px">${strings.he.description}</label>
-          <input id="desc" type="text" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;"/>
+          <input id="desc" type="text" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;"/>
           <label class="hint" style="margin-top:8px">${strings.he.category}</label>
-          <select id="cat" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;">
+          <select id="cat" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;">
             <option>אוכל ושתייה</option><option>אופנה</option><option>בילויים</option><option>טכנולוגיה</option>
             <option>יופי וטיפוח</option><option>תחבורה</option><option>מנויים</option><option>קניות אימפולסיביות</option>
             <option>חברתי</option><option>אחר</option>
           </select>
-          <p class="hint" style="margin-top:10px">כסף שנצבר להשקעות באפיקים המתאימים לך.</p>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="(function(){ const item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() }; if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;} App.addSkip(item); })()">${strings.he.save}</button></div>
+          <p class="hint" style="margin-top:10px">הנתונים נשמרים אוטומטית ומצטברים לכל כניסה.</p>
+          <div style="margin-top:12px"><button class="btn" onclick="(function(){ const item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() }; if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;} App.addSkip(item); })()">${strings.he.save}</button></div>
         </section>`;
       }
       else if(this.state.screen==='history'){
         const rows=this.state.data.slice().reverse();
         html = `<section class="card">
           <h2>${strings.he.history}</h2>
-          <div style="margin-top:8px">
-            <table style="width:100%;border-collapse:collapse">
+          <div class="stat"><span class="chip">סך הכל: ₪${total.toFixed(2)}</span><button class="btn" onclick="App.exportCSV()">ייצוא CSV</button><button class="btn" style="background:linear-gradient(90deg,var(--honey),var(--peach));color:#1F2937" onclick="App.exportJSON()">ייצוא JSON</button></div>
+          <div style="margin-top:10px">
+            <table>
               <thead><tr style="background:#fff6f2"><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">תאריך</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">סכום (₪)</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">קטגוריה</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">תיאור</th></tr></thead>
               <tbody>
                 ${ rows.length ? rows.map(s=>`<tr><td style='padding:8px;border-bottom:1px solid #eee'>${formatDate(s.date)}</td><td style='padding:8px;border-bottom:1px solid #eee'>${(s.amount||0).toFixed(2)}</td><td style='padding:8px;border-bottom:1px solid #eee'>${s.category||'-'}</td><td style='padding:8px;border-bottom:1px solid #eee'>${s.description||'-'}</td></tr>`).join('') : `<tr><td colspan='4' class='hint' style='padding:8px'>אין רישומים עדיין</td></tr>` }
               </tbody>
             </table>
           </div>
-          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="App.push('insights')">${strings.he.continue}</button>
-          </div>
         </section>`;
       }
       else if(this.state.screen==='insights'){
-        const totalSaved=this.state.data.reduce((s,x)=>s+(x.amount||0),0);
-        const msg = totalSaved>100 ? 'כבר ניתן להתחיל לחסוך ולהשקיע.' : 'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.';
+        const totalSaved=total; const msg = totalSaved>100 ? 'כבר ניתן להתחיל לחסוך ולהשקיע.' : 'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.';
         html = `<section class="card">
           <h2>${strings.he.insights}</h2>
           <p class="hint">שווי חיסכון מלא: ₪${totalSaved.toFixed(2)}</p>
           <p class="hint">${msg}</p>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="App.push('investments')">${strings.he.continue}</button></div>
+          <div style="margin-top:12px"><button class="btn" onclick="App.push('investments')">${strings.he.continue}</button></div>
         </section>`;
       }
       else if(this.state.screen==='investments'){
-        html = `<section>
-          <div class="list">
+        html = `<section class="card">
+          <h2>אפיקי השקעה · ריבית דריבית</h2>
+          <div class="grid" style="margin-top:8px">
             <a class="tile" href="https://www.google.com/search?q=%D7%90%D7%A4%D7%99%D7%A7%D7%99+%D7%94%D7%A9%D7%A7%D7%A2%D7%94+%D7%9E%D7%95%D7%9E%D7%9C%D7%A6%D7%99%D7%9D+%D7%9C%D7%98%D7%95%D7%95%D7%97+%D7%90%D7%A8%D7%95%D7%9A" target="_blank" rel="noopener noreferrer">אפיקי ההשקעה הכי טובים וחכמים</a>
             <a class="tile" href="https://www.google.com/search?q=%D7%9C%D7%9E%D7%94+%D7%9B%D7%93%D7%90%D7%99+%D7%9C%D7%97%D7%A1%D7%95%D7%9A+%D7%9E%D7%92%D7%99%D7%9C+%D7%A6%D7%A2%D7%99%D7%A8" target="_blank" rel="noopener noreferrer">למה כדאי לחסוך מגיל צעיר ולהשקיע נכון</a>
-            <button class="btn btn-primary" onclick="App.push('summary')">סיום וסיכום</button>
+            <a class="tile" href="https://he.wikipedia.org/wiki/%D7%A8%D7%99%D7%91%D7%99%D7%AA_%D7%93%D7%A8%D7%91%D7%99%D7%AA" target="_blank" rel="noopener noreferrer">ריבית דריבית — ויקיפדיה (עברית)</a>
+            <a class="tile" href="https://www.boi.org.il/information/bankipedia/centralbank/%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/" target="_blank" rel="noopener noreferrer">בנק ישראל — בנקיפדיה (ריבית דריבית)</a>
+            <a class="tile" href="https://terms.hebrew-academy.org.il/munnah/28672_2/compound%20interest" target="_blank" rel="noopener noreferrer">האקדמיה ללשון — המונח “ריבית דריבית”</a>
+            <a class="tile" href="https://www.investors.isa.gov.il/nav-index/nav-bar/Compound-Interest" target="_blank" rel="noopener noreferrer">הרשות לניירות ערך — ריבית דריבית למשקיעים</a>
+            <a class="tile" href="https://financa.co.il/%d7%a8%d7%99%d7%91%d7%99%d7%aa-%d7%93%d7%a8%d7%91%d7%99%d7%aa-%d7%90%d7%99%d7%9a-%d7%9e%d7%97%d7%a9%d7%91%d7%99%d7%9d-%d7%95%d7%9c%d7%9e%d7%94-%d7%9e%d7%a9%d7%a7%d7%99%d7%a2%d7%99%d7%9d-%d7%a2/" target="_blank" rel="noopener noreferrer">Financa — מדריך ריבית דריבית</a>
+            <a class="tile" href="https://berki.co.il/%D7%9E%D7%97%D7%A9%D7%91%D7%95%D7%9F-%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/" target="_blank" rel="noopener noreferrer">Berki — מחשבון ריבית דריבית</a>
+            <a class="tile" href="https://www.investopedia.com/terms/c/compoundinterest.asp" target="_blank" rel="noopener noreferrer">Investopedia — Compound Interest</a>
+            <a class="tile" href="https://www.investor.gov/financial-tools-calculators/calculators/compound-interest-calculator" target="_blank" rel="noopener noreferrer">Investor.gov — Compound Interest Calculator</a>
+            <a class="tile" href="https://www.khanacademy.org/economics-finance-domain/core-finance/interest-tutorial/compound-interest-tutorial/v/introduction-to-compound-interest" target="_blank" rel="noopener noreferrer">Khan Academy — Introduction to Compound Interest</a>
+            <a class="tile" href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener noreferrer">Wikipedia — Compound Interest</a>
           </div>
+          <div style="margin-top:12px"><button class="btn" onclick="App.push('summary')">סיום וסיכום</button></div>
         </section>`;
       }
       else if(this.state.screen==='summary'){
@@ -162,11 +175,21 @@
           <p class="hint">מספר דילוגים: ${count}</p>
           <p class="hint">שווי חיסכון מלא: ₪${totalSaved.toFixed(2)}</p>
           <p class="hint">מטרה: ${this.state.user?.purpose||'-'}</p>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="App.goHome()">חזרה למסך הבית</button></div>
+          <div style="margin-top:12px"><button class="btn" onclick="App.goHome()">חזרה למסך הבית</button></div>
         </section>`;
         setTimeout(()=>App.goHome(), 3500);
       }
-      document.getElementById('app').innerHTML = html;
+      else if(this.state.screen==='settings'){
+        const u=this.state.user||{firstName:'',age:'',goal:'',purpose:''};
+        html = `<section class="card">
+          <h2>${strings.he.settings}</h2>
+          <p class="hint">שם: ${u.firstName||'-'} • גיל: ${u.age||'-'} • יעד חודשי: ₪${u.goal||'-'} • מטרה: ${u.purpose||'-'}</p>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn" style="background:linear-gradient(90deg,var(--honey),var(--peach));color:#1F2937" onclick="App.reset()">${strings.he.reset_all}</button>
+          </div>
+        </section>`;
+      }
+      el.innerHTML = html;
     }
   };
 
