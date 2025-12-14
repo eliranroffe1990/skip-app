@@ -1,6 +1,6 @@
 
-// SKIPAPP Service Worker v4.7.1 (fix activate parenthesis + relative paths)
-const CACHE='skipapp-v4.7.1';
+// SKIPAPP Service Worker v4.7.2 (roll-up)
+const CACHE='skipapp-v4.7.2';
 const CORE=['.','index.html','manifest.json','icons/icon-192.png','icons/icon-512.png','icons/icon-180.png','images/hero.jpg','images/play_logo.png'];
 self.addEventListener('install',e=>{self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{const keys=await caches.keys(); await Promise.all(keys.map(k=>k!==CACHE&&caches.delete(k)));})()); self.clients.claim();});
