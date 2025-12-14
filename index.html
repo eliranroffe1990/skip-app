@@ -11,7 +11,7 @@
 
   <!-- קבצים יחסיים חשובים ל-GitHub Pages -->
   manifest.json
-  <!-- אם התיקייה אצלך נקראת icons/ – שנה ל-icons/icon-180.png -->
+  <!-- אם תיקיית האיקונים אצלך היא icons/ – שנה כאן ל-icons/icon-180.png -->
   icon/icon-180.png
 
   <!-- הגדרות PWA ל-iOS -->
@@ -180,15 +180,14 @@
         html = `<section class="card" style="text-align:center">
           <div class="brandWrap">
             <h2 class="brandName">SKIPAPP${name?` · ${strings.he.welcome_home} ${name}`:''}</h2>
-            images/play_logo.png
+            ./images/play_logo.png
           </div>
-          images/hero.jpg
-          <div class="list" style="margin-top:12px">
-            #${strings.he.add_skip}</a>
-            #${strings.he.history}</a>
-            #${strings.he.insights}</a>
-            #${strings.he.investments}</a>
-            #${strings.he.settings}</a>
+          <img src="./images/hero.jpg" alt="SKIPAPP" style="width:100%;border-radius:12px;margin-top:8px"
+                        javascript:void(0)${strings.he.add_skip}</a>
+            javascript:void(0)${strings.he.history}</a>
+            javascript:void(0)${strings.he.insights}</a>
+            javascript:void(0)${strings.he.investments}</a>
+            javascript:void(0)${strings.he.settings}</a>
           </div>
           <p class="hint" style="margin-top:8px">${strings.he.total}${total.toFixed(2)}</p>
         </section>`;
@@ -266,17 +265,18 @@
         html = `<section class="card">
           <h2>אפיקי השקעה · ריבית דריבית</h2>
           <div class="grid" style="margin-top:8px">
-            https://www.google.com/search?q=%D7%90%D7%A4%D7%99%D7%A7%D7%99+%D7%94%D7%A9%D7%A7%D7%A2%D7%94+%D7%9E%D7%95%D7%9E%D7%9C%D7%A6%D7%99%D7%9D+%D7%9C%D7%98%D7%95%D7%95%D7%97+%D7%90%D7%A8%D7%95%D7%9Aאפיקי ההשקעה הכי טובים וחכמים</a>
-            https://www.google.com/search?q=%D7%9C%D7%9E%D7%94+%D7%9B%D7%93%D7%90%D7%99+%D7%9C%D7%97%D7%A1%D7%95%D7%9A+%D7%9E%D7%92%D7%99%D7%9C+%D7%A6%D7%A2%D7%99%D7%A8למה כדאי לחסוך מגיל צעיר ולהשקיע נכון</a>
-            <a class="tile" href="https://he.wikipedia.org/wiki/%D7%A8%D7%99%D7%91%D7%99%D7%AA_%D7D7%AAריבית דריבית — ויקיפדיה (עברית)</a>
-            https://www.boi.org.il/information/bankipedia/centralbank/%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/בנק ישראל — בנקיפדיה (ריבית דריבית)</a>
-            https://terms.hebrew-academy.org.il/munnah/28672_2/compound%20interestהאקדמיה ללשון — המונח “ריבית דריבית”</a>
-            https://www.investors.isa.gov.il/nav-index/nav-bar/Compound-Interestהרשות לניירות ערך — ריבית דריבית למשקיעים</a>
-            <a class="tile" href="https://financa.co.il/%d7%a8%d7%99%d7%91%d7%99%d7%aa-%d7%93%d7%a8%d7%91%d7%99%d7%aa-%d7%90%d7%99%d7%9a-%d7%9e%d7%97%d7%a9%d7%91%d7%99%de%d7%94-%d7%9e%d7%a9%d7%a7%d7%99%d7%a2%d7%99%d7%9d-%d7%a2/Financa — מדריך ריבית דריבית</a>
-            https://berki.co.il/%D7%9E%D7%97%D7%A9%D7%91%D7%95%D7%9F-%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/Berki — מחשבון ריבית דריבית</a>
-            https://www.investopedia.com/terms/c/compoundinterest.aspInvestopedia — Compound Interest</a>
-            https://www.investor.gov/financial-tools-calculators/calculators/compound-interest-calculatorInvestor.gov — Compound Interest Calculator</a>
-            <a class="tile" href="https://www.khanacademy.org/economics-finance-domain/core-finance/interest-tutorial/compound-interest-tutorial/v/introduction-to-compound-interest" target="_blank" rel="noopener            <a class="tile" href="https://www.khanacademy.org/economics-finance-domain/core-finance/interest-tutorial/compound-interest-tutorial/v/introduction-to-compound-interest" target="_blank" rel="noopener            https://en.wikipedia.org/wiki/Compound_interestWikipedia — Compound Interest</a>
+            javascript:void(0)אפיקי ההשקעה הכי טובים וחכמים</a>
+            <a class=":void(0)למה כדאי לחסוך מגיל צעיר ולהשקיע נכון</a>
+            javascript:void(0)ריבית דריבית — ויקיפדיה (עברית)</a>
+            javascript:void(0)בנק ישראל — בנקיפדיה (ריבית דריבית)</a>
+            javascript:void(0)האקדמיה ללשון — המונח “ריבית דריבית”</a>
+            javascript:void(0)הרשות לניירות ערך — ריבית דריבית למשקיעים</a>
+            javascript:void(0)Financa — מדריך ריבית דריבית</a>
+            javascript:void(0)Berki — מחשבון ריבית דריבית</a>
+            <a classpt:void(0)Investopedia — Compound Interest</a>
+            javascript:void(0)Investor.gov — Compound Interest Calculator</a>
+            javascript:void(0)Khan Academy — Introduction to Compound Interest</a>
+            javascript:void(0)Wikipedia — Compound Interest</a>
           </div>
           <div style="margin-top:12px"><button class="btn" onclick="App.push('summary')">סיום וסיכום</button></div>
         </section>`;
@@ -285,7 +285,7 @@
         const count=this.state.data.length; const totalSaved=this.state.data.reduce((s,x)=>s+(x.amount||0),0);
         html = `<section class="card" style="text-align:center">
           <h2>סיכום</h2>
-          <p class="hint">מספר דילוגים: ${count}</p>
+          <p class="hint">מספר דילוג          <p class="hint">מספר דילוגים: ${count}</p>
           <p class="hint">שווי חיסכון מלא: ₪${totalSaved.toFixed(2)}</p>
           <p class="hint">מטרה: ${this.state.user?.purpose||'-'}</p>
           <div style="margin-top:12px"><button class="btn" onclick="App.goHome()">חזרה למסך הבית</button></div>
