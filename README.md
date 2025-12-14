@@ -1,17 +1,19 @@
-# SKIPAPP – Patch v4.7 (LICENSE + README)
+[README.md](https://github.com/user-attachments/files/24149778/README.md)
+# SKIPAPP – אפליקציית חיסכון מודע (v4.7.2)
 
-חבילה זו נועדה להוסיף קובץ `LICENSE` (MIT) לריפו שלך ולהחליף/לשדרג README קצר.
+גרסת Roll-up מלאה: נתיבים יחסיים, Service Worker מתוקן (`activate`), גרסת CACHE `skipapp-v4.7.2`,
+עיצוב פסטל חמים, היסטוריה מצטברת עם ייצוא CSV/JSON, ומסך "אפיקי השקעה" מעודכן.
 
-## מה כולל ה-Patch
-- `LICENSE` – רישיון MIT מעודכן לשנת 2025.
-- `README.md` – תיאור תמציתי של הגרסה v4.7 והנחיות פריסה ב-GitHub Pages.
+## פריסה (GitHub Pages)
+1. העלה את כל הקבצים לשורש הריפו (`main`).
+2. Settings → Pages → Source: `main` / `root`.
+3. פתח: `https://<user>.github.io/skip-app/`.
+4. אחרי עדכון: DevTools → Application → Service Workers → **Unregister** → רענון קשיח (Ctrl+Shift+R).
 
-## פריסה מהירה
-1. העלה את שני הקבצים הללו לשורש הריפו `skip-app/`.
-2. בצע Commit ל-`main`.
-3. רענון קשיח בדפדפן: `Ctrl + Shift + R`.
-4. אם יש Service Worker ישן: DevTools → Application → Service Workers → Unregister → רענון.
+## שימוש
+- הוסף דילוג → ההיסטוריה נשמרת מקומית (localStorage).
+- היסטוריה → סכום נצבר + ייצוא JSON/CSV.
+- אפיקי השקעה → קישורים איכותיים בעברית/אנגלית (target="_blank").
 
-## הערות
-- הגרסה v4.7 משתמשת בנתיבים יחסיים לכל הנכסים, ומגינה על נתוני localStorage בקריאה בטוחה.
-- אם תוסיף קבצים/תיקיות נוספים, אין צורך לשנות את הרישיון.
+## רישוי
+MIT – ראו `LICENSE`.
