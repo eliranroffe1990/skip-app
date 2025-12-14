@@ -70,9 +70,7 @@
     exportJSON(){ const blob=new Blob([JSON.stringify(this.state.data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.json'; a.click(); URL.revokeObjectURL(a.href); },
     reset(){ if(!confirm('לאפס את כל הנתונים?')) return; localStorage.removeItem('skipapp_data'); this.state.data=[]; this.saveData(); this.render(); },
     load(){
-      // parse user defensively
       try{ const u=localStorage.getItem('skipapp_user'); this.state.user = u ? JSON.parse(u) : null; } catch(e){ console.warn('user parse failed', e); localStorage.removeItem('skipapp_user'); this.state.user=null; }
-      // parse data defensively
       try{ const d=localStorage.getItem('skipapp_data'); const arr = d ? JSON.parse(d) : []; this.state.data = Array.isArray(arr) ? arr : []; } catch(e){ console.warn('data parse failed', e); localStorage.removeItem('skipapp_data'); this.state.data=[]; }
       this.state.screen = this.state.user ? 'home' : 'register';
       this.render();
@@ -165,7 +163,7 @@
             <a class="tile" href="https://www.boi.org.il/information/bankipedia/centralbank/%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/" target="_blank" rel="noopener noreferrer">בנק ישראל — בנקיפדיה (ריבית דריבית)</a>
             <a class="tile" href="https://terms.hebrew-academy.org.il/munnah/28672_2/compound%20interest" target="_blank" rel="noopener noreferrer">האקדמיה ללשון — המונח “ריבית דריבית”</a>
             <a class="tile" href="https://www.investors.isa.gov.il/nav-index/nav-bar/Compound-Interest" target="_blank" rel="noopener noreferrer">הרשות לניירות ערך — ריבית דריבית למשקיעים</a>
-            <a class="tile" href="https://financa.co.il/%d7%a8%d7%99%d7%91%d7%99%d7%aa-%d7%93%d7%a8%d7%91%d7%99%d7%aa-%d7%90%d7%99%d7%9a-%d7%9e%d7%97%d7%a9%d7%91%d7%99%d7%9d-%d7%95%d7%9c%d7%9e%d7%94-%d7%9e%d7%a9%d7%a7%d7%99%d7%a2%d7%99%d7%9d-%d7%a2/" target="_blank" rel="noopener noreferrer">Financa — מדריך ריבית דריבית</a>
+            <a class="tile" href="https://financa.co.il/%d7%a8%d7%99%d7%91%d7%99%d7%aa-%d7%93%d7%a8%d7%91%d7%99%d7%aa-%d7%90%d7%99%d7%9a-%d7%9e%d7%97%d7%a9%d7%91%d7%99%d7%9d-%d7%95%d7%9C%d7%9e%d7%94-%d7%9e%d7%a9%d7%a7%d7%99%d7%a2%d7%99%d7%9d-%d7%a2/" target="_blank" rel="noopener noreferrer">Financa — מדריך ריבית דריבית</a>
             <a class="tile" href="https://berki.co.il/%D7%9E%D7%97%D7%A9%D7%91%D7%95%D7%9F-%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/" target="_blank" rel="noopener noreferrer">Berki — מחשבון ריבית דריבית</a>
             <a class="tile" href="https://www.investopedia.com/terms/c/compoundinterest.asp" target="_blank" rel="noopener noreferrer">Investopedia — Compound Interest</a>
             <a class="tile" href="https://www.investor.gov/financial-tools-calculators/calculators/compound-interest-calculator" target="_blank" rel="noopener noreferrer">Investor.gov — Compound Interest Calculator</a>
