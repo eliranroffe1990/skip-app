@@ -1,28 +1,53 @@
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>SKIPAPP</title>
+
+  <!-- צבע נושא לפסטל חמים -->
   <meta name="theme-color" content="#FFD8BE"/>
-  <link rel="manifest" href="manifest.json"/>
-  <link rel="apple-touch-icon" href="icons/icon-180.png"/>
+
+  <!-- קבצים יחסיים חשובים ל-GitHub Pages -->
+  manifest.json
+  <!-- אם התיקייה אצלך נקראת icons/ – שנה ל-icons/icon-180.png -->
+  icon/icon-180.png
+
+  <!-- הגדרות PWA ל-iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="SKIPAPP"/>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet"/>
+
+  <!-- פונט -->
+  https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap
+
+  <!-- סגנון פסטלי חמים -->
   <style>
-    :root{--cream:#FFF4E6; --peach:#FFD8BE; --blush:#F9C6C9; --sage:#DDE8D1; --lav:#E6D7FF; --sand:#EAD6C4; --coral:#F7BFB4; --mint:#D9F5E3; --honey:#F6D8AE; --text:#1A202C; --muted:#64748B; --card:#FFFFFF; --border:#E2E8F0; --accent:#06B6D4; --accent2:#4F46E5}
+    :root{
+      --cream:#FFF4E6; --peach:#FFD8BE; --blush:#F9C6C9; --sage:#DDE8D1; --lav:#E6D7FF;
+      --sand:#EAD6C4; --coral:#F7BFB4; --mint:#D9F5E3; --honey:#F6D8AE;
+      --text:#1A202C; --muted:#64748B; --card:#FFFFFF; --border:#E2E8F0;
+      --accent:#06B6D4; --accent2:#4F46E5
+    }
     *{box-sizing:border-box}
-    body{margin:0;color:var(--text);font-family:'Heebo',system-ui; background: var(--cream)}
-    header{position:sticky; top:0; z-index:10; background:rgba(255,255,255,.86); backdrop-filter:blur(8px); border-bottom:1px solid var(--border)}
+    body{margin:0;color:var(--text);font-family:'Heebo',system-ui; background:var(--cream)}
+    header{position:sticky; top:0; z-index:10; background:rgba(255,255,255,.86);
+      backdrop-filter:blur(8px); border-bottom:1px solid var(--border)}
     .topbar{max-width:940px;margin:0 auto;display:flex;gap:8px;align-items:center;padding:10px}
-    .iconbtn{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer;box-shadow:0 6px 16px rgba(17,24,39,.08)}
+    .iconbtn{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;
+      cursor:pointer;box-shadow:0 6px 16px rgba(17,24,39,.08)}
     .iconbtn svg{width:22px;height:22px;fill:#0F766E}
     main{max-width:940px;margin:0 auto;padding:20px}
-    .card{background:var(--card);border-radius:16px;padding:22px;border:1px solid var(--border);box-shadow:0 10px 24px rgba(17,24,39,.08)}
-    .btn{appearance:none;border:none;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#fff;padding:12px 18px;cursor:pointer;font-weight:700; box-shadow:0 10px 24px rgba(79,70,229,.18)}
-    .tile{display:block;text-decoration:none;background:linear-gradient(180deg,#FFFFFF,#FAFAFF);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;font-weight:700;color:#0F766E;box-shadow:0 8px 18px rgba(17,24,39,.08)}
+    .card{background:var(--card);border-radius:16px;padding:22px;border:1px solid var(--border);
+      box-shadow:0 10px 24px rgba(17,24,39,.08)}
+    .btn{appearance:none;border:none;border-radius:999px;
+      background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#fff;
+      padding:12px 18px;cursor:pointer;font-weight:700;
+      box-shadow:0 10px 24px rgba(79,70,229,.18)}
+    .tile{display:block;text-decoration:none;background:linear-gradient(180deg,#FFFFFF,#FAFAFF);
+      border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;
+      font-weight:700;color:#0F766E;box-shadow:0 8px 18px rgba(17,24,39,.08)}
     .list{display:flex;flex-direction:column;gap:10px}
     .hint{color:var(--muted);font-size:.95rem}
     .brandWrap{display:flex;flex-direction:column;align-items:center;gap:8px}
@@ -48,6 +73,33 @@
 
   <main id="app"></main>
 
+  <!-- דיאגנוסטיקה לשגיאות: מציגה כל שגיאה על המסך וגם ב-Console -->
+  <script>
+    (function installDiagnostics() {
+      const boxStyle =
+        "position:fixed;right:12px;bottom:12px;max-width:60vw;z-index:9999;" +
+        "background:#fff;border:1px solid #e11d48;border-radius:10px;padding:10px;" +
+        "box-shadow:0 10px 24px rgba(17,24,39,.12);direction:ltr;font:12px/1.3 ui-monospace,Consolas,monospace;";
+      const box = document.createElement('div');
+      box.id = '_diag';
+      box.style = boxStyle + 'display:none;';
+      document.addEventListener('DOMContentLoaded', ()=>document.body.appendChild(box));
+
+      function show(msg) {
+        box.style.display = 'block';
+        const p = document.createElement('div');
+        p.textContent = msg;
+        box.appendChild(p);
+        console.error('[SKIPAPP]', msg);
+      }
+      window.addEventListener('error', (e) => show(e.message || e.error || 'Error'));
+      window.addEventListener('unhandledrejection', (e) => show('Promise: ' + (e.reason?.message || e.reason || 'unhandledrejection')));
+
+      console.log('[SKIPAPP] Diagnostics installed');
+    })();
+  </script>
+
+  <!-- אפליקציה -->
   <script>
   const strings={ he:{
     continue:'המשך', home:'בית', back:'חזרה', add_skip:'הוסף דילוג', history:'היסטוריה', insights:'תובנות', investments:'אפיקי השקעה', settings:'הגדרות',
@@ -56,27 +108,48 @@
     purpose_opts:['השקעות','קניית נכס','חיסכון חכם','אחר'], start:'התחל', total:'שווי חיסכון מלא: ₪'
   }};
 
-  function formatDate(iso){ try{const d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleDateString('he-IL');}catch{return '—';}}
+  function formatDate(iso){
+    try{const d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleDateString('he-IL');}
+    catch{return '—';}
+  }
 
-  const App={ state:{screen:'home',historyStack:[],user:null,lang:'he',data:[]},
+  const App={
+    state:{screen:'home',historyStack:[],user:null,lang:'he',data:[]},
     t(k){return strings[this.state.lang][k]||k},
     push(s){this.state.historyStack.push(this.state.screen); this.state.screen=s; this.render();},
     goBack(){ if(this.state.historyStack.length){ this.state.screen=this.state.historyStack.pop(); this.render(); } else { this.goHome(); } },
     goHome(){ this.state.screen='home'; this.render(); },
     saveUser(u){ localStorage.setItem('skipapp_user',JSON.stringify(u)); this.state.user=u; },
     saveData(){ localStorage.setItem('skipapp_data',JSON.stringify(this.state.data)); },
-    exportCSV(){ const rows=this.state.data.slice().reverse(); const header=['תאריך','סכום','קטגוריה','תיאור']; const lines=[header.join(',')]; rows.forEach(r=>lines.push([formatDate(r.date),(r.amount||0),`"${r.category||''}"`,`"${(r.description||'').replace(/"/g,'"')}"`].join(','))); const blob=new Blob(["﻿"+lines.join('
-')],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href); },
-    exportJSON(){ const blob=new Blob([JSON.stringify(this.state.data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.json'; a.click(); URL.revokeObjectURL(a.href); },
-    reset(){ if(!confirm('לאפס את כל הנתונים?')) return; localStorage.removeItem('skipapp_data'); this.state.data=[]; this.saveData(); this.render(); },
+    exportCSV(){
+      const rows=this.state.data.slice().reverse(); const header=['תאריך','סכום','קטגוריה','תיאור']; const lines=[header.join(',')];
+      rows.forEach(r=>lines.push([formatDate(r.date),(r.amount||0),`"${r.category||''}"`,`"${(r.description||'').replace(/"/g,'\\"')}"`].join(',')));
+      const blob=new Blob(["\ufeff"+lines.join('\n')],{type:'text/csv;charset=utf-8;'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href);
+    },
+    exportJSON(){
+      const blob=new Blob([JSON.stringify(this.state.data,null,2)],{type:'application/json'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.json'; a.click(); URL.revokeObjectURL(a.href);
+    },
+    reset(){
+      if(!confirm('לאפס את כל הנתונים?')) return;
+      localStorage.removeItem('skipapp_data'); this.state.data=[]; this.saveData(); this.render();
+    },
     load(){
-      try{ const u=localStorage.getItem('skipapp_user'); this.state.user = u ? JSON.parse(u) : null; } catch(e){ console.warn('user parse failed', e); localStorage.removeItem('skipapp_user'); this.state.user=null; }
-      try{ const d=localStorage.getItem('skipapp_data'); const arr = d ? JSON.parse(d) : []; this.state.data = Array.isArray(arr) ? arr : []; } catch(e){ console.warn('data parse failed', e); localStorage.removeItem('skipapp_data'); this.state.data=[]; }
+      // קריאה בטוחה מ-localStorage כדי לא ליפול בגלל JSON פגום
+      try{ const u=localStorage.getItem('skipapp_user'); this.state.user = u ? JSON.parse(u) : null; }
+      catch(e){ console.warn('user parse failed', e); localStorage.removeItem('skipapp_user'); this.state.user=null; }
+      try{ const d=localStorage.getItem('skipapp_data'); const arr = d ? JSON.parse(d) : []; this.state.data = Array.isArray(arr) ? arr : []; }
+      catch(e){ console.warn('data parse failed', e); localStorage.removeItem('skipapp_data'); this.state.data=[]; }
+
       this.state.screen = this.state.user ? 'home' : 'register';
       this.render();
     },
     addSkip(item){ this.state.data.push(item); this.saveData(); this.state.screen='history'; this.render(); },
-    render(){ const el=document.getElementById('app'); let html=''; const total=this.state.data.reduce((s,x)=>s+(x.amount||0),0);
+    render(){
+      const el=document.getElementById('app'); let html='';
+      const total=this.state.data.reduce((s,x)=>s+(x.amount||0),0);
+
       if(this.state.screen==='register'){
         const u=this.state.user||{firstName:'',age:'',goal:0,purpose:''};
         const opts=strings.he.purpose_opts;
@@ -91,7 +164,15 @@
           <input id="goal" type="number" min="0" value="${u.goal||''}" placeholder="1000" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;"/>
           <label class="hint" style="margin-top:8px">${strings.he.purpose}</label>
           <select id="purpose" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;">${opts.map(o=>`<option>${o}</option>`).join('')}</select>
-          <div style="margin-top:12px"><button class="btn" onclick="(function(){ const user={ firstName:document.getElementById('fn').value.trim(), age:parseInt(document.getElementById('age').value||0), goal:parseFloat(document.getElementById('goal').value||0), purpose:document.getElementById('purpose').value, registeredAt:new Date().toISOString() }; if(!user.firstName||!user.age||isNaN(user.goal)){ alert('אנא מלא/י את כל השדות'); return;} App.saveUser(user); App.goHome(); })()">${strings.he.start}</button></div>
+          <div style="margin-top:12px"><button class="btn" onclick="(function(){
+            const user={ firstName:document.getElementById('fn').value.trim(),
+              age:parseInt(document.getElementById('age').value||0),
+              goal:parseFloat(document.getElementById('goal').value||0),
+              purpose:document.getElementById('purpose').value,
+              registeredAt:new Date().toISOString() };
+            if(!user.firstName||!user.age||isNaN(user.goal)){ alert('אנא מלא/י את כל השדות'); return;}
+            App.saveUser(user); App.goHome();
+          })()">${strings.he.start}</button></div>
         </section>`;
       }
       else if(this.state.screen==='home'){
@@ -99,15 +180,15 @@
         html = `<section class="card" style="text-align:center">
           <div class="brandWrap">
             <h2 class="brandName">SKIPAPP${name?` · ${strings.he.welcome_home} ${name}`:''}</h2>
-            <img src="images/play_logo.png" alt="PLAY" class="brandLogo"/>
+            images/play_logo.png
           </div>
-          <img src="images/hero.jpg" alt="SKIPAPP" style="width:100%;border-radius:12px;margin-top:8px"/>
+          images/hero.jpg
           <div class="list" style="margin-top:12px">
-            <a class="tile" href="#" onclick="App.push('addSkip')">${strings.he.add_skip}</a>
-            <a class="tile" href="#" onclick="App.push('history')">${strings.he.history}</a>
-            <a class="tile" href="#" onclick="App.push('insights')">${strings.he.insights}</a>
-            <a class="tile" href="#" onclick="App.push('investments')">${strings.he.investments}</a>
-            <a class="tile" href="#" onclick="App.push('settings')">${strings.he.settings}</a>
+            #${strings.he.add_skip}</a>
+            #${strings.he.history}</a>
+            #${strings.he.insights}</a>
+            #${strings.he.investments}</a>
+            #${strings.he.settings}</a>
           </div>
           <p class="hint" style="margin-top:8px">${strings.he.total}${total.toFixed(2)}</p>
         </section>`;
@@ -126,26 +207,54 @@
             <option>חברתי</option><option>אחר</option>
           </select>
           <p class="hint" style="margin-top:10px">הנתונים נשמרים אוטומטית ומצטברים לכל כניסה.</p>
-          <div style="margin-top:12px"><button class="btn" onclick="(function(){ const item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() }; if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;} App.addSkip(item); })()">${strings.he.save}</button></div>
+          <div style="margin-top:12px"><button class="btn" onclick="(function(){
+            const item={ amount:parseFloat(document.getElementById('amt').value||0),
+              description:document.getElementById('desc').value.trim(),
+              category:document.getElementById('cat').value,
+              date:new Date().toISOString() };
+            if(!item.amount||!item.description){ alert('נא להזין סכום ותיאור'); return;}
+            App.addSkip(item);
+          })()">${strings.he.save}</button></div>
         </section>`;
       }
       else if(this.state.screen==='history'){
         const rows=this.state.data.slice().reverse();
         html = `<section class="card">
           <h2>${strings.he.history}</h2>
-          <div class="stat"><span class="chip">סך הכל: ₪${total.toFixed(2)}</span><button class="btn" onclick="App.exportCSV()">ייצוא CSV</button><button class="btn" style="background:linear-gradient(90deg,var(--honey),var(--peach));color:#1F2937" onclick="App.exportJSON()">ייצוא JSON</button></div>
+          <div class="stat">
+            <span class="chip">סך הכל: ₪${total.toFixed(2)}</span>
+            <button class="btn" onclick="App.exportCSV()">ייצוא CSV</button>
+            <button class="btn" style="background:linear-gradient(90deg,var(--honey),var(--peach));color:#1F2937" onclick="App.exportJSON()">ייצוא JSON</button>
+          </div>
           <div style="margin-top:10px">
             <table>
-              <thead><tr style="background:#fff6f2"><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">תאריך</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">סכום (₪)</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">קטגוריה</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">תיאור</th></tr></thead>
+              <thead>
+                <tr style="background:#fff6f2">
+                  <th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">תאריך</th>
+                  <th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">סכום (₪)</th>
+                  <th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">קטגוריה</th>
+                  <th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">תיאור</th>
+                </tr>
+              </thead>
               <tbody>
-                ${ rows.length ? rows.map(s=>`<tr><td style='padding:8px;border-bottom:1px solid #eee'>${formatDate(s.date)}</td><td style='padding:8px;border-bottom:1px solid #eee'>${(s.amount||0).toFixed(2)}</td><td style='padding:8px;border-bottom:1px solid #eee'>${s.category||'-'}</td><td style='padding:8px;border-bottom:1px solid #eee'>${s.description||'-'}</td></tr>`).join('') : `<tr><td colspan='4' class='hint' style='padding:8px'>אין רישומים עדיין</td></tr>` }
+                ${
+                  rows.length
+                  ? rows.map(s=>`<tr>
+                        <td style='padding:8px;border-bottom:1px solid #eee'>${formatDate(s.date)}</td>
+                        <td style='padding:8px;border-bottom:1px solid #eee'>${(s.amount||0).toFixed(2)}</td>
+                        <td style='padding:8px;border-bottom:1px solid #eee'>${s.category||'-'}</td>
+                        <td style='padding:8px;border-bottom:1px solid #eee'>${s.description||'-'}</td>
+                      </tr>`).join('')
+                  : `<tr><td colspan='4' class='hint' style='padding:8px'>אין רישומים עדיין</td></tr>`
+                }
               </tbody>
             </table>
           </div>
         </section>`;
       }
       else if(this.state.screen==='insights'){
-        const totalSaved=total; const msg = totalSaved>100 ? 'כבר ניתן להתחיל לחסוך ולהשקיע.' : 'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.';
+        const totalSaved=total;
+        const msg = totalSaved>100 ? 'כבר ניתן להתחיל לחסוך ולהשקיע.' : 'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.';
         html = `<section class="card">
           <h2>${strings.he.insights}</h2>
           <p class="hint">שווי חיסכון מלא: ₪${totalSaved.toFixed(2)}</p>
@@ -157,18 +266,17 @@
         html = `<section class="card">
           <h2>אפיקי השקעה · ריבית דריבית</h2>
           <div class="grid" style="margin-top:8px">
-            <a class="tile" href="https://www.google.com/search?q=%D7%90%D7%A4%D7%99%D7%A7%D7%99+%D7%94%D7%A9%D7%A7%D7%A2%D7%94+%D7%9E%D7%95%D7%9E%D7%9C%D7%A6%D7%99%D7%9D+%D7%9C%D7%98%D7%95%D7%95%D7%97+%D7%90%D7%A8%D7%95%D7%9A" target="_blank" rel="noopener noreferrer">אפיקי ההשקעה הכי טובים וחכמים</a>
-            <a class="tile" href="https://www.google.com/search?q=%D7%9C%D7%9E%D7%94+%D7%9B%D7%93%D7%90%D7%99+%D7%9C%D7%97%D7%A1%D7%95%D7%9A+%D7%9E%D7%92%D7%99%D7%9C+%D7%A6%D7%A2%D7%99%D7%A8" target="_blank" rel="noopener noreferrer">למה כדאי לחסוך מגיל צעיר ולהשקיע נכון</a>
-            <a class="tile" href="https://he.wikipedia.org/wiki/%D7%A8%D7%99%D7%91%D7%99%D7%AA_%D7%93%D7%A8%D7%91%D7%99%D7%AA" target="_blank" rel="noopener noreferrer">ריבית דריבית — ויקיפדיה (עברית)</a>
-            <a class="tile" href="https://www.boi.org.il/information/bankipedia/centralbank/%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/" target="_blank" rel="noopener noreferrer">בנק ישראל — בנקיפדיה (ריבית דריבית)</a>
-            <a class="tile" href="https://terms.hebrew-academy.org.il/munnah/28672_2/compound%20interest" target="_blank" rel="noopener noreferrer">האקדמיה ללשון — המונח “ריבית דריבית”</a>
-            <a class="tile" href="https://www.investors.isa.gov.il/nav-index/nav-bar/Compound-Interest" target="_blank" rel="noopener noreferrer">הרשות לניירות ערך — ריבית דריבית למשקיעים</a>
-            <a class="tile" href="https://financa.co.il/%d7%a8%d7%99%d7%91%d7%99%d7%aa-%d7%93%d7%a8%d7%91%d7%99%d7%aa-%d7%90%d7%99%d7%9a-%d7%9e%d7%97%d7%a9%d7%91%d7%99%d7%9d-%d7%95%d7%9C%d7%9e%d7%94-%d7%9e%d7%a9%d7%a7%d7%99%d7%a2%d7%99%d7%9d-%d7%a2/" target="_blank" rel="noopener noreferrer">Financa — מדריך ריבית דריבית</a>
-            <a class="tile" href="https://berki.co.il/%D7%9E%D7%97%D7%A9%D7%91%D7%95%D7%9F-%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/" target="_blank" rel="noopener noreferrer">Berki — מחשבון ריבית דריבית</a>
-            <a class="tile" href="https://www.investopedia.com/terms/c/compoundinterest.asp" target="_blank" rel="noopener noreferrer">Investopedia — Compound Interest</a>
-            <a class="tile" href="https://www.investor.gov/financial-tools-calculators/calculators/compound-interest-calculator" target="_blank" rel="noopener noreferrer">Investor.gov — Compound Interest Calculator</a>
-            <a class="tile" href="https://www.khanacademy.org/economics-finance-domain/core-finance/interest-tutorial/compound-interest-tutorial/v/introduction-to-compound-interest" target="_blank" rel="noopener noreferrer">Khan Academy — Introduction to Compound Interest</a>
-            <a class="tile" href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener noreferrer">Wikipedia — Compound Interest</a>
+            https://www.google.com/search?q=%D7%90%D7%A4%D7%99%D7%A7%D7%99+%D7%94%D7%A9%D7%A7%D7%A2%D7%94+%D7%9E%D7%95%D7%9E%D7%9C%D7%A6%D7%99%D7%9D+%D7%9C%D7%98%D7%95%D7%95%D7%97+%D7%90%D7%A8%D7%95%D7%9Aאפיקי ההשקעה הכי טובים וחכמים</a>
+            https://www.google.com/search?q=%D7%9C%D7%9E%D7%94+%D7%9B%D7%93%D7%90%D7%99+%D7%9C%D7%97%D7%A1%D7%95%D7%9A+%D7%9E%D7%92%D7%99%D7%9C+%D7%A6%D7%A2%D7%99%D7%A8למה כדאי לחסוך מגיל צעיר ולהשקיע נכון</a>
+            <a class="tile" href="https://he.wikipedia.org/wiki/%D7%A8%D7%99%D7%91%D7%99%D7%AA_%D7D7%AAריבית דריבית — ויקיפדיה (עברית)</a>
+            https://www.boi.org.il/information/bankipedia/centralbank/%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/בנק ישראל — בנקיפדיה (ריבית דריבית)</a>
+            https://terms.hebrew-academy.org.il/munnah/28672_2/compound%20interestהאקדמיה ללשון — המונח “ריבית דריבית”</a>
+            https://www.investors.isa.gov.il/nav-index/nav-bar/Compound-Interestהרשות לניירות ערך — ריבית דריבית למשקיעים</a>
+            <a class="tile" href="https://financa.co.il/%d7%a8%d7%99%d7%91%d7%99%d7%aa-%d7%93%d7%a8%d7%91%d7%99%d7%aa-%d7%90%d7%99%d7%9a-%d7%9e%d7%97%d7%a9%d7%91%d7%99%de%d7%94-%d7%9e%d7%a9%d7%a7%d7%99%d7%a2%d7%99%d7%9d-%d7%a2/Financa — מדריך ריבית דריבית</a>
+            https://berki.co.il/%D7%9E%D7%97%D7%A9%D7%91%D7%95%D7%9F-%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/Berki — מחשבון ריבית דריבית</a>
+            https://www.investopedia.com/terms/c/compoundinterest.aspInvestopedia — Compound Interest</a>
+            https://www.investor.gov/financial-tools-calculators/calculators/compound-interest-calculatorInvestor.gov — Compound Interest Calculator</a>
+            <a class="tile" href="https://www.khanacademy.org/economics-finance-domain/core-finance/interest-tutorial/compound-interest-tutorial/v/introduction-to-compound-interest" target="_blank" rel="noopener            <a class="tile" href="https://www.khanacademy.org/economics-finance-domain/core-finance/interest-tutorial/compound-interest-tutorial/v/introduction-to-compound-interest" target="_blank" rel="noopener            https://en.wikipedia.org/wiki/Compound_interestWikipedia — Compound Interest</a>
           </div>
           <div style="margin-top:12px"><button class="btn" onclick="App.push('summary')">סיום וסיכום</button></div>
         </section>`;
@@ -194,12 +302,17 @@
           </div>
         </section>`;
       }
+
       el.innerHTML = html;
     }
   };
 
-  if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+  // רישום Service Worker בנתיב יחסי – חשוב ל-GitHub Pages
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+
+  // טעינה ראשונית
   App.load();
   </script>
 </body>
-</html>
