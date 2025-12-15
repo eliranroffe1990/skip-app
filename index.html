@@ -48,28 +48,15 @@
 
   <main id="app"></main>
 
-  <!-- דיאגנוסטיקה לשגיאות: מציגה כל שגיאה על המסך וגם ב-Console -->
+  <!-- דיאגנוסטיקה לשגיאות -->
   <script>
-    (function installDiagnostics() {
-      const boxStyle =
-        "position:fixed;right:12px;bottom:12px;max-width:60vw;z-index:9999;" +
-        "background:#fff;border:1px solid #e11d48;border-radius:10px;padding:10px;" +
-        "box-shadow:0 10px 24px rgba(17,24,39,.12);direction:ltr;font:12px/1.3 ui-monospace,Consolas,monospace;";
-      const box = document.createElement('div');
-      box.id = '_diag';
-      box.style = boxStyle + 'display:none;';
-      document.addEventListener('DOMContentLoaded', ()=>document.body.appendChild(box));
-
-      function show(msg) {
-        box.style.display = 'block';
-        const p = document.createElement('div');
-        p.textContent = msg;
-        box.appendChild(p);
-        console.error('[SKIPAPP]', msg);
-      }
-      window.addEventListener('error', (e) => show(e.message || e.error || 'Error'));
-      window.addEventListener('unhandledrejection', (e) => show('Promise: ' + (e.reason?.message || e.reason || 'unhandledrejection')));
-      console.log('[SKIPAPP] Diagnostics installed');
+    (function(){
+      const s="position:fixed;right:12px;bottom:12px;max-width:60vw;z-index:9999;background:#fff;border:1px solid #e11d48;border-radius:10px;padding:10px;box-shadow:0 10px 24px rgba(17,24,39,.12);direction:ltr;font:12px/1.3 ui-monospace,Consolas,monospace;";
+      const box=document.createElement('div'); box.id='_diag'; box.style=s+'display:none;';
+      document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(box));
+      function show(m){box.style.display='block'; const p=document.createElement('div'); p.textContent=m; box.appendChild(p); console.error('[SKIPAPP]',m);}
+      window.addEventListener('error',e=>show(e.message||e.error||'Error'));
+      window.addEventListener('unhandledrejection',e=>show('Promise: '+(e.reason&&e.reason.message||e.reason||'unhandledrejection')));
     })();
   </script>
 
@@ -83,6 +70,7 @@
   }};
 
   function formatDate(iso){ try{const d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleDateString('he-IL');}catch{return '—';}}
+  const csvQuote = (v)=> '"' + String(v).replace(/"/g,'""') + '"';
 
   const App={ state:{screen:'home',historyStack:[],user:null,lang:'he',data:[]},
     t(k){return strings[this.state.lang][k]||k},
@@ -91,8 +79,7 @@
     goHome(){ this.state.screen='home'; this.render(); },
     saveUser(u){ localStorage.setItem('skipapp_user',JSON.stringify(u)); this.state.user=u; },
     saveData(){ localStorage.setItem('skipapp_data',JSON.stringify(this.state.data)); },
-    exportCSV(){ const rows=this.state.data.slice().reverse(); const header=['תאריך','סכום','קטגוריה','תיאור']; const lines=[header.join(',')]; rows.forEach(r=>lines.push([formatDate(r.date),(r.amount||0),`"${r.category||''}"`,`"${(r.description||'').replace(/"/g,'\"')}"`].join(','))); const blob=new Blob(["﻿"+lines.join('
-')],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href); },
+    exportCSV(){ const rows=this.state.data.slice().reverse(); const header=['תאריך','סכום','קטגוריה','תיאור']; const lines=[header.join(',')]; rows.forEach(r=>lines.push([formatDate(r.date),(r.amount||0),csvQuote(r.category||''),csvQuote(r.description||'')].join(','))); const blob=new Blob(["\ufeff"+lines.join('\n')],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href); },
     exportJSON(){ const blob=new Blob([JSON.stringify(this.state.data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.json'; a.click(); URL.revokeObjectURL(a.href); },
     reset(){ if(!confirm('לאפס את כל הנתונים?')) return; localStorage.removeItem('skipapp_data'); this.state.data=[]; this.saveData(); this.render(); },
     load(){ try{ const u=localStorage.getItem('skipapp_user'); this.state.user = u ? JSON.parse(u) : null; } catch(e){ console.warn('user parse failed', e); localStorage.removeItem('skipapp_user'); this.state.user=null; } try{ const d=localStorage.getItem('skipapp_data'); const arr = d ? JSON.parse(d) : []; this.state.data = Array.isArray(arr) ? arr : []; } catch(e){ console.warn('data parse failed', e); localStorage.removeItem('skipapp_data'); this.state.data=[]; } this.state.screen = this.state.user ? 'home' : 'register'; this.render(); },
@@ -177,16 +164,9 @@
         html = `<section class="card">
           <h2>אפיקי השקעה · ריבית דריבית</h2>
           <div class="grid" style="margin-top:8px">
-            <a class="tile" href="javascript:void(0)" onclick="window.open('https://www.google.com/search?q=%D7%90%D7%A4%D7%99%D7%A7%D7%99+%D7%94%D7%A9%D7%A7%D7%A2%D7%94+%D7%9E%D7%95%D7%9E%D7%9C%D7%A6%D7%99%D7%9D+%D7%9C%D7%98%D7%95%D7%95%D7%97+%D7%90%D7%A8%D7%95%D7%9A','_blank')">אפיקי ההשקעה הכי טובים וחכמים</a>
-            <a class="tile" href="javascript:void(0)" onclick="window.open('https://www.google.com/search?q=%D7%9C%D7%9E%D7%94+%D7%9B%D7%93%D7%90%D7%99+%D7%9C%D7%97%D7%A1%D7%95%D7%9A+%D7%9E%D7%92%D7%99%D7%9C+%D7%A6%D7%A2%D7%99%D7%A8','_blank')">למה כדאי לחסוך מגיל צעיר ולהשקיע נכון</a>
             <a class="tile" href="javascript:void(0)" onclick="window.open('https://he.wikipedia.org/wiki/%D7%A8%D7%99%D7%91%D7%99%D7%AA_%D7%93%D7%A8%D7%91%D7%99%D7%AA','_blank')">ריבית דריבית — ויקיפדיה (עברית)</a>
             <a class="tile" href="javascript:void(0)" onclick="window.open('https://www.boi.org.il/information/bankipedia/centralbank/%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/','_blank')">בנק ישראל — בנקיפדיה (ריבית דריבית)</a>
-            <a class="tile" href="javascript:void(0)" onclick="window.open('https://terms.hebrew-academy.org.il/munnah/28672_2/compound%20interest','_blank')">האקדמיה ללשון — המונח “ריבית דריבית”</a>
-            <a class="tile" href="javascript:void(0)" onclick="window.open('https://www.investors.isa.gov.il/nav-index/nav-bar/Compound-Interest','_blank')">הרשות לניירות ערך — ריבית דריבית למשקיעים</a>
-            <a class="tile" href="javascript:void(0)" onclick="window.open('https://financa.co.il/%d7%a8%d7%99%d7%91%d7%99%d7%aa-%d7%93%d7%a8%d7%91%d7%99%d7%aa-%d7%90%d7%99%d7%9a-%d7%9e%d7%97%d7%a9%d7%91%d7%99%d7%9d-%d7%95%d7%9c%d7%9e%d7%94-%d7%9e%d7%a9%d7%a7%d7%99%d7%a2%d7%99%d7%9d-%d7%a2/','_blank')">Financa — מדריך ריבית דריבית</a>
-            <a class="tile" href="javascript:void(0)" onclick="window.open('https://berki.co.il/%D7%9E%D7%97%D7%A9%D7%91%D7%95%D7%9F-%D7%A8%D7%99%D7%91%D7%99%D7%AA-%D7%93%D7%A8%D7%91%D7%99%D7%AA/','_blank')">Berki — מחשבון ריבית דריבית</a>
             <a class="tile" href="javascript:void(0)" onclick="window.open('https://www.investopedia.com/terms/c/compoundinterest.asp','_blank')">Investopedia — Compound Interest</a>
-            <a class="tile" href="javascript:void(0)" onclick="window.open('https://www.investor.gov/financial-tools-calculators/calculators/compound-interest-calculator','_blank')">Investor.gov — Compound Interest Calculator</a>
             <a class="tile" href="javascript:void(0)" onclick="window.open('https://www.khanacademy.org/economics-finance-domain/core-finance/interest-tutorial/compound-interest-tutorial/v/introduction-to-compound-interest','_blank')">Khan Academy — Introduction to Compound Interest</a>
             <a class="tile" href="javascript:void(0)" onclick="window.open('https://en.wikipedia.org/wiki/Compound_interest','_blank')">Wikipedia — Compound Interest</a>
           </div>
