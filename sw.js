@@ -1,5 +1,5 @@
 
-const CACHE='skipapp-v5.0.2';
+const CACHE='skipapp-v5.1';
 const CORE=['.','index.html','manifest.json','icon/icon-192.png','icon/icon-512.png','icon/icon-180.png','images/hero.jpg','images/play_logo.png'];
 self.addEventListener('install',e=>{self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{const keys=await caches.keys(); await Promise.all(keys.map(k=>k!==CACHE&&caches.delete(k)));})()); self.clients.claim();});
