@@ -1,5 +1,5 @@
 
-var CACHE='skipapp-v5.2.3';
+var CACHE='skipapp-v5.2.3.1';
 var CORE=['.','index.html','manifest.json','app.js?v=5223','icon/icon-192.png','icon/icon-512.png','icon/icon-180.png','images/hero.jpg','images/play_logo.png'];
 self.addEventListener('install', function(e){ self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(CORE); })); });
 self.addEventListener('activate', function(e){ e.waitUntil(caches.keys().then(function(keys){ return Promise.all(keys.map(function(k){ if(k!==CACHE){ return caches.delete(k); } })); })); self.clients.claim(); });
