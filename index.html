@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SKIPAPP">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#A8D5BA">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCBmaWxsPSIjQThENUJBIiB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIi8+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iNjAiIGZpbGw9IiNGRkYiIG9wYWNpdHk9IjAuMyIvPjxwYXRoIGQ9Ik02MCA5NmwyMCAyMCA0MC00MCIgc3Ryb2tlPSIjRkZGIiBzdHJva2Utd2lkdGg9IjEwIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=">
+  <title>SKIPAPP - משחק החיסכון החכם</title>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-tap-highlight-color: transparent; 
+    }
+    
+    html, body { 
+      height: 100%; 
+      overflow: hidden; 
+    }
+    
+    body { 
+      font-family: 'Assistant', 'Rubik', sans-serif; 
+      background: linear-gradient(135deg, #A8D5BA 0%, #D4E9DF 100%); 
+      min-height: 100vh; 
+    }
+    
+    :root {
+      --primary: #A8D5BA;
+      --primary-dark: #7EBA9B;
+      --secondary: #FFD9A0;
+      --accent: #FFB88C;
+      --bg: #FFFCF7;
+      --text: #3D3D3D;
+      --text-light: #757575;
+      --success: #90D4A8;
+      --danger: #FF9B9B;
+      --card-bg: #FFFFFF;
+    }
+    
+    .app { 
+      width: 100%; 
+      height: 100vh; 
+      max-width: 500px; 
+      margin: 0 auto; 
+      background: var(--bg); 
+      position: relative; 
+      overflow: hidden; 
+    }
+    
+    @media (min-width: 501px) {
+      body { 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        padding: 20px; 
+      }
+      .app { 
+        height: 90vh; 
+        max-height: 850px; 
+        border-radius: 40px; 
+        box-shadow: 0 30px 80px rgba(0,0,0,0.15); 
+      }
+    }
+    
+    .screen { 
+      display: none; 
+      width: 100%; 
+      height: 100%; 
+      flex-direction: column; 
+      overflow: hidden; 
+    }
+    
+    .screen.active { 
+      display: flex; 
+      animation: fadeIn 0.4s ease; 
+    }
+    
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(10px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+    
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 0 0 30px 30px;
+      box-shadow: 0 4px 20px rgba(168, 213, 186, 0.3);
+      position: relative;
+    }
+    
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 5px;
+    }
+    
+    .header .subtitle {
+      font-size: 15px;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+    
+    .play-icon {
+      width: 120px;
+      height: 120px;
+      margin: 40px auto 30px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--success) 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 40px rgba(168, 213, 186, 0.4);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .play-icon::before {
+      content: '';
+      width: 0;
+      height: 0;
+      border-top: 25px solid transparent;
+      border-bottom: 25px solid transparent;
+      border-right: 40px solid white;
+      margin-right: -5px;
+    }
+    
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      letter-spacing: -0.3px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(168, 213, 186, 0.3);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(2px);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      color: var(--text);
+      box-shadow: 0 6px 20px rgba(255, 217, 160, 0.3);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, #FF8080 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(255, 155, 155, 0.3);
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #E8E8E8;
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      background: white;
+      direction: rtl;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(168, 213, 186, 0.1);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+    }
+    
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+    
+    .date-display {
+      background: linear-gradient(135deg, #F5F5F5 0%, #FAFAFA 100%);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
+      border: 1px solid #E8E8E8;
+    }
+    
+    .date-hebrew {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+    
+    .date-gregorian {
+      font-size: 14px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+    
+    .skip-entry {
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      border-right: 4px solid var(--primary);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .skip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .skip-category {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .skip-amount {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--success);
+    }
+    
+    .skip-date {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 5px;
+    }
+    
+    .skip-description {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    
+    .form-group {
+      margin-bottom: 18px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 15px;
+    }
+    
+    .bottom-nav {
+      background: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid #E8E8E8;
+      box-shadow: 0 -2px 20px rgba(0,0,0,0.05);
+    }
+    
+    .nav-btn {
+      background: none;
+      border: none;
+      padding: 10px 15px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 10px;
+      font-family: inherit;
+    }
+    
+    .nav-btn.active {
+      color: var(--primary-dark);
+      background: rgba(168, 213, 186, 0.1);
+    }
+    
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.3);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+    
+    .back-btn:active {
+      transform: scale(0.9);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+    }
+    
+    .empty-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+    
+    .empty-text {
+      font-size: 16px;
+    }
+    
+    .success-msg {
+      background: linear-gradient(135deg, var(--success) 0%, #7FC99C 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(144, 212, 168, 0.3);
+    }
+    
+    .category-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: rgba(168, 213, 186, 0.15);
+      color: var(--primary-dark);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    
+    .welcome-content {
+      text-align: center;
+      padding: 40px 30px;
+    }
+    
+    .app-title {
+      font-size: 48px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 15px;
+      letter-spacing: -1px;
+    }
+    
+    .app-tagline {
+      font-size: 18px;
+      color: var(--text-light);
+      margin-bottom: 40px;
+      font-weight: 500;
+    }
+    
+    .feature-list {
+      text-align: right;
+      margin: 30px 0;
+    }
+    
+    .feature-item {
+      padding: 15px;
+      margin-bottom: 10px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--success) 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    
+    .feature-text {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      text-align: right;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 15px;
+    }
+    
+    .modal-text {
+      font-size: 16px;
+      color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .modal-buttons .btn {
+      flex: 1;
+    }
+    
+    .user-greeting {
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Welcome Screen -->
+    <div class="screen active" id="welcome">
+      <div class="header">
+        <h1>SKIPAPP</h1>
+        <div class="subtitle">דלג על ההוצאה, צבור לעתיד</div>
+      </div>
+      
+      <div class="content">
+        <div class="welcome-content">
+          <div class="play-icon"></div>
+          
+          <div class="app-title">SKIPAPP</div>
+          <div class="app-tagline">משחק החיסכון שישנה לך את החיים</div>
+          
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-icon">✓</div>
+              <div class="feature-text">תעד כל רכישה שוויתרת עליה</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">💰</div>
+              <div class="feature-text">צבור נקודות וראה את החיסכון שלך</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">📊</div>
+              <div class="feature-text">עקוב אחרי ההתקדמות שלך</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">🎯</div>
+              <div class="feature-text">השג מטרות והתפתח</div>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary" onclick="checkRegistration()">בואו נתחיל!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registration Screen -->
+    <div class="screen" id="register">
+      <div class="header">
+        <button class="back-btn" onclick="showScreen('welcome')">←</button>
+        <h1>הרשמה</h1>
+        <div class="subtitle">בואו נכיר!</div>
+      </div>
+      
+      <div class="content">
+        <div class="card">
+          <form id="registerForm" onsubmit="saveRegistration(event)">
+            <div class="form-group">
+              <label>שם פרטי</label>
+              <input type="text" id="firstName" placeholder="איך קוראים לך?" required>
+            </div>
+            
+            <div class="form-group">
+              <label>גיל</label>
+              <input type="number" id="age" placeholder="כמה אתה בן/בת?" required min="1" max="120">
+            </div>
+            
+            <div class="form-group">
+              <label>מטרת חיסכון (אופציונלי)</label>
+              <input type="text" id="goal" placeholder="למה אתה חוסך?">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">התחל לחסוך! 🚀</button>
+          </form>
+        </div>
+        
+        <div class="card" style="margin-top: 15px; background: #F5F5F5;">
+          <p style="font-size: 14px; color: var(--text-light); line-height: 1.6;">
+            ℹ️ הנתונים שלך נשמרים במכשיר שלך בלבד ולא נשלחים לשום מקום.
+            אתה תמיד יכול למחוק או לאפס את הנתונים בהגדרות.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Home Screen -->
+    <div class="screen" id="home">
+      <div class="header">
+        <h1>SKIPAPP</h1>
+        <div class="subtitle">שלום, <span id="userName">משתמש</span>!</div>
+      </div>
+      
+      <div class="content">
+        <div class="date-display">
+          <div class="date-hebrew" id="hebrewDate">טוען תאריך...</div>
+          <div class="date-gregorian" id="gregorianDate">Loading...</div>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="totalPoints">0</div>
+            <div class="stat-label">נקודות כולל</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="todaySkips">0</div>
+            <div class="stat-label">דילוגים היום</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="weekStreak">0</div>
+            <div class="stat-label">רצף ימים</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="totalSavings">₪0</div>
+            <div class="stat-label">חסכון כולל</div>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="showScreen('addSkip')" style="margin-bottom: 15px;">
+          + הוסף דילוג חדש
+        </button>
+        
+        <div class="card">
+          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;">הדילוגים האחרונים</h3>
+          <div id="recentSkips">
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <div class="empty-text">עדיין אין דילוגים</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bottom-nav">
+        <button class="nav-btn active" onclick="showScreen('home')">🏠 בית</button>
+        <button class="nav-btn" onclick="showScreen('history')">📊 היסטוריה</button>
+        <button class="nav-btn" onclick="showScreen('stats')">📈 סטטיסטיקות</button>
+        <button class="nav-btn" onclick="showScreen('settings')">⚙️ הגדרות</button>
+      </div>
+    </div>
+
+    <!-- Add Skip Screen -->
+    <div class="screen" id="addSkip">
+      <div class="header">
+        <button class="back-btn" onclick="confirmNavigation('home', 'addSkip')">←</button>
+        <h1>דילוג חדש</h1>
+        <div class="subtitle">תעד רכישה שדילגת עליה</div>
+      </div>
+      
+      <div class="content">
+        <div class="date-display">
+          <div class="date-hebrew" id="addSkipHebrewDate">טוען תאריך...</div>
+          <div class="date-gregorian" id="addSkipGregorianDate">Loading...</div>
+        </div>
+        
+        <div class="card">
+          <form id="skipForm" onsubmit="addSkip(event)">
+            <div class="form-group">
+              <label>קטגוריה</label>
+              <select id="category" required>
+                <option value="">בחר קטגוריה</option>
+                <option value="אוכל ומשקאות">🍕 אוכל ומשקאות</option>
+                <option value="אופנה וביגוד">👕 אופנה וביגוד</option>
+                <option value="בידור">🎬 בידור</option>
+                <option value="טכנולוגיה">📱 טכנולוגיה</option>
+                <option value="יופי וטיפוח">💄 יופי וטיפוח</option>
+                <option value="תחבורה">🚗 תחבורה</option>
+                <option value="מנויים">📺 מנויים</option>
+                <option value="קניות דחף">🛍️ קניות דחף</option>
+                <option value="חברתי">🎉 חברתי</option>
+                <option value="אחר">📦 אחר</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>סכום (₪)</label>
+              <input type="number" id="amount" placeholder="כמה חסכת?" required min="1" step="0.01">
+            </div>
+            
+            <div class="form-group">
+              <label>תיאור (אופציונלי)</label>
+              <input type="text" id="description" placeholder="על מה ויתרת?">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">שמור דילוג</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Screen -->
+    <div class="screen" id="history">
+      <div class="header">
+        <h1>היסטוריה</h1>
+        <div class="subtitle">כל הדילוגים שלך</div>
+      </div>
+      
+      <div class="content">
+        <div class="date-display">
+          <div class="date-hebrew" id="historyHebrewDate">טוען תאריך...</div>
+          <div class="date-gregorian" id="historyGregorianDate">Loading...</div>
+        </div>
+        
+        <div id="allSkips">
+          <div class="empty-state">
+            <div class="empty-icon">📝</div>
+            <div class="empty-text">עדיין אין דילוגים</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bottom-nav">
+        <button class="nav-btn" onclick="showScreen('home')">🏠 בית</button>
+        <button class="nav-btn active" onclick="showScreen('history')">📊 היסטוריה</button>
+        <button class="nav-btn" onclick="showScreen('stats')">📈 סטטיסטיקות</button>
+        <button class="nav-btn" onclick="showScreen('settings')">⚙️ הגדרות</button>
+      </div>
+    </div>
+
+    <!-- Stats Screen -->
+    <div class="screen" id="stats">
+      <div class="header">
+        <h1>סטטיסטיקות</h1>
+        <div class="subtitle">הנתונים שלך במבט אחד</div>
+      </div>
+      
+      <div class="content">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="statsTotal">0</div>
+            <div class="stat-label">סה"כ דילוגים</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statsWeek">0</div>
+            <div class="stat-label">השבוע</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statsMonth">0</div>
+            <div class="stat-label">החודש</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statsAvg">₪0</div>
+            <div class="stat-label">ממוצע דילוג</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;">קטגוריות פופולריות</h3>
+          <div id="topCategories">
+            <div class="empty-state">
+              <div class="empty-icon">📊</div>
+              <div class="empty-text">אין מספיק נתונים</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bottom-nav">
+        <button class="nav-btn" onclick="showScreen('home')">🏠 בית</button>
+        <button class="nav-btn" onclick="showScreen('history')">📊 היסטוריה</button>
+        <button class="nav-btn active" onclick="showScreen('stats')">📈 סטטיסטיקות</button>
+        <button class="nav-btn" onclick="showScreen('settings')">⚙️ הגדרות</button>
+      </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div class="screen" id="settings">
+      <div class="header">
+        <h1>הגדרות</h1>
+        <div class="subtitle">התאם אישית את החוויה</div>
+      </div>
+      
+      <div class="content">
+        <div class="card">
+          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;">פרופיל שלי</h3>
+          <div id="userProfile" style="color: var(--text-light); line-height: 1.8;">
+            <p><strong>שם:</strong> <span id="profileName">-</span></p>
+            <p><strong>גיל:</strong> <span id="profileAge">-</span></p>
+            <p><strong>מטרה:</strong> <span id="profileGoal">-</span></p>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;">אודות SKIPAPP</h3>
+          <p style="color: var(--text-light); line-height: 1.6; margin-bottom: 10px;">
+            SKIPAPP היא אפליקציה חינוכית שמבוססת על מחקר בכלכלה התנהגותית. 
+            האפליקציה מלמדת אוריינות פיננסית באמצעות תיעוד הוצאות שנמנעו.
+          </p>
+          <p style="color: var(--text-light); line-height: 1.6;">
+            גרסה: 3.1<br>
+            פותח על ידי: ד"ר אלירן<br>
+            מבוסס על מתודולוגיית AST
+          </p>
+        </div>
+        
+        <div class="card">
+          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;">פעולות</h3>
+          <button class="btn btn-secondary" onclick="exportData()" style="margin-bottom: 10px;">
+            📥 ייצא נתונים
+          </button>
+          <button class="btn btn-danger" onclick="confirmReset()">
+            🔄 אפס הכל והרשם מחדש
+          </button>
+        </div>
+      </div>
+      
+      <div class="bottom-nav">
+        <button class="nav-btn" onclick="showScreen('home')">🏠 בית</button>
+        <button class="nav-btn" onclick="showScreen('history')">📊 היסטוריה</button>
+        <button class="nav-btn" onclick="showScreen('stats')">📈 סטטיסטיקות</button>
+        <button class="nav-btn active" onclick="showScreen('settings')">⚙️ הגדרות</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for confirmations -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-content">
+      <div class="modal-title" id="modalTitle">האם לשמור?</div>
+      <div class="modal-text" id="modalText">יש לך שינויים שלא נשמרו. האם לשמור אותם?</div>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" id="modalCancel">ביטול</button>
+        <button class="btn btn-primary" id="modalConfirm">אישור</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Hebrew calendar - FIXED: Proper date calculation
+    const hebrewMonths = ['תשרי', 'חשוון', 'כסלו', 'טבת', 'שבט', 'אדר', 'ניסן', 'אייר', 'סיוון', 'תמוז', 'אב', 'אלול'];
+    const hebrewDays = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+    
+    function getHebrewDate(date) {
+      if (!date) date = new Date();
+      const dayOfWeek = hebrewDays[date.getDay()];
+      const year = 5786; // Updated for 2025-2026
+      const monthIndex = date.getMonth();
+      const hebrewMonthIndex = (monthIndex + 3) % 12; // Approximate mapping
+      const month = hebrewMonths[hebrewMonthIndex];
+      const day = date.getDate();
+      return 'יום ' + dayOfWeek + ', ' + day + ' ' + month + ' ' + year;
+    }
+    
+    function getGregorianDate(date) {
+      if (!date) date = new Date();
+      try {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('he-IL', options);
+      } catch (e) {
+        // Fallback for browsers that don't support he-IL
+        const days = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+        const months = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
+        return 'יום ' + days[date.getDay()] + ', ' + date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+      }
+    }
+    
+    function updateDates() {
+      try {
+        const now = new Date();
+        const hebrew = getHebrewDate(now);
+        const gregorian = getGregorianDate(now);
+        
+        const hebrewElements = document.querySelectorAll('[id$="HebrewDate"]');
+        const gregorianElements = document.querySelectorAll('[id$="GregorianDate"]');
+        
+        hebrewElements.forEach(el => {
+          if (el) el.textContent = hebrew;
+        });
+        
+        gregorianElements.forEach(el => {
+          if (el) el.textContent = gregorian;
+        });
+      } catch (e) {
+        console.error('Error updating dates:', e);
+      }
+    }
+    
+    // Data storage - FIXED: Better error handling
+    let userData = null;
+    let skipsData = [];
+    let formDirty = false;
+    
+    try {
+      userData = JSON.parse(localStorage.getItem('skipapp_user') || 'null');
+      skipsData = JSON.parse(localStorage.getItem('skipapp_data') || '[]');
+    } catch (e) {
+      console.error('Error loading data:', e);
+      userData = null;
+      skipsData = [];
+    }
+    
+    // Check registration
+    function checkRegistration() {
+      try {
+        if (userData && userData.firstName) {
+          showScreen('home');
+          updateUserGreeting();
+        } else {
+          showScreen('register');
+        }
+      } catch (e) {
+        console.error('Error checking registration:', e);
+        showScreen('register');
+      }
+    }
+    
+    // Save registration - FIXED: Better validation
+    function saveRegistration(event) {
+      event.preventDefault();
+      
+      try {
+        const firstNameEl = document.getElementById('firstName');
+        const ageEl = document.getElementById('age');
+        const goalEl = document.getElementById('goal');
+        
+        if (!firstNameEl || !ageEl) {
+          alert('שגיאה בטופס ההרשמה');
+          return;
+        }
+        
+        const firstName = firstNameEl.value.trim();
+        const age = parseInt(ageEl.value);
+        const goal = goalEl ? goalEl.value.trim() : '';
+        
+        if (!firstName || !age || age < 1 || age > 120) {
+          alert('אנא מלא את כל השדות החובה בצורה תקינה');
+          return;
+        }
+        
+        userData = {
+          firstName: firstName,
+          age: age,
+          goal: goal || 'לעתיד טוב יותר',
+          registeredAt: new Date().toISOString()
+        };
+        
+        localStorage.setItem('skipapp_user', JSON.stringify(userData));
+        
+        showScreen('home');
+        updateUserGreeting();
+        
+        // Welcome message
+        setTimeout(() => {
+          const homeContent = document.querySelector('#home .content');
+          if (homeContent) {
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-msg';
+            successMsg.textContent = 'ברוך הבא ' + firstName + '! בואו נתחיל לחסוך! 🎉';
+            homeContent.insertBefore(successMsg, homeContent.firstChild);
+            setTimeout(() => successMsg.remove(), 3000);
+          }
+        }, 100);
+      } catch (e) {
+        console.error('Error saving registration:', e);
+        alert('שגיאה בשמירת ההרשמה. אנא נסה שוב.');
+      }
+    }
+    
+    // Update user greeting - FIXED: Null checks
+    function updateUserGreeting() {
+      try {
+        if (userData && userData.firstName) {
+          const userNameEl = document.getElementById('userName');
+          const profileNameEl = document.getElementById('profileName');
+          const profileAgeEl = document.getElementById('profileAge');
+          const profileGoalEl = document.getElementById('profileGoal');
+          
+          if (userNameEl) userNameEl.textContent = userData.firstName;
+          if (profileNameEl) profileNameEl.textContent = userData.firstName;
+          if (profileAgeEl) profileAgeEl.textContent = userData.age || '-';
+          if (profileGoalEl) profileGoalEl.textContent = userData.goal || '-';
+        }
+      } catch (e) {
+        console.error('Error updating user greeting:', e);
+      }
+    }
+    
+    // Track form changes
+    document.addEventListener('DOMContentLoaded', function() {
+      const skipForm = document.getElementById('skipForm');
+      if (skipForm) {
+        skipForm.addEventListener('input', function() {
+          formDirty = true;
+        });
+      }
+    });
+    
+    // Confirm navigation with unsaved changes
+    function confirmNavigation(toScreen, fromScreen) {
+      if (formDirty && fromScreen === 'addSkip') {
+        showModal(
+          'שינויים לא נשמרו',
+          'האם לשמור את הדילוג לפני שחוזרים?',
+          function() {
+            // Save
+            const skipForm = document.getElementById('skipForm');
+            if (skipForm) {
+              skipForm.requestSubmit();
+            }
+          },
+          function() {
+            // Don't save
+            formDirty = false;
+            const skipForm = document.getElementById('skipForm');
+            if (skipForm) skipForm.reset();
+            showScreen(toScreen);
+          },
+          'שמור',
+          'אל תשמור'
+        );
+      } else {
+        showScreen(toScreen);
+      }
+    }
+    
+    // Show modal - FIXED: Better event handling
+    function showModal(title, text, onConfirm, onCancel, confirmText, cancelText) {
+      try {
+        const modal = document.getElementById('confirmModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalText = document.getElementById('modalText');
+        const modalConfirm = document.getElementById('modalConfirm');
+        const modalCancel = document.getElementById('modalCancel');
+        
+        if (!modal || !modalTitle || !modalText || !modalConfirm || !modalCancel) {
+          console.error('Modal elements not found');
+          return;
+        }
+        
+        modalTitle.textContent = title || 'אישור';
+        modalText.textContent = text || '';
+        modalConfirm.textContent = confirmText || 'אישור';
+        modalCancel.textContent = cancelText || 'ביטול';
+        
+        modal.classList.add('active');
+        
+        // Remove old listeners
+        const newConfirm = modalConfirm.cloneNode(true);
+        const newCancel = modalCancel.cloneNode(true);
+        modalConfirm.parentNode.replaceChild(newConfirm, modalConfirm);
+        modalCancel.parentNode.replaceChild(newCancel, modalCancel);
+        
+        // Add new listeners
+        newConfirm.addEventListener('click', function() {
+          modal.classList.remove('active');
+          if (onConfirm) onConfirm();
+        });
+        
+        newCancel.addEventListener('click', function() {
+          modal.classList.remove('active');
+          if (onCancel) onCancel();
+        });
+        
+        // Click outside to close
+        modal.addEventListener('click', function(e) {
+          if (e.target === modal) {
+            modal.classList.remove('active');
+            if (onCancel) onCancel();
+          }
+        });
+      } catch (e) {
+        console.error('Error showing modal:', e);
+      }
+    }
+    
+    // Show screen - FIXED: Better navigation
+    function showScreen(screenId) {
+      try {
+        const screens = document.querySelectorAll('.screen');
+        screens.forEach(function(s) {
+          s.classList.remove('active');
+        });
+        
+        const targetScreen = document.getElementById(screenId);
+        if (targetScreen) {
+          targetScreen.classList.add('active');
+        }
+        
+        const navBtns = document.querySelectorAll('.nav-btn');
+        navBtns.forEach(function(btn) {
+          btn.classList.remove('active');
+        });
+        
+        updateDates();
+        
+        if (screenId === 'home') {
+          loadHomeData();
+        } else if (screenId === 'history') {
+          loadHistory();
+        } else if (screenId === 'stats') {
+          loadStats();
+        } else if (screenId === 'settings') {
+          updateUserGreeting();
+        }
+      } catch (e) {
+        console.error('Error showing screen:', e);
+      }
+    }
+    
+    // Add skip - FIXED: Better validation and error handling
+    function addSkip(event) {
+      event.preventDefault();
+      
+      try {
+        const categoryEl = document.getElementById('category');
+        const amountEl = document.getElementById('amount');
+        const descriptionEl = document.getElementById('description');
+        
+        if (!categoryEl || !amountEl) {
+          alert('שגיאה בטופס');
+          return;
+        }
+        
+        const category = categoryEl.value;
+        const amount = parseFloat(amountEl.value);
+        const description = descriptionEl ? descriptionEl.value.trim() : '';
+        
+        if (!category || !amount || amount <= 0) {
+          alert('אנא מלא את כל השדות החובה בצורה תקינה');
+          return;
+        }
+        
+        const skip = {
+          id: Date.now(),
+          category: category,
+          amount: amount,
+          description: description,
+          date: new Date().toISOString(),
+          hebrewDate: getHebrewDate(),
+          gregorianDate: getGregorianDate(),
+          points: Math.round(amount * 0.5)
+        };
+        
+        skipsData.unshift(skip);
+        localStorage.setItem('skipapp_data', JSON.stringify(skipsData));
+        
+        formDirty = false;
+        const skipForm = document.getElementById('skipForm');
+        if (skipForm) skipForm.reset();
+        
+        showScreen('home');
+        
+        // Success message
+        setTimeout(function() {
+          const homeContent = document.querySelector('#home .content');
+          if (homeContent) {
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-msg';
+            successMsg.textContent = 'כל הכבוד! הרווחת ' + skip.points + ' נקודות! 🎉';
+            homeContent.insertBefore(successMsg, homeContent.firstChild);
+            setTimeout(function() {
+              successMsg.remove();
+            }, 3000);
+          }
+        }, 100);
+      } catch (e) {
+        console.error('Error adding skip:', e);
+        alert('שגיאה בשמירת הדילוג. אנא נסה שוב.');
+      }
+    }
+    
+    // Load home data - FIXED: Better null checks
+    function loadHomeData() {
+      try {
+        const totalPoints = skipsData.reduce(function(sum, skip) {
+          return sum + (skip.points || 0);
+        }, 0);
+        
+        const today = new Date().toDateString();
+        const todaySkips = skipsData.filter(function(skip) {
+          try {
+            return new Date(skip.date).toDateString() === today;
+          } catch (e) {
+            return false;
+          }
+        }).length;
+        
+        const totalSavings = skipsData.reduce(function(sum, skip) {
+          return sum + (skip.amount || 0);
+        }, 0);
+        
+        const weekStreak = calculateStreak();
+        
+        const totalPointsEl = document.getElementById('totalPoints');
+        const todaySkipsEl = document.getElementById('todaySkips');
+        const weekStreakEl = document.getElementById('weekStreak');
+        const totalSavingsEl = document.getElementById('totalSavings');
+        
+        if (totalPointsEl) totalPointsEl.textContent = totalPoints.toLocaleString();
+        if (todaySkipsEl) todaySkipsEl.textContent = todaySkips;
+        if (weekStreakEl) weekStreakEl.textContent = weekStreak;
+        if (totalSavingsEl) totalSavingsEl.textContent = '₪' + totalSavings.toLocaleString();
+        
+        const recentSkipsContainer = document.getElementById('recentSkips');
+        if (!recentSkipsContainer) return;
+        
+        const recentSkips = skipsData.slice(0, 5);
+        
+        if (recentSkips.length === 0) {
+          recentSkipsContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">עדיין אין דילוגים</div></div>';
+        } else {
+          recentSkipsContainer.innerHTML = recentSkips.map(function(skip) {
+            const descHtml = skip.description ? '<div class="skip-description">' + skip.description + '</div>' : '';
+            return '<div class="skip-entry"><div class="skip-header"><div class="skip-category">' + skip.category + '</div><div class="skip-amount">₪' + skip.amount.toLocaleString() + '</div></div><div class="skip-date"><div>' + skip.hebrewDate + '</div><div style="font-size: 11px; margin-top: 2px;">' + skip.gregorianDate + '</div></div>' + descHtml + '</div>';
+          }).join('');
+        }
+      } catch (e) {
+        console.error('Error loading home data:', e);
+      }
+    }
+    
+    // Calculate streak - FIXED: Better date handling
+    function calculateStreak() {
+      try {
+        if (skipsData.length === 0) return 0;
+        
+        let streak = 0;
+        let currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+        
+        for (let i = 0; i < 30; i++) {
+          const dateStr = currentDate.toDateString();
+          const hasSkipOnDate = skipsData.some(function(skip) {
+            try {
+              return new Date(skip.date).toDateString() === dateStr;
+            } catch (e) {
+              return false;
+            }
+          });
+          
+          if (hasSkipOnDate) {
+            streak++;
+          } else if (i > 0) {
+            break;
+          }
+          
+          currentDate.setDate(currentDate.getDate() - 1);
+        }
+        
+        return streak;
+      } catch (e) {
+        console.error('Error calculating streak:', e);
+        return 0;
+      }
+    }
+    
+    // Load history - FIXED: Better rendering
+    function loadHistory() {
+      try {
+        const allSkipsContainer = document.getElementById('allSkips');
+        if (!allSkipsContainer) return;
+        
+        if (skipsData.length === 0) {
+          allSkipsContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">עדיין אין דילוגים</div></div>';
+        } else {
+          allSkipsContainer.innerHTML = skipsData.map(function(skip) {
+            const descHtml = skip.description ? '<div class="skip-description">' + skip.description + '</div>' : '';
+            return '<div class="skip-entry"><div class="skip-header"><div class="skip-category">' + skip.category + '</div><div class="skip-amount">₪' + skip.amount.toLocaleString() + '</div></div><div class="skip-date"><div>' + skip.hebrewDate + '</div><div style="font-size: 11px; margin-top: 2px;">' + skip.gregorianDate + '</div></div>' + descHtml + '<div style="margin-top: 10px;"><span class="category-badge">+' + skip.points + ' נקודות</span></div></div>';
+          }).join('');
+        }
+      } catch (e) {
+        console.error('Error loading history:', e);
+      }
+    }
+    
+    // Load stats - FIXED: Better calculations
+    function loadStats() {
+      try {
+        const now = new Date();
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        
+        const statsTotal = skipsData.length;
+        const statsWeek = skipsData.filter(function(skip) {
+          try {
+            return new Date(skip.date) >= weekAgo;
+          } catch (e) {
+            return false;
+          }
+        }).length;
+        const statsMonth = skipsData.filter(function(skip) {
+          try {
+            return new Date(skip.date) >= monthAgo;
+          } catch (e) {
+            return false;
+          }
+        }).length;
+        const statsAvg = skipsData.length > 0 
+          ? Math.round(skipsData.reduce(function(sum, skip) { return sum + (skip.amount || 0); }, 0) / skipsData.length)
+          : 0;
+        
+        const statsTotalEl = document.getElementById('statsTotal');
+        const statsWeekEl = document.getElementById('statsWeek');
+        const statsMonthEl = document.getElementById('statsMonth');
+        const statsAvgEl = document.getElementById('statsAvg');
+        
+        if (statsTotalEl) statsTotalEl.textContent = statsTotal;
+        if (statsWeekEl) statsWeekEl.textContent = statsWeek;
+        if (statsMonthEl) statsMonthEl.textContent = statsMonth;
+        if (statsAvgEl) statsAvgEl.textContent = '₪' + statsAvg.toLocaleString();
+        
+        const categoryCount = {};
+        skipsData.forEach(function(skip) {
+          if (skip.category) {
+            categoryCount[skip.category] = (categoryCount[skip.category] || 0) + 1;
+          }
+        });
+        
+        const topCategories = Object.keys(categoryCount)
+          .map(function(cat) { return [cat, categoryCount[cat]]; })
+          .sort(function(a, b) { return b[1] - a[1]; })
+          .slice(0, 5);
+        
+        const topCategoriesContainer = document.getElementById('topCategories');
+        if (!topCategoriesContainer) return;
+        
+        if (topCategories.length === 0) {
+          topCategoriesContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-text">אין מספיק נתונים</div></div>';
+        } else {
+          topCategoriesContainer.innerHTML = topCategories.map(function(item) {
+            return '<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0;"><div style="font-size: 15px; color: var(--text);">' + item[0] + '</div><div style="font-size: 18px; font-weight: 700; color: var(--primary-dark);">' + item[1] + '</div></div>';
+          }).join('');
+        }
+      } catch (e) {
+        console.error('Error loading stats:', e);
+      }
+    }
+    
+    // Export data - FIXED: Better error handling
+    function exportData() {
+      try {
+        const exportObj = {
+          user: userData,
+          skips: skipsData,
+          exportDate: new Date().toISOString()
+        };
+        const dataStr = JSON.stringify(exportObj, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        const fileName = 'skipapp-' + (userData && userData.firstName ? userData.firstName : 'user') + '-' + new Date().toISOString().split('T')[0] + '.json';
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        console.error('Error exporting data:', e);
+        alert('שגיאה בייצוא הנתונים');
+      }
+    }
+    
+    // Confirm reset
+    function confirmReset() {
+      showModal(
+        'איפוס מלא',
+        'האם אתה בטוח? פעולה זו תמחק את כל הנתונים שלך ותחזיר אותך למסך ההרשמה.',
+        function() { resetAll(); },
+        null,
+        'אפס הכל',
+        'ביטול'
+      );
+    }
+    
+    // Reset all - FIXED: Better cleanup
+    function resetAll() {
+      try {
+        localStorage.removeItem('skipapp_user');
+        localStorage.removeItem('skipapp_data');
+        userData = null;
+        skipsData = [];
+        showScreen('welcome');
+      } catch (e) {
+        console.error('Error resetting:', e);
+        alert('שגיאה באיפוס הנתונים');
+      }
+    }
+    
+    // Initialize - FIXED: Better startup
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        updateDates();
+        if (userData && userData.firstName) {
+          updateUserGreeting();
+        }
+        setInterval(updateDates, 60000);
+      } catch (e) {
+        console.error('Error initializing:', e);
+      }
+    });
+    
+    // Service Worker - FIXED: Better registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function() {
+          console.log('Service Worker registered');
+        }).catch(function(err) {
+          console.log('Service Worker registration failed:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
