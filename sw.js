@@ -1,12 +1,10 @@
-// SKIPAPP Service Worker v2.0
-const CACHE_NAME = 'skipapp-v2.0';
+const CACHE_NAME = 'skipapp-v4.0';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  './',
+  './index.html',
+  './manifest.json'
 ];
 
-// Install
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -14,15 +12,13 @@ self.addEventListener('install', event => {
   );
 });
 
-// Fetch
 self.addEventListener('fetch', event => {
   event.respondWith(
-    fetch(event.request)
-      .catch(() => caches.match(event.request))
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
   );
 });
 
-// Activate
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
