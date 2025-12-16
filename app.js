@@ -1,6 +1,6 @@
 
 'use strict';
-(function(){ var b=document.getElementById('_diag'); function show(m){ try{ b.style.display='block'; var p=document.createElement('div'); p.textContent=m; b.appendChild(p); console.error('[SKIPAPP]', m);}catch(e){ console.error('Diagnostics failed', e);} } window.addEventListener('error', function(e){ show(e.message||e.error||'Error'); }); window.addEventListener('unhandledrejection', function(e){ show('Promise: '+(e.reason&&e.reason.message||e.reason||'unhandledrejection')); }); window._diag_show=show; })();
+(function(){ var b=document.getElementById('_diag'); function show(m){ try{ b.style.display='block'; var p=document.createElement('div'); p.textContent=String(m); b.appendChild(p); console.error('[SKIPAPP]', m);}catch(e){ console.error('Diagnostics failed', e);} } window.addEventListener('error', function(e){ show(e.message||e.error||'Error'); }); window.addEventListener('unhandledrejection', function(e){ show('Promise: '+(e.reason&&e.reason.message||e.reason||'unhandledrejection')); }); window._diag_show=show; })();
 
 var strings={ he:{
   continue:'המשך', save_next:'שמור והמשך', home:'בית', back:'חזרה', add_skip:'הוסף דילוג', history:'היסטוריה', insights:'תובנות', investments:'אפיקי השקעה', settings:'הגדרות', charts:'גרפים',
@@ -18,14 +18,16 @@ var strings={ he:{
   start:'Start', go_home:'Go to Home', go_register:'Go to Register', total:'Total saved: ₪', terms_title:'Terms of Use', terms_text:'This app is intended for educational use to learn about money saving.', chart_mode_line:'Line', chart_mode_bar:'Bar', dashboard:'Smart Dashboard', skips_count:'Skips', avg_skip:'Average Skip', month_total:'Monthly Savings', export_pdf:'Export PDF', purpose_opts:['Investments','Buy property','Smart saving','Other']
 }};
 
-function formatDate(iso){ try{var d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleDateString(App.state.lang==='he'?'he-IL':'en-US');}catch(e){ return '—'; }}
+function q(k){ try{ var pack=strings[App.state.lang]||strings.he; return pack[k]||k; }catch(e){ return k; } }
+function formatDate(iso){ try{ var d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleDateString(App.state.lang==='he'?'he-IL':'en-US'); }catch(e){ return '—'; } }
 function csvQuote(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }
 
+function el(tag, attrs, children){ var node=document.createElement(tag); attrs=attrs||{}; for(var k in attrs){ if(k==='class') node.className=attrs[k]; else if(k==='text') node.textContent=String(attrs[k]); else if(k==='html') node.innerHTML=String(attrs[k]); else node.setAttribute(k, attrs[k]); } if(children){ if(typeof children==='string'){ node.textContent=children; } else if(Array.isArray(children)){ for(var i=0;i<children.length;i++){ if(children[i]) node.appendChild(children[i]); } } else { node.appendChild(children); } } return node; }
+
 var App={ state:{screen:'entry',historyStack:[],user:null,lang:'he',data:[], theme:'light', chartMode:'line'},
-  t:function(k){ try{ return (strings[this.state.lang]||strings.he)[k]||k; } catch(e){ window._diag_show('t() failed: '+e); return k; } },
-  persist:function(){ try{ localStorage.setItem('skipapp_user', JSON.stringify(this.state.user||null)); localStorage.setItem('skipapp_data', JSON.stringify(this.state.data||[])); localStorage.setItem('skipapp_lang', this.state.lang); localStorage.setItem('skipapp_theme', this.state.theme); var url=new URL(location.href); url.searchParams.set('lang', this.state.lang); history.replaceState(null,'',url.toString()); } catch(e){ window._diag_show('persist failed: '+e);} },
-  setLang:function(l){ this.state.lang = (l==='en'?'en':'he'); document.documentElement.setAttribute('lang', this.state.lang==='he'?'he':'en'); document.documentElement.setAttribute('dir', this.state.lang==='he'?'rtl':'ltr'); var sel=document.getElementById('lang_header'); if(sel){ sel.value=this.state.lang; } this.persist(); this.render(); },
-  toggleTheme:function(){ this.state.theme = (this.state.theme==='dark')?'light':'dark'; document.body.setAttribute('data-theme', this.state.theme); this.persist(); },
+  persist:function(){ try{ localStorage.setItem('skipapp_user', JSON.stringify(this.state.user||null)); localStorage.setItem('skipapp_data', JSON.stringify(this.state.data||[])); localStorage.setItem('skipapp_lang', this.state.lang); localStorage.setItem('skipapp_theme', this.state.theme); var url=new URL(location.href); url.searchParams.set('lang', this.state.lang); history.replaceState(null,'',url.toString()); }catch(e){ window._diag_show('persist failed: '+e);} },
+  setLang:function(l){ this.state.lang=(l==='en'?'en':'he'); document.documentElement.setAttribute('lang', this.state.lang==='he'?'he':'en'); document.documentElement.setAttribute('dir', this.state.lang==='he'?'rtl':'ltr'); var sel=document.getElementById('lang_header'); if(sel) sel.value=this.state.lang; this.persist(); this.render(); },
+  toggleTheme:function(){ this.state.theme=(this.state.theme==='dark')?'light':'dark'; document.body.setAttribute('data-theme', this.state.theme); this.persist(); },
   push:function(s){ this.state.historyStack.push(this.state.screen); this.state.screen=s; this.render(); },
   goBack:function(){ if(this.state.historyStack.length){ this.state.screen=this.state.historyStack.pop(); this.render(); } else { this.goHome(); } },
   goHome:function(){ this.state.screen='home'; this.render(); },
@@ -35,145 +37,128 @@ var App={ state:{screen:'entry',historyStack:[],user:null,lang:'he',data:[], the
   exportCSV:function(){ var rows=this.state.data.slice().reverse(); var header=this.state.lang==='he'?['תאריך','סכום','קטגוריה','תיאור']:['Date','Amount','Category','Description']; var lines=[header.join(',')]; for(var i=0;i<rows.length;i++){ var r=rows[i]; lines.push([formatDate(r.date),(r.amount||0),csvQuote(r.category||''),csvQuote(r.description||'')].join(',')); } var blob=new Blob(['﻿'+lines.join('
 ')],{type:'text/csv;charset=utf-8;'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.csv'; a.click(); URL.revokeObjectURL(a.href); },
   exportJSON:function(){ var blob=new Blob([JSON.stringify(this.state.data,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='skipapp_history.json'; a.click(); URL.revokeObjectURL(a.href); },
-  exportPDF:function(period){ try{ var now=new Date(); var lang=this.state.lang; var dir = (lang==='he'?'rtl':'ltr'); var title=(lang==='he'?'סיכום חיסכון':'Savings Summary'); var data=this.state.data.slice(); function fmt(d){ return new Date(d); } var filtered=data; if(period==='month'){ var m= now.getMonth(); var y= now.getFullYear(); filtered = data.filter(function(x){ var dx=fmt(x.date); return dx.getMonth()==m && dx.getFullYear()==y; }); } else if(period==='quarter'){ var q=Math.floor(now.getMonth()/3); var yq=now.getFullYear(); filtered=data.filter(function(x){ var dx=fmt(x.date); return Math.floor(dx.getMonth()/3)==q && dx.getFullYear()==yq; }); } var total=0; for(var i=0;i<filtered.length;i++){ total+= (Number(filtered[i].amount)||0); } var count=filtered.length; var avg=count? total/count : 0; var html='<!DOCTYPE html><html lang="'+lang+'" dir="'+dir+'"><head><meta charset='utf-8'><title>'+title+'</title><style>body{font-family:Heebo,system-ui;margin:24px;color:#0f172a} h1{margin:0 0 8px} .muted{color:#64748B} table{width:100%;border-collapse:collapse;margin-top:12px} th,td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:'+ (dir=='rtl'?'right':'left') +'} .k{display:flex;gap:8px;margin-top:8px} .chip{border:1px solid #e2e8f0;border-radius:999px;padding:6px 10px}</style></head><body>'; html+='<h1>'+title+'</h1>'; html+='<p class='muted'>'+(period==='month'?(lang==='he'?'חודש נוכחי':'Current Month'):(lang==='he'?'רבעון נוכחי':'Current Quarter'))+'</p>'; html+='<div class='k'>'+'<span class='chip'>'+(lang==='he'?'מספר דילוגים':'Skips')+': '+count+'</span>'+'<span class='chip'>'+(lang==='he'?'סך הכל':'Total')+': ₪'+total.toFixed(2)+'</span>'+'<span class='chip'>'+(lang==='he'?'ממוצע':'Average')+': ₪'+avg.toFixed(2)+'</span>'+'</div>'; html+='<table><thead><tr><th>'+(lang==='he'?'תאריך':'Date')+'</th><th>'+(lang==='he'?'סכום (₪)':'Amount (₪)')+'</th><th>'+(lang==='he'?'קטגוריה':'Category')+'</th><th>'+(lang==='he'?'תיאור':'Description')+'</th></tr></thead><tbody>'; for(var j=0;j<filtered.length;j++){ var r=filtered[j]; html+='<tr><td>'+formatDate(r.date)+'</td><td>'+((Number(r.amount)||0).toFixed(2))+'</td><td>'+(r.category||'-')+'</td><td>'+(r.description||'-')+'</td></tr>'; } html+='</tbody></table></body></html>'; var blob=new Blob([html],{type:'text/html'}); var url=URL.createObjectURL(blob); var w=window.open(url,'_blank'); if(!w){ alert(lang==='he'?'פתח חלונות מוקפץ':'Enable pop-ups'); } if(w){ w.onload = function(){ try{ w.focus(); w.print(); }catch(e){} }; } setTimeout(function(){ URL.revokeObjectURL(url); }, 30000); } catch(e){ window._diag_show('exportPDF failed: '+e); } },
-  monthSum:function(){ var now=new Date(); var m=now.getMonth(); var y=now.getFullYear(); var sum=0; for(var i=0;i<this.state.data.length;i++){ var x=this.state.data[i]; var dx=new Date(x.date); if(dx.getMonth()==m && dx.getFullYear()==y){ sum += (Number(x.amount)||0); } } return sum; },
-  gQuery:function(q){ var enc = encodeURIComponent(q); var hl = this.state.lang==='he'?'he':'en'; return 'https://www.google.com/search?q='+enc+'&hl='+hl; },
-  renderChart:function(){ var el=document.getElementById('chart'); if(!el) return; var ctx=el.getContext('2d'); var w=el.width=el.clientWidth; var h=el.height=320; ctx.clearRect(0,0,w,h); ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--cardbg'); ctx.fillRect(0,0,w,h); var data=this.state.data.slice().sort(function(a,b){return new Date(a.date)-new Date(b.date);}); var amounts=[]; for(var i=0;i<data.length;i++){ amounts.push(Number(data[i].amount)||0); } var cum=[]; var s=0; for(var j=0;j<amounts.length;j++){ s+=amounts[j]; cum.push(s); } var series=this.state.chartMode==='line'?cum:amounts; var max=10; for(var k=0;k<series.length;k++){ if(series[k]>max) max=series[k]; } var left=40,right=10,top=10,bottom=30,gw=w-left-right,gh=h-top-bottom; ctx.strokeStyle='#94a3b8'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(left,top); ctx.lineTo(left,h-bottom); ctx.lineTo(w-right,h-bottom); ctx.stroke(); ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text'); ctx.font='12px Heebo, sans-serif'; ctx.fillText((this.state.lang==='he'?'סכום (₪)':'Amount (₪)'),6,16); if(series.length===0){ ctx.fillText(this.state.lang==='he'?'אין נתונים':'No data', left+6, top+40); return;} var step=series.length>1?gw/(series.length-1):gw; if(this.state.chartMode==='line'){ ctx.strokeStyle='#22d3ee'; ctx.lineWidth=2; ctx.beginPath(); for(var m=0;m<series.length;m++){ var x=left+m*step; var y=h-bottom-(series[m]/max)*gh; if(m===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke(); } else { var barW=Math.max(4, gw/series.length*0.6); ctx.fillStyle='#818cf8'; for(var n=0;n<series.length;n++){ var xb=left+n*step-barW/2; var yb=h-bottom-(series[n]/max)*gh; ctx.fillRect(xb,yb,barW,(series[n]/max)*gh); } }
-  },
-  render:function(){ var el=document.getElementById('app'); var parts=[]; var t=this.t.bind(this); var total=0; for(var i=0;i<this.state.data.length;i++){ total+= (this.state.data[i].amount||0); } function push(s){ parts.push(s); }
-    try{
+  exportPDF:function(period){ try{ var now=new Date(); var lang=this.state.lang; var dir=(lang==='he'?'rtl':'ltr'); var title=(lang==='he'?'סיכום חיסכון':'Savings Summary'); var data=this.state.data.slice(); function fmt(d){ return new Date(d); } var filtered=data; if(period==='month'){ var m=now.getMonth(), y=now.getFullYear(); filtered=data.filter(function(x){ var dx=fmt(x.date); return dx.getMonth()==m && dx.getFullYear()==y; }); } else if(period==='quarter'){ var q=Math.floor(now.getMonth()/3), yq=now.getFullYear(); filtered=data.filter(function(x){ var dx=fmt(x.date); return Math.floor(dx.getMonth()/3)==q && dx.getFullYear()==yq; }); } var total=0; for(var i=0;i<filtered.length;i++){ total+=(Number(filtered[i].amount)||0); } var count=filtered.length; var avg=count? total/count : 0; var html='<!DOCTYPE html><html lang="'+lang+'" dir="'+dir+'"><head><meta charset='utf-8'><title>'+title+'</title><style>body{font-family:Heebo,system-ui;margin:24px;color:#0f172a} h1{margin:0 0 8px} .muted{color:#64748B} table{width:100%;border-collapse:collapse;margin-top:12px} th,td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:'+(dir==='rtl'?'right':'left')+'} .k{display:flex;gap:8px;margin-top:8px} .chip{border:1px solid #e2e8f0;border-radius:999px;padding:6px 10px}</style></head><body>';
+    html+='<h1>'+title+'</h1>'; html+='<p class='muted'>'+(period==='month'?(lang==='he'?'חודש נוכחי':'Current Month'):(lang==='he'?'רבעון נוכחי':'Current Quarter'))+'</p>'; html+='<div class='k'>'+'<span class='chip'>'+(lang==='he'?'מספר דילוגים':'Skips')+': '+count+'</span>'+'<span class='chip'>'+(lang==='he'?'סך הכל':'Total')+': ₪'+total.toFixed(2)+'</span>'+'<span class='chip'>'+(lang==='he'?'ממוצע':'Average')+': ₪'+avg.toFixed(2)+'</span>'+'</div>'; html+='<table><thead><tr><th>'+(lang==='he'?'תאריך':'Date')+'</th><th>'+(lang==='he'?'סכום (₪)':'Amount (₪)')+'</th><th>'+(lang==='he'?'קטגוריה':'Category')+'</th><th>'+(lang==='he'?'תיאור':'Description')+'</th></tr></thead><tbody>';
+    for(var j=0;j<filtered.length;j++){ var r=filtered[j]; html+='<tr><td>'+formatDate(r.date)+'</td><td>'+((Number(r.amount)||0).toFixed(2))+'</td><td>'+(r.category||'-')+'</td><td>'+(r.description||'-')+'</td></tr>'; }
+    html+='</tbody></table></body></html>';
+    var blob=new Blob([html],{type:'text/html'}); var url=URL.createObjectURL(blob); var w=window.open(url,'_blank'); if(!w){ alert(lang==='he'?'פתח חלונות מוקפץ':'Enable pop-ups'); } if(w){ w.onload=function(){ try{ w.focus(); w.print(); }catch(e){} }; } setTimeout(function(){ URL.revokeObjectURL(url); },30000); }catch(e){ window._diag_show('exportPDF failed: '+e); } },
+  monthSum:function(){ var now=new Date(), m=now.getMonth(), y=now.getFullYear(), sum=0; for(var i=0;i<this.state.data.length;i++){ var x=this.state.data[i], dx=new Date(x.date); if(dx.getMonth()==m && dx.getFullYear()==y){ sum+=(Number(x.amount)||0); } } return sum; },
+  gQuery:function(q){ var enc=encodeURIComponent(q); var hl=this.state.lang==='he'?'he':'en'; return 'https://www.google.com/search?q='+enc+'&hl='+hl; },
+
+  render:function(){ var root=document.getElementById('app'); while(root.firstChild){ root.removeChild(root.firstChild); } var total=0; for(var i=0;i<this.state.data.length;i++){ total+=(this.state.data[i].amount||0); }
+    var section=el('section',{'class':'card'});
+    function row(){ return el('div',{'class':'row'}); }
     if(this.state.screen==='entry'){
-      push('<section class="card" style="text-align:center">');
-      push('<div class="brandWrap"><h2 class="brandName">SKIPAPP · '+t('entry_title')+'</h2><img src="images/play_logo.png" alt="PLAY" class="brandLogo"/></div>');
-      push('<img src="images/hero.jpg" alt="SKIPAPP" style="width:100%;border-radius:12px;margin-top:8px"/>');
-      push('<p class="hint" style="margin-top:10px">'+t('entry_intro_1')+'</p>');
-      push('<p class="hint">'+t('entry_intro_2')+'</p>');
-      push('<p class="hint">'+t('entry_intro_3')+'</p>');
-      push('<div class="row" style="margin-top:12px"><label class="hint">'+t('language')+'</label><select id="lang" style="max-width:240px"><option value="he"'+(this.state.lang==='he'?' selected':'')+'>'+strings[this.state.lang].lang_he+'</option><option value="en"'+(this.state.lang==='en'?' selected':'')+'>'+strings[this.state.lang].lang_en+'</option></select></div>');
-      push('<div class="row" style="margin-top:12px;justify-content:center"><button class="btn" id="btn_go_home">'+t('go_home')+'</button><button class="btnSecondary" id="btn_go_register">'+t('go_register')+'</button></div>');
-      push('<div style="margin-top:12px"><button class="btn" id="btn_next">'+t('save_next')+'</button></div>');
-      push('</section>');
+      var brand=el('div',{'class':'brandWrap'});
+      brand.appendChild(el('h2',{'class':'brandName','text':'SKIPAPP · '+q('entry_title')}));
+      brand.appendChild(el('img',{'src':'images/play_logo.png','alt':'PLAY','class':'brandLogo'}));
+      section.appendChild(brand);
+      section.appendChild(el('img',{'src':'images/hero.jpg','alt':'SKIPAPP'},null));
+      section.appendChild(el('p',{'class':'hint','text':q('entry_intro_1')}));
+      section.appendChild(el('p',{'class':'hint','text':q('entry_intro_2')}));
+      section.appendChild(el('p',{'class':'hint','text':q('entry_intro_3')}));
+      var r1=row(); r1.appendChild(el('label',{'class':'hint','text':q('language')})); var sel=el('select',{'id':'lang','style':'max-width:240px'}); sel.appendChild(el('option',{'value':'he','text':strings[this.state.lang].lang_he})); sel.appendChild(el('option',{'value':'en','text':strings[this.state.lang].lang_en})); sel.value=this.state.lang; r1.appendChild(sel); section.appendChild(r1);
+      var r2=row(); var bHome=el('button',{'class':'btn','id':'btn_go_home','text':q('go_home')}); var bReg=el('button',{'class':'btnSecondary','id':'btn_go_register','text':q('go_register')}); r2.appendChild(bHome); r2.appendChild(bReg); section.appendChild(r2);
+      var r3=el('div',{'style':'margin-top:12px'}); r3.appendChild(el('button',{'class':'btn','id':'btn_next','text':q('save_next')})); section.appendChild(r3);
     }
     else if(this.state.screen==='register'){
       var u=this.state.user||{firstName:'',age:'',goal:0,purpose:''}; var opts=(strings[this.state.lang].purpose_opts||['השקעות','קניית נכס','חיסכון חכם','אחר']);
-      push('<section class="card">');
-      push('<h2>'+t('register')+'</h2>');
-      push('<label class="hint">'+t('name')+'</label><input id="fn" type="text" value="'+(u.firstName||'')+'"/>');
-      push('<label class="hint" style="margin-top:8px">'+t('age')+'</label><input id="age" type="number" min="10" max="99" value="'+(u.age||'')+'"/>');
-      push('<label class="hint" style="margin-top:8px">'+t('goal')+'</label><input id="goal" type="number" min="0" value="'+(u.goal||'')+'" placeholder="1000"/>');
-      push('<label class="hint" style="margin-top:8px">'+t('purpose')+'</label><select id="purpose">'+opts.map(function(o){return '<option>'+o+'</option>';}).join('')+'</select>');
-      push('<div class="row" style="margin-top:12px"><button class="btn" id="btn_save_user">'+t('save')+'</button><button class="btn" id="btn_next2">'+t('save_next')+'</button></div>');
-      push('</section>');
+      section.appendChild(el('h2',{'text':q('register')}));
+      section.appendChild(el('label',{'class':'hint','text':q('name')})); section.appendChild(el('input',{'id':'fn','type':'text','value':u.firstName||''}));
+      section.appendChild(el('label',{'class':'hint','text':q('age'),'style':'margin-top:8px'})); section.appendChild(el('input',{'id':'age','type':'number','min':'10','max':'99','value':u.age||''}));
+      section.appendChild(el('label',{'class':'hint','text':q('goal'),'style':'margin-top:8px'})); section.appendChild(el('input',{'id':'goal','type':'number','min':'0','value':u.goal||'','placeholder':'1000'}));
+      section.appendChild(el('label',{'class':'hint','text':q('purpose'),'style':'margin-top:8px'})); var selp=el('select',{'id':'purpose'}); for(var ii=0;ii<opts.length;ii++){ selp.appendChild(el('option',{'text':opts[ii]})); } section.appendChild(selp);
+      var r=row(); r.appendChild(el('button',{'class':'btn','id':'btn_save_user','text':q('save')})); r.appendChild(el('button',{'class':'btn','id':'btn_next2','text':q('save_next')})); section.appendChild(r);
     }
     else if(this.state.screen==='home'){
       var name=(this.state.user&&this.state.user.firstName)?this.state.user.firstName:''; var month=this.monthSum(); var avg=this.state.data.length?(total/this.state.data.length):0;
-      push('<section class="card" style="text-align:center">');
-      push('<div class="brandWrap"><h2 class="brandName">SKIPAPP'+(name?(' · '+t('welcome_home')+' '+name):'')+'</h2><img src="images/play_logo.png" alt="PLAY" class="brandLogo"/></div>');
-      push('<img src="images/hero.jpg" alt="SKIPAPP" style="width:100%;border-radius:12px;margin-top:8px"/>');
-      push('<h3 style="margin-top:8px">'+t('dashboard')+'</h3>');
-      push('<div class="kpis">');
-      push('<div class="kpi"><h3>'+t('skips_count')+'</h3><p>'+this.state.data.length+'</p></div>');
-      push('<div class="kpi"><h3>'+t('avg_skip')+'</h3><p>₪'+avg.toFixed(2)+'</p></div>');
-      push('<div class="kpi"><h3>'+t('month_total')+'</h3><p>₪'+month.toFixed(2)+'</p></div>');
-      push('</div>');
-      push('<div class="row" style="margin-top:8px;justify-content:center"><button class="btnSecondary" id="btn_pdf_month">'+t('export_pdf')+' · '+(this.state.lang==='he'?'חודש':'Month')+'</button><button class="btnSecondary" id="btn_pdf_quarter">'+t('export_pdf')+' · '+(this.state.lang==='he'?'רבעון':'Quarter')+'</button></div>');
-      push('<div class="list" style="margin-top:12px">'+['add_skip','history','insights','investments','settings','charts'].map(function(s){return '<a class="tile" href="javascript:void(0)" data-nav="'+s+'">'+t(s)+'</a>';}).join('')+'</div>');
-      push('<p class="hint" style="margin-top:8px">'+t('total')+total.toFixed(2)+'</p>');
-      push('<div style="margin-top:12px"><button class="btn" id="btn_next3">'+t('save_next')+'</button></div>');
-      push('</section>');
+      var brand=el('div',{'class':'brandWrap'}); brand.appendChild(el('h2',{'class':'brandName','text':'SKIPAPP'+(name?(' · '+q('welcome_home')+' '+name):'')})); brand.appendChild(el('img',{'src':'images/play_logo.png','alt':'PLAY','class':'brandLogo'})); section.appendChild(brand);
+      section.appendChild(el('img',{'src':'images/hero.jpg','alt':'SKIPAPP'}));
+      section.appendChild(el('h3',{'text':q('dashboard'),'style':'margin-top:8px'}));
+      var kpis=el('div',{'class':'kpis'}); kpis.appendChild(el('div',{'class':'kpi'},[el('h3',{'text':q('skips_count')}), el('p',{'text':String(this.state.data.length)})])); kpis.appendChild(el('div',{'class':'kpi'},[el('h3',{'text':q('avg_skip')}), el('p',{'text':'₪'+avg.toFixed(2)})])); kpis.appendChild(el('div',{'class':'kpi'},[el('h3',{'text':q('month_total')}), el('p',{'text':'₪'+month.toFixed(2)})])); section.appendChild(kpis);
+      var r=row(); r.appendChild(el('button',{'class':'btnSecondary','id':'btn_pdf_month','text':q('export_pdf')+' · '+(this.state.lang==='he'?'חודש':'Month')})); r.appendChild(el('button',{'class':'btnSecondary','id':'btn_pdf_quarter','text':q('export_pdf')+' · '+(this.state.lang==='he'?'רבעון':'Quarter')})); section.appendChild(r);
+      var list=el('div',{'class':'list','style':'margin-top:12px'}); var items=['add_skip','history','insights','investments','settings','charts']; for(var s=0;s<items.length;s++){ var a=el('a',{'class':'tile','href':'javascript:void(0)','data-nav':items[s],'text':q(items[s])}); list.appendChild(a);} section.appendChild(list);
+      section.appendChild(el('p',{'class':'hint','text':q('total')+total.toFixed(2),'style':'margin-top:8px'}));
+      var r3=el('div',{'style':'margin-top:12px'}); r3.appendChild(el('button',{'class':'btn','id':'btn_next3','text':q('save_next')})); section.appendChild(r3);
     }
     else if(this.state.screen==='addSkip'){
-      push('<section class="card">');
-      push('<h2>'+t('add_skip')+'</h2>');
-      push('<label class="hint">'+t('amount')+'</label><input id="amt" type="number" min="1"/>');
-      push('<label class="hint" style="margin-top:8px">'+t('description')+'</label><input id="desc" type="text"/>');
-      push('<label class="hint" style="margin-top:8px">'+t('category')+'</label><select id="cat">'+['אוכל ושתייה','אופנה','בילויים','טכנולוגיה','יופי וטיפוח','תחבורה','מנויים','קניות אימפולסיביות','חברתי','אחר'].map(function(o){return '<option>'+o+'</option>';}).join('')+'</select>');
-      push('<p class="hint" style="margin-top:10px">'+(this.state.lang==='he'?'הנתונים נשמרים אוטומטית ומצטברים לכל כניסה.':'Data is saved automatically and accumulates across sessions.')+'</p>');
-      push('<div class="row" style="margin-top:12px"><button class="btn" id="btn_save_skip">'+t('save')+'</button><button class="btn" id="btn_next4">'+t('save_next')+'</button></div>');
-      push('</section>');
+      section.appendChild(el('h2',{'text':q('add_skip')}));
+      section.appendChild(el('label',{'class':'hint','text':q('amount')})); section.appendChild(el('input',{'id':'amt','type':'number','min':'1'}));
+      section.appendChild(el('label',{'class':'hint','text':q('description'),'style':'margin-top:8px'})); section.appendChild(el('input',{'id':'desc','type':'text'}));
+      section.appendChild(el('label',{'class':'hint','text':q('category'),'style':'margin-top:8px'})); var selc=el('select',{'id':'cat'}); var cats=['אוכל ושתייה','אופנה','בילויים','טכנולוגיה','יופי וטיפוח','תחבורה','מנויים','קניות אימפולסיביות','חברתי','אחר']; for(var ci=0;ci<cats.length;ci++){ selc.appendChild(el('option',{'text':cats[ci]})); } section.appendChild(selc);
+      section.appendChild(el('p',{'class':'hint','text':(this.state.lang==='he'?'הנתונים נשמרים אוטומטית ומצטברים לכל כניסה.':'Data is saved automatically and accumulates across sessions.'),'style':'margin-top:10px'}));
+      var r=row(); r.appendChild(el('button',{'class':'btn','id':'btn_save_skip','text':q('save')})); r.appendChild(el('button',{'class':'btn','id':'btn_next4','text':q('save_next')})); section.appendChild(r);
     }
     else if(this.state.screen==='history'){
-      var rows=this.state.data.slice().reverse(); var hdr=this.state.lang==='he'?['תאריך','סכום (₪)','קטגוריה','תיאור']:['Date','Amount (₪)','Category','Description'];
-      push('<section class="card">');
-      push('<h2>'+t('history')+'</h2>');
-      push('<div class="stat"><span class="chip">'+(this.state.lang==='he'?'סך הכל':'Total')+': ₪'+total.toFixed(2)+'</span><button class="btn" id="btn_csv">CSV</button><button class="btn" style="background:linear-gradient(90deg,#4F46E5,#06B6D4);" id="btn_json">JSON</button></div>');
-      push('<div style="margin-top:10px"><table><thead><tr style="background:#fff6f2">'+hdr.map(function(h){return '<th style="text-align:'+(App.state.lang==='he'?'right':'left')+';padding:8px;border-bottom:1px solid var(--border)">'+h+'</th>';}).join('')+'</tr></thead><tbody>');
-      if(rows.length){ for(var r=0;r<rows.length;r++){ var s=rows[r]; push('<tr><td style="padding:8px;border-bottom:1px solid #eee">'+formatDate(s.date)+'</td><td style="padding:8px;border-bottom:1px solid #eee">'+(s.amount||0).toFixed(2)+'</td><td style="padding:8px;border-bottom:1px solid #eee">'+(s.category||'-')+'</td><td style="padding:8px;border-bottom:1px solid #eee">'+(s.description||'-')+'</td></tr>'); } } else { push('<tr><td colspan="4" class="hint" style="padding:8px">'+(this.state.lang==='he'?'אין רישומים עדיין':'No records yet')+'</td></tr>'); }
-      push('</tbody></table></div><div style="margin-top:12px"><button class="btn" id="btn_next5">'+t('save_next')+'</button></div></section>');
+      section.appendChild(el('h2',{'text':q('history')}));
+      var stat=el('div',{'class':'stat'}); stat.appendChild(el('span',{'class':'chip','text':(this.state.lang==='he'?'סך הכל':'Total')+': ₪'+total.toFixed(2)})); stat.appendChild(el('button',{'class':'btn','id':'btn_csv','text':'CSV'})); stat.appendChild(el('button',{'class':'btn','id':'btn_json','text':'JSON','style':'background:linear-gradient(90deg,#4F46E5,#06B6D4)'})); section.appendChild(stat);
+      var tbl=el('table'); var thead=el('thead'); var tr=el('tr'); var hdr=this.state.lang==='he'?['תאריך','סכום (₪)','קטגוריה','תיאור']:['Date','Amount (₪)','Category','Description']; for(var h=0;h<hdr.length;h++){ tr.appendChild(el('th',{'text':hdr[h]})); } thead.appendChild(tr); tbl.appendChild(thead); var tbody=el('tbody'); var rows=this.state.data.slice().reverse(); if(rows.length){ for(var r=0;r<rows.length;r++){ var s=rows[r]; var rr=el('tr'); rr.appendChild(el('td',{'text':formatDate(s.date)})); rr.appendChild(el('td',{'text':(s.amount||0).toFixed(2)})); rr.appendChild(el('td',{'text':(s.category||'-')})); rr.appendChild(el('td',{'text':(s.description||'-')})); tbody.appendChild(rr);} } else { var rr2=el('tr'); var td=el('td',{'text':(this.state.lang==='he'?'אין רישומים עדיין':'No records yet')}); td.setAttribute('colspan','4'); td.setAttribute('class','hint'); rr2.appendChild(td); tbody.appendChild(rr2);} tbl.appendChild(tbody); var wrap=el('div',{'style':'margin-top:10px'}); wrap.appendChild(tbl); section.appendChild(wrap);
+      var r2=el('div',{'style':'margin-top:12px'}); r2.appendChild(el('button',{'class':'btn','id':'btn_next5','text':q('save_next')})); section.appendChild(r2);
     }
     else if(this.state.screen==='insights'){
-      var totalSaved=total; var msg= totalSaved>100 ? (this.state.lang==='he'?'כבר ניתן להתחיל לחסוך ולהשקיע.':'You can start saving and investing.') : (this.state.lang==='he'?'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.':'Keep small skips to reach your goal and start investing.');
-      push('<section class="card">');
-      push('<h2>'+t('insights')+'</h2>');
-      push('<p class="hint">'+t('total')+totalSaved.toFixed(2)+'</p>');
-      push('<p class="hint">'+msg+'</p>');
-      push('<canvas id="chart" style="width:100%;height:320px"></canvas>');
-      push('<div class="row" style="margin-top:8px"><button class="btnSecondary" id="btn_line">'+t('chart_mode_line')+'</button><button class="btnSecondary" id="btn_bar">'+t('chart_mode_bar')+'</button></div>');
-      push('<div class="row" style="margin-top:12px"><button class="btn" id="btn_to_invest">'+t('continue')+'</button><button class="btn" id="btn_next6">'+t('save_next')+'</button></div>');
-      push('</section>');
+      section.appendChild(el('h2',{'text':q('insights')}));
+      var totalSaved=total; section.appendChild(el('p',{'class':'hint','text':q('total')+totalSaved.toFixed(2)})); var msg= totalSaved>100 ? (this.state.lang==='he'?'כבר ניתן להתחיל לחסוך ולהשקיע.':'You can start saving and investing.') : (this.state.lang==='he'?'המשיכו בדילוגים קטנים כדי להגיע ליעד ולהתחיל להשקיע.':'Keep small skips to reach your goal and start investing.'); section.appendChild(el('p',{'class':'hint','text':msg})); var canvas=el('canvas',{'id':'chart','style':'width:100%;height:320px'}); section.appendChild(canvas);
+      var r=row(); r.appendChild(el('button',{'class':'btnSecondary','id':'btn_line','text':q('chart_mode_line')})); r.appendChild(el('button',{'class':'btnSecondary','id':'btn_bar','text':q('chart_mode_bar')})); section.appendChild(r);
+      var r2=row(); r2.appendChild(el('button',{'class':'btn','id':'btn_to_invest','text':q('continue')})); r2.appendChild(el('button',{'class':'btn','id':'btn_next6','text':q('save_next')})); section.appendChild(r2);
     }
     else if(this.state.screen==='investments'){
-      var q_he=['המושג ריבית דריבית','למה כדאי להשקיע מגיל צעיר','מה הם אפיקי ההשקעה הטובים ביותר','פירוש המושג מניות','פירוש המושג אג"ח']; var q_en=['compound interest concept','why invest from a young age','best investment avenues','definition of stock','definition of bonds']; var queries=this.state.lang==='he'?q_he:q_en;
-      push('<section class="card">');
-      push('<h2>'+t('investments')+'</h2>');
-      push('<div class="grid" style="margin-top:8px">'+queries.map(function(q){return '<a class="tile" href="'+App.gQuery(q)+'" target="_blank" rel="noopener noreferrer">'+q+'</a>';}).join('')+'</div>');
-      push('<div class="row" style="margin-top:12px"><button class="btn" id="btn_to_summary">'+t('continue')+'</button><button class="btn" id="btn_next7">'+t('save_next')+'</button></div>');
-      push('</section>');
+      section.appendChild(el('h2',{'text':q('investments')}));
+      var queries=(this.state.lang==='he'?['המושג ריבית דריבית','למה כדאי להשקיע מגיל צעיר','מה הם אפיקי ההשקעה הטובים ביותר','פירוש המושג מניות','פירוש המושג אג"ח']:['compound interest concept','why invest from a young age','best investment avenues','definition of stock','definition of bonds']); var grid=el('div',{'class':'grid','style':'margin-top:8px'}); for(var qi=0;qi<queries.length;qi++){ var a=el('a',{'class':'tile','href':App.gQuery(queries[qi]),'target':'_blank','rel':'noopener noreferrer','text':queries[qi]}); grid.appendChild(a);} section.appendChild(grid);
+      var r=row(); r.appendChild(el('button',{'class':'btn','id':'btn_to_summary','text':q('continue')})); r.appendChild(el('button',{'class':'btn','id':'btn_next7','text':q('save_next')})); section.appendChild(r);
     }
     else if(this.state.screen==='summary'){
-      var count=this.state.data.length; var totalSaved=total; push('<section class="card" style="text-align:center">'); push('<h2>'+(this.state.lang==='he'?'סיכום':'Summary')+'</h2>'); push('<p class="hint">'+(this.state.lang==='he'?'מספר דילוגים':'Skips')+': '+count+'</p>'); push('<p class="hint">'+t('total')+totalSaved.toFixed(2)+'</p>'); push('<div class="row" style="margin-top:12px;justify-content:center"><button class="btn" id="btn_home_from_sum">'+t('home')+'</button><button class="btn" id="btn_next8">'+t('save_next')+'</button></div>'); push('</section>');
+      section.appendChild(el('h2',{'text':(this.state.lang==='he'?'סיכום':'Summary')})); var count=this.state.data.length; section.appendChild(el('p',{'class':'hint','text':(this.state.lang==='he'?'מספר דילוגים':'Skips')+': '+count})); section.appendChild(el('p',{'class':'hint','text':q('total')+total.toFixed(2)})); var r=row(); r.appendChild(el('button',{'class':'btn','id':'btn_home_from_sum','text':q('home')})); r.appendChild(el('button',{'class':'btn','id':'btn_next8','text':q('save_next')})); section.appendChild(r);
     }
-    el.innerHTML = parts.join('');
+    root.appendChild(section);
+
+    // Listeners
+    var app=this;
+    var lh=document.getElementById('lang_header'); if(lh) lh.addEventListener('change', function(e){ app.setLang(e.target.value); });
+    var btn;
+    btn=document.getElementById('btn_back'); if(btn) btn.addEventListener('click', function(){ app.goBack(); });
+    btn=document.getElementById('btn_home'); if(btn) btn.addEventListener('click', function(){ app.goHome(); });
+    btn=document.getElementById('btn_theme'); if(btn) btn.addEventListener('click', function(){ app.toggleTheme(); });
+
+    btn=document.getElementById('btn_go_home'); if(btn) btn.addEventListener('click', function(){ app.goHome(); });
+    btn=document.getElementById('btn_go_register'); if(btn) btn.addEventListener('click', function(){ app.push('register'); });
+    btn=document.getElementById('btn_next'); if(btn) btn.addEventListener('click', function(){ app.next(); });
+    var sel=document.getElementById('lang'); if(sel) sel.addEventListener('change', function(e){ app.setLang(e.target.value); });
+
+    btn=document.getElementById('btn_save_user'); if(btn) btn.addEventListener('click', function(){ try{ var user={ firstName:document.getElementById('fn').value.trim(), age:parseInt(document.getElementById('age').value||0), goal:parseFloat(document.getElementById('goal').value||0), purpose:document.getElementById('purpose').value, registeredAt:new Date().toISOString() }; if(!user.firstName||!user.age||isNaN(user.goal)){ alert(app.state.lang==='he'?'אנא מלא/י את כל השדות':'Please fill all fields'); return;} app.saveUser(user); app.goHome(); }catch(e){ window._diag_show('saveUser failed: '+e);} });
+    btn=document.getElementById('btn_next2'); if(btn) btn.addEventListener('click', function(){ app.next(); });
+
+    btn=document.getElementById('btn_pdf_month'); if(btn) btn.addEventListener('click', function(){ app.exportPDF('month'); });
+    btn=document.getElementById('btn_pdf_quarter'); if(btn) btn.addEventListener('click', function(){ app.exportPDF('quarter'); });
+
+    var tiles=document.querySelectorAll('[data-nav]'); for(var t=0;t<tiles.length;t++){ tiles[t].addEventListener('click', function(){ app.push(this.getAttribute('data-nav')); }); }
+
+    btn=document.getElementById('btn_save_skip'); if(btn) btn.addEventListener('click', function(){ try{ var item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() }; if(!item.amount||!item.description){ alert(app.state.lang==='he'?'נא להזין סכום ותיאור':'Please enter amount and description'); return;} app.addSkip(item); }catch(e){ window._diag_show('addSkip failed: '+e);} });
+    btn=document.getElementById('btn_next3'); if(btn) btn.addEventListener('click', function(){ app.next(); });
+    btn=document.getElementById('btn_next4'); if(btn) btn.addEventListener('click', function(){ app.next(); });
+
+    btn=document.getElementById('btn_csv'); if(btn) btn.addEventListener('click', function(){ app.exportCSV(); });
+    btn=document.getElementById('btn_json'); if(btn) btn.addEventListener('click', function(){ app.exportJSON(); });
+    btn=document.getElementById('btn_next5'); if(btn) btn.addEventListener('click', function(){ app.next(); });
+
+    btn=document.getElementById('btn_line'); if(btn) btn.addEventListener('click', function(){ app.state.chartMode='line'; app.renderChart(); });
+    btn=document.getElementById('btn_bar'); if(btn) btn.addEventListener('click', function(){ app.state.chartMode='bar'; app.renderChart(); });
+    btn=document.getElementById('btn_to_invest'); if(btn) btn.addEventListener('click', function(){ app.push('investments'); });
+    btn=document.getElementById('btn_next6'); if(btn) btn.addEventListener('click', function(){ app.next(); });
+
+    btn=document.getElementById('btn_to_summary'); if(btn) btn.addEventListener('click', function(){ app.push('summary'); });
+    btn=document.getElementById('btn_next7'); if(btn) btn.addEventListener('click', function(){ app.next(); });
+
+    btn=document.getElementById('btn_home_from_sum'); if(btn) btn.addEventListener('click', function(){ app.goHome(); });
+    btn=document.getElementById('btn_next8'); if(btn) btn.addEventListener('click', function(){ app.next(); });
+
     if(this.state.screen==='insights'){ this.renderChart(); }
-
-    // attach listeners (delegation + IDs)
-    var app = this;
-    document.getElementById('lang_header') && document.getElementById('lang_header').addEventListener('change', function(e){ app.setLang(e.target.value); });
-    document.getElementById('btn_back') && document.getElementById('btn_back').addEventListener('click', function(){ app.goBack(); });
-    document.getElementById('btn_home') && document.getElementById('btn_home').addEventListener('click', function(){ app.goHome(); });
-    document.getElementById('btn_theme') && document.getElementById('btn_theme').addEventListener('click', function(){ app.toggleTheme(); });
-
-    document.getElementById('btn_go_home') && document.getElementById('btn_go_home').addEventListener('click', function(){ app.goHome(); });
-    document.getElementById('btn_go_register') && document.getElementById('btn_go_register').addEventListener('click', function(){ app.push('register'); });
-    document.getElementById('btn_next') && document.getElementById('btn_next').addEventListener('click', function(){ app.next(); });
-
-    document.getElementById('btn_save_user') && document.getElementById('btn_save_user').addEventListener('click', function(){ try{ var user={ firstName:document.getElementById('fn').value.trim(), age:parseInt(document.getElementById('age').value||0), goal:parseFloat(document.getElementById('goal').value||0), purpose:document.getElementById('purpose').value, registeredAt:new Date().toISOString() }; if(!user.firstName||!user.age||isNaN(user.goal)){ alert(app.state.lang==='he'?'אנא מלא/י את כל השדות':'Please fill all fields'); return;} app.saveUser(user); app.goHome(); }catch(e){ window._diag_show('saveUser failed: '+e);} });
-    document.getElementById('btn_next2') && document.getElementById('btn_next2').addEventListener('click', function(){ app.next(); });
-
-    document.getElementById('btn_pdf_month') && document.getElementById('btn_pdf_month').addEventListener('click', function(){ app.exportPDF('month'); });
-    document.getElementById('btn_pdf_quarter') && document.getElementById('btn_pdf_quarter').addEventListener('click', function(){ app.exportPDF('quarter'); });
-
-    document.querySelectorAll('[data-nav]').forEach(function(a){ a.addEventListener('click', function(){ app.push(a.getAttribute('data-nav')); }); });
-
-    document.getElementById('btn_save_skip') && document.getElementById('btn_save_skip').addEventListener('click', function(){ try{ var item={ amount:parseFloat(document.getElementById('amt').value||0), description:document.getElementById('desc').value.trim(), category:document.getElementById('cat').value, date:new Date().toISOString() }; if(!item.amount||!item.description){ alert(app.state.lang==='he'?'נא להזין סכום ותיאור':'Please enter amount and description'); return;} app.addSkip(item); }catch(e){ window._diag_show('addSkip failed: '+e);} });
-    document.getElementById('btn_next3') && document.getElementById('btn_next3').addEventListener('click', function(){ app.next(); });
-    document.getElementById('btn_next4') && document.getElementById('btn_next4').addEventListener('click', function(){ app.next(); });
-
-    document.getElementById('btn_csv') && document.getElementById('btn_csv').addEventListener('click', function(){ app.exportCSV(); });
-    document.getElementById('btn_json') && document.getElementById('btn_json').addEventListener('click', function(){ app.exportJSON(); });
-    document.getElementById('btn_next5') && document.getElementById('btn_next5').addEventListener('click', function(){ app.next(); });
-
-    document.getElementById('btn_line') && document.getElementById('btn_line').addEventListener('click', function(){ app.state.chartMode='line'; app.renderChart(); });
-    document.getElementById('btn_bar') && document.getElementById('btn_bar').addEventListener('click', function(){ app.state.chartMode='bar'; app.renderChart(); });
-    document.getElementById('btn_to_invest') && document.getElementById('btn_to_invest').addEventListener('click', function(){ app.push('investments'); });
-    document.getElementById('btn_next6') && document.getElementById('btn_next6').addEventListener('click', function(){ app.next(); });
-
-    document.getElementById('btn_to_summary') && document.getElementById('btn_to_summary').addEventListener('click', function(){ app.push('summary'); });
-    document.getElementById('btn_next7') && document.getElementById('btn_next7').addEventListener('click', function(){ app.next(); });
-
-    document.getElementById('btn_home_from_sum') && document.getElementById('btn_home_from_sum').addEventListener('click', function(){ app.goHome(); });
-    document.getElementById('btn_next8') && document.getElementById('btn_next8').addEventListener('click', function(){ app.next(); });
-
-    document.getElementById('lang') && document.getElementById('lang').addEventListener('change', function(e){ app.setLang(e.target.value); });
   },
+
+  renderChart:function(){ var el=document.getElementById('chart'); if(!el) return; var ctx=el.getContext('2d'), w=el.width=el.clientWidth, h=el.height=320; ctx.clearRect(0,0,w,h); ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--cardbg'); ctx.fillRect(0,0,w,h); var data=this.state.data.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); }); var amounts=[], cum=[], s=0; for(var i=0;i<data.length;i++){ var v=Number(data[i].amount)||0; amounts.push(v); s+=v; cum.push(s); } var series=this.state.chartMode==='line'?cum:amounts; var max=10; for(var k=0;k<series.length;k++){ if(series[k]>max) max=series[k]; } var left=40,right=10,top=10,bottom=30,gw=w-left-right,gh=h-top-bottom; ctx.strokeStyle='#94a3b8'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(left,top); ctx.lineTo(left,h-bottom); ctx.lineTo(w-right,h-bottom); ctx.stroke(); ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text'); ctx.font='12px Heebo, sans-serif'; ctx.fillText((this.state.lang==='he'?'סכום (₪)':'Amount (₪)'),6,16); if(series.length===0){ ctx.fillText(this.state.lang==='he'?'אין נתונים':'No data', left+6, top+40); return; } var step=series.length>1?gw/(series.length-1):gw; if(this.state.chartMode==='line'){ ctx.strokeStyle='#22d3ee'; ctx.lineWidth=2; ctx.beginPath(); for(var m=0;m<series.length;m++){ var x=left+m*step; var y=h-bottom-(series[m]/max)*gh; if(m===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke(); } else { var barW=Math.max(4, gw/series.length*0.6); ctx.fillStyle='#818cf8'; for(var n=0;n<series.length;n++){ var xb=left+n*step-barW/2; var yb=h-bottom-(series[n]/max)*gh; ctx.fillRect(xb,yb,barW,(series[n]/max)*gh); } }
+  },
+
   addSkip:function(item){ this.state.data.push(item); this.saveData(); this.state.screen='history'; this.render(); },
-  load:function(){ try{ var urlLang=new URL(location.href).searchParams.get('lang'); var storeLang=localStorage.getItem('skipapp_lang'); this.state.lang = (urlLang||storeLang||'he'); }catch(e){}
-    document.documentElement.setAttribute('lang', this.state.lang==='he'?'he':'en'); document.documentElement.setAttribute('dir', this.state.lang==='he'?'rtl':'ltr'); var sel=document.getElementById('lang_header'); if(sel){ sel.value=this.state.lang; }
-    try{ var th=localStorage.getItem('skipapp_theme')||'light'; this.state.theme=th; document.body.setAttribute('data-theme', th);}catch(e){}
-    try{ var u=localStorage.getItem('skipapp_user'); this.state.user = u ? JSON.parse(u) : null; }catch(e){}
-    try{ var d=localStorage.getItem('skipapp_data'); var arr = d ? JSON.parse(d) : []; this.state.data = Array.isArray(arr) ? arr : []; }catch(e){}
-    this.state.screen='entry'; this.render();
-  }
+  load:function(){ try{ var urlLang=new URL(location.href).searchParams.get('lang'); var storeLang=localStorage.getItem('skipapp_lang'); this.state.lang=(urlLang||storeLang||'he'); }catch(e){} document.documentElement.setAttribute('lang', this.state.lang==='he'?'he':'en'); document.documentElement.setAttribute('dir', this.state.lang==='he'?'rtl':'ltr'); var sel=document.getElementById('lang_header'); if(sel) sel.value=this.state.lang; try{ var th=localStorage.getItem('skipapp_theme')||'light'; this.state.theme=th; document.body.setAttribute('data-theme', th);}catch(e){} try{ var u=localStorage.getItem('skipapp_user'); this.state.user=u?JSON.parse(u):null; }catch(e){} try{ var d=localStorage.getItem('skipapp_data'); var arr=d?JSON.parse(d):[]; this.state.data=Array.isArray(arr)?arr:[]; }catch(e){} this.state.screen='entry'; this.render(); }
 };
 
 document.addEventListener('DOMContentLoaded', function(){ App.load(); });
