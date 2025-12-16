@@ -10,6 +10,7 @@
   <link rel="apple-touch-icon" href="icon/icon-180.png"/>
   <link rel="icon" href="icon/icon-180.png"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="SKIPAPP"/>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet"/>
@@ -23,15 +24,18 @@
     .card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:22px}
     .hint{color:var(--muted)}
     #_diag{position:fixed;right:12px;bottom:12px;max-width:60vw;z-index:9999;background:#fff;border:1px solid #e11d48;border-radius:10px;padding:10px;display:none;font:12px ui-monospace,Consolas,monospace}
+    .btn{background:#0ea5e9;color:#fff;border:0;border-radius:10px;padding:10px 14px;cursor:pointer}
+    .btnSecondary{background:#EEF; color:#1A202C; border:1px solid #CBD5E1; border-radius:10px; padding:10px 14px; cursor:pointer}
+    .tile{display:inline-block;margin:6px;padding:10px 14px;border:1px solid var(--border);border-radius:10px}
   </style>
 </head>
 <body>
   <header>
     <div class="topbar">
-      <button class="iconbtn" onclick="App.goBack()" title="חזרה">⟵</button>
-      <button class="iconbtn" onclick="App.goHome()" title="בית">⌂</button>
-      <button class="iconbtn" onclick="App.toggleTheme()" title="Theme">☼</button>
-      <select id="lang_header" onchange="App.setLang(this.value)" style="margin-right:auto;max-width:140px">
+      <button class="iconbtn" id="btn_back" title="חזרה">⟵</button>
+      <button class="iconbtn" id="btn_home" title="בית">⌂</button>
+      <button class="iconbtn" id="btn_theme" title="Theme">☼</button>
+      <select id="lang_header" style="margin-right:auto;max-width:140px">
         <option value="he">עברית</option>
         <option value="en">English</option>
       </select>
@@ -39,6 +43,6 @@
   </header>
   <main id="app"></main>
   <div id="_diag"></div>
-  <script src="app.js?v=52231"></script>
+  <script src="app.js?v=5230"></script>
 </body>
 </html>
