@@ -1,0 +1,27 @@
+{
+  "name": "SKIPAPP - משחק החיסכון החכם",
+  "short_name": "SKIPAPP",
+  "description": "אפליקציה חינוכית לתיעוד הוצאות שנמנעו ובניית אוריינות פיננסית",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFCF7",
+  "theme_color": "#A8D5BA",
+  "orientation": "portrait",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCBmaWxsPSIjQThENUJBIiB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIi8+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iNjAiIGZpbGw9IiNGRkYiIG9wYWNpdHk9IjAuMyIvPjxwYXRoIGQ9Ik02MCA5NmwyMCAyMCA0MC00MCIgc3Ryb2tlPSIjRkZGIiBzdHJva2Utd2lkdGg9IjEwIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCBmaWxsPSIjQThENUJBIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTUwIiBmaWxsPSIjRkZGIiBvcGFjaXR5PSIwLjMiLz48cGF0aCBkPSJNMTYwIDI1Nmw1MCA1MCAxMDAtMTAwIiBzdHJva2U9IiNGRkYiIHN0cm9rZS13aWR0aD0iMjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "education", "productivity"]
+}
