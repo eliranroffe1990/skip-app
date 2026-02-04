@@ -1,0 +1,556 @@
+# 📂 מדריך העלאה ל-GitHub
+
+## 🎯 **למה להעלות ל-GitHub?**
+
+```
+✅ גיבוי בענן
+✅ ניהול גרסאות
+✅ שיתוף עם מנחה/עמיתים
+✅ פרסום ב-GitHub Pages (חינם!)
+✅ Portfolio למחקר
+```
+
+---
+
+## 📋 **מה להעלות?**
+
+### ✅ **קבצים שחייבים להיות:**
+```
+skipapp/
+├── index.html ✅ (האפליקציה)
+├── service-worker.js ✅ (PWA support)
+├── manifest.json ✅ (PWA manifest)
+├── README.md ✅ (תיעוד)
+├── FIREBASE-SETUP.md ✅ (מדריך Firebase)
+├── ICONS-GUIDE.md ✅ (מדריך אייקונים)
+├── .gitignore ✅ (מה לא להעלות)
+└── icons/ ✅ (אייקונים - אם יש)
+    ├── icon-72x72.png
+    ├── icon-96x96.png
+    ├── icon-192x192.png
+    └── icon-512x512.png
+```
+
+### ⚠️ **לחשוב פעמיים:**
+```
+Firebase Config:
+אם אתה לא רוצה לשתף את firebaseConfig שלך (ה-API keys):
+├── תסיר אותם מ-index.html לפני העלאה
+├── תוסיף הערה: "// Replace with your config"
+└── תשלח בנפרד למי שצריך
+
+אבל!
+Firebase API keys הם בטוחים לשיתוף אם הגדרת Security Rules נכון
+└── בגלל ש-Firebase מגן עם domain restrictions
+```
+
+---
+
+## 🚀 **שלב 1: התקנת Git (אם אין לך)**
+
+### Windows:
+```
+1. הורד מ: https://git-scm.com/download/win
+2. התקן עם ברירות מחדל
+3. פתח Git Bash
+```
+
+### Mac:
+```
+1. פתח Terminal
+2. הרץ: git --version
+3. אם אין: התקן Xcode Command Line Tools
+```
+
+### Linux:
+```
+sudo apt install git
+```
+
+---
+
+## 👤 **שלב 2: הגדרת Git (פעם אחת)**
+
+```bash
+# הגדר שם ואימייל
+git config --global user.name "Eliran [שם משפחה]"
+git config --global user.email "eliran@example.com"
+
+# בדיקה
+git config --list
+```
+
+---
+
+## 🌐 **שלב 3: יצירת Repository ב-GitHub**
+
+### 3.1 הרשם ל-GitHub
+
+```
+1. עבור ל: https://github.com
+2. לחץ "Sign up"
+3. בחר שם משתמש (דוגמה: eliran-phd)
+4. אשר אימייל
+```
+
+### 3.2 צור Repository חדש
+
+```
+1. לחץ על "+" למעלה מימין
+2. בחר "New repository"
+3. מלא פרטים:
+   ├── Repository name: "skipapp"
+   ├── Description: "SKIPAPP v5.0 - Financial behavior research app"
+   ├── Public או Private? בחר!
+   ├── ☐ Add README (אל תסמן - יש לך כבר)
+   └── ☐ Add .gitignore (אל תסמן - יש לך כבר)
+4. לחץ "Create repository"
+```
+
+---
+
+## 💻 **שלב 4: העלאה ראשונית**
+
+### 4.1 פתח Terminal/Command Prompt
+
+```
+בתיקייה של הפרויקט:
+cd /path/to/skipapp
+```
+
+### 4.2 אתחל Git
+
+```bash
+# אתחל repository מקומי
+git init
+
+# הוסף את כל הקבצים
+git add .
+
+# בדיקה - מה עומד להיות committed
+git status
+```
+
+**אתה צריך לראות:**
+```
+Changes to be committed:
+  new file:   index.html
+  new file:   service-worker.js
+  new file:   manifest.json
+  new file:   README.md
+  new file:   FIREBASE-SETUP.md
+  new file:   ICONS-GUIDE.md
+  new file:   .gitignore
+```
+
+### 4.3 Commit ראשון
+
+```bash
+# צור commit
+git commit -m "Initial commit: SKIPAPP v5.0 with Firebase Analytics"
+
+# חבר ל-GitHub (החלף USERNAME ו-REPO)
+git remote add origin https://github.com/USERNAME/skipapp.git
+
+# בדוק
+git remote -v
+```
+
+### 4.4 העלה ל-GitHub
+
+```bash
+# שנה שם ה-branch ל-main (אם צריך)
+git branch -M main
+
+# העלה!
+git push -u origin main
+```
+
+**אם מבקש סיסמה:**
+```
+GitHub כבר לא מקבל סיסמאות!
+צריך Personal Access Token:
+
+1. GitHub → Settings → Developer settings
+2. Personal access tokens → Tokens (classic)
+3. Generate new token (classic)
+4. בחר: repo (כל ה-scopes)
+5. Generate token
+6. העתק את ה-token (שמור אותו!)
+7. השתמש בו במקום סיסמה
+```
+
+---
+
+## ✅ **אימות שהעלאה עבדה**
+
+```
+1. רענן את דף הrepository ב-GitHub
+2. אתה צריך לראות:
+   ├── index.html
+   ├── service-worker.js
+   ├── manifest.json
+   ├── README.md
+   └── כל שאר הקבצים
+
+3. README.md אמור להיות מוצג למטה
+```
+
+---
+
+## 🌍 **שלב 5: פרסום ב-GitHub Pages (בונוס!)**
+
+### 5.1 הפעל GitHub Pages
+
+```
+1. Repository → Settings
+2. Pages (בתפריט צד שמאל)
+3. Source:
+   ├── Branch: main
+   └── Folder: / (root)
+4. לחץ "Save"
+5. המתן 2-3 דקות
+```
+
+### 5.2 קבל את ה-URL
+
+```
+האפליקציה תהיה זמינה ב:
+https://USERNAME.github.io/skipapp/
+
+דוגמה:
+https://eliran-phd.github.io/skipapp/
+```
+
+### 5.3 בדוק שעובד
+
+```
+1. פתח את ה-URL בדפדפן
+2. האפליקציה צריכה לטעון!
+3. בדוק שFirebase עובד (F12 → Console)
+```
+
+---
+
+## 🔄 **עדכונים עתידיים**
+
+### כשאתה משנה קוד:
+
+```bash
+# בדיקה מה השתנה
+git status
+
+# הוסף את השינויים
+git add .
+
+# או הוסף קובץ ספציפי
+git add index.html
+
+# Commit
+git commit -m "תיאור קצר של מה שינית"
+
+# דוגמאות:
+git commit -m "Added new analytics event for skip category"
+git commit -m "Fixed bug in purchase tracking"
+git commit -m "Updated README with new features"
+
+# העלה
+git push
+```
+
+---
+
+## 📊 **מבנה Commits מומלץ למחקר**
+
+```bash
+# גרסאות ראשיות
+git commit -m "v5.0: Initial release with Firebase Analytics"
+git commit -m "v5.1: Added purchase tracking feature"
+git commit -m "v5.2: Fixed gender field bug"
+
+# תיקוני באגים
+git commit -m "Fix: Analytics not tracking skip events"
+git commit -m "Fix: Purchase screen navigation issue"
+
+# תכונות חדשות
+git commit -m "Feature: Added daily summary comparison"
+git commit -m "Feature: Export data to CSV"
+
+# תיעוד
+git commit -m "Docs: Updated Firebase setup guide"
+git commit -m "Docs: Added research methodology section"
+```
+
+---
+
+## 🏷️ **Tagging גרסאות (מומלץ למחקר)**
+
+```bash
+# צור tag לגרסה
+git tag -a v5.0 -m "SKIPAPP v5.0 - Initial release"
+
+# העלה tags
+git push --tags
+
+# רשימת tags
+git tag -l
+
+# חזור לגרסה ספציפית
+git checkout v5.0
+```
+
+**למה זה טוב?**
+```
+✅ תיעוד ברור של גרסאות
+✅ חזרה לגרסה קודמת אם צריך
+✅ ציטוט בעבודה: "SKIPAPP v5.0 (tag: v5.0)"
+```
+
+---
+
+## 🔒 **אבטחה - מה לעשות עם Firebase Config**
+
+### אופציה 1: Public (מומלץ)
+```
+✅ השאר את firebaseConfig בקוד
+✅ הגדר Security Rules ב-Firebase Console:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+
+זה מגן גם אם ה-keys חשופים!
+```
+
+### אופציה 2: Private
+```
+1. צור קובץ firebase-config.js:
+   export const firebaseConfig = {
+     // הconfig שלך
+   };
+
+2. הוסף ל-.gitignore:
+   firebase-config.js
+
+3. ב-index.html:
+   import { firebaseConfig } from './firebase-config.js';
+
+4. שתף firebase-config.js בנפרד עם מי שצריך
+```
+
+---
+
+## 📝 **קובץ README.md טוב למחקר**
+
+```markdown
+# SKIPAPP v5.0
+
+## Overview
+Mobile PWA for tracking abstained spending and financial behavior.
+Part of PhD research on Small Amount Fallacy.
+
+## Features
+- Skip tracking with points system
+- Actual purchase tracking
+- Firebase Analytics integration
+- Gender-based analysis
+- Behavioral insights
+
+## Research
+**Institution:** Adam Mickiewicz University, Poznan
+**Field:** Behavioral Economics
+**Topic:** Small Amount Fallacy & Abstained Spending Tracking
+
+## Installation
+See [FIREBASE-SETUP.md](FIREBASE-SETUP.md)
+
+## Citation
+[Your Name]. (2024). SKIPAPP: Mobile App for Financial Behavior Research.
+Adam Mickiewicz University, Poznan, Poland.
+
+## License
+Academic Research - For research purposes only
+```
+
+---
+
+## 🤝 **שיתוף עם מנחה/עמיתים**
+
+### הוסף Collaborators:
+
+```
+1. Repository → Settings → Collaborators
+2. Add people
+3. הזן username או email
+4. הם יקבלו הזמנה
+```
+
+### שתף קישור ל-Code:
+
+```
+הקוד:
+https://github.com/USERNAME/skipapp
+
+האפליקציה:
+https://USERNAME.github.io/skipapp/
+```
+
+---
+
+## 🎓 **טיפים למחקר אקדמי**
+
+### 1. Branch Strategy
+
+```bash
+# Branch ראשי: main (stable)
+git branch main
+
+# Branch פיתוח
+git checkout -b development
+# עבוד פה על תכונות חדשות
+
+# Branch לניסוי
+git checkout -b experiment-feature-x
+# נסה רעיונות חדשים
+
+# Merge בחזרה
+git checkout main
+git merge development
+```
+
+### 2. תיעוד שינויים
+
+```
+צור CHANGELOG.md:
+
+# Changelog
+
+## [5.0.0] - 2024-12-17
+### Added
+- Firebase Analytics integration
+- Purchase tracking feature
+- Gender field in registration
+
+### Fixed
+- Navigation bug in history screen
+
+## [4.0.0] - 2024-12-10
+...
+```
+
+### 3. Issues Tracking
+
+```
+GitHub → Issues → New issue
+
+תבנית:
+Title: [BUG] Analytics not tracking skip events
+Description:
+- What happened: ...
+- Expected: ...
+- Steps to reproduce: ...
+- Environment: Chrome 120, Windows 11
+```
+
+---
+
+## ⚠️ **Troubleshooting**
+
+### בעיה: "Permission denied (publickey)"
+
+```bash
+# צור SSH key
+ssh-keygen -t ed25519 -C "your_email@example.com"
+
+# העתק public key
+cat ~/.ssh/id_ed25519.pub
+
+# הוסף ב-GitHub:
+Settings → SSH and GPG keys → New SSH key
+```
+
+### בעיה: "Updates were rejected"
+
+```bash
+# מישהו שינה משהו ב-GitHub
+git pull origin main
+git push
+```
+
+### בעיה: שכחתי להוסיף .gitignore
+
+```bash
+# צור .gitignore
+echo "node_modules/" > .gitignore
+
+# הסר מה-tracking
+git rm -r --cached node_modules/
+
+# Commit
+git commit -m "Added .gitignore"
+git push
+```
+
+---
+
+## ✅ **Checklist העלאה ראשונית**
+
+```
+[ ] יצרתי חשבון GitHub
+[ ] התקנתי Git
+[ ] הגדרתי user.name ו-user.email
+[ ] יצרתי repository חדש
+[ ] אתחלתי git init
+[ ] הוספתי קבצים git add .
+[ ] בדקתי git status
+[ ] עשיתי commit ראשון
+[ ] חיברתי remote
+[ ] העליתי git push
+[ ] אימתתי ב-GitHub שהקבצים שם
+[ ] הפעלתי GitHub Pages (אופציונלי)
+[ ] בדקתי שהאפליקציה עובדת
+```
+
+---
+
+## ✅ **Checklist עדכונים**
+
+```
+[ ] שיניתי קוד
+[ ] בדקתי שעובד מקומית
+[ ] git status (ראיתי מה השתנה)
+[ ] git add .
+[ ] git commit -m "תיאור ברור"
+[ ] git push
+[ ] בדקתי ב-GitHub שהשינוי עלה
+[ ] בדקתי ב-GitHub Pages שעובד (אם רלוונטי)
+```
+
+---
+
+## 🎉 **סיימת!**
+
+```
+עכשיו יש לך:
+✅ פרויקט ב-GitHub
+✅ גיבוי בענן
+✅ ניהול גרסאות
+✅ אפליקציה חיה (אם הפעלת Pages)
+✅ שיתוף עם מנחה/עמיתים
+
+הצלחת! 🚀
+```
+
+---
+
+**שאלות? אני כאן לעזור!** 😊
+
+**קישורים שימושיים:**
+- GitHub Docs: https://docs.github.com
+- Git Tutorial: https://git-scm.com/doc
+- GitHub Pages: https://pages.github.com
