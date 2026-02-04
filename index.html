@@ -2,329 +2,411 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SKIPAPP v5.0 - Analytics Edition</title>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Theme Color -->
   <meta name="theme-color" content="#A8D5BA">
-  <title>SKIPAPP - Smart Savings Game</title>
-  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SKIPAPP">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+  
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; overflow: hidden; }
-    body { 
-      font-family: 'Assistant', 'Robik', sans-serif; 
-      background: linear-gradient(135deg, #A8D5BA 0%, #D4E9DF 100%); 
-      min-height: 100vh; 
-    }
-    body.en { font-family: 'Roboto', 'Arial', sans-serif; }
-    
-    :root {
-      --primary: #A8D5BA;
-      --primary-dark: #7EBA9B;
-      --secondary: #FFD9A0;
-      --accent: #FFB88C;
-      --bg: #FFFCF7;
-      --text: #3D3D3D;
-      --text-light: #757575;
-      --success: #90D4A8;
-      --danger: #FF9B9B;
-      --card-bg: #FFFFFF;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     
-    .app { width: 100%; height: 100vh; max-width: 500px; margin: 0 auto; background: var(--bg); position: relative; overflow: hidden; }
-    
-    @media (min-width: 501px) {
-      body { display: flex; justify-content: center; align-items: center; padding: 20px; }
-      .app { height: 90vh; max-height: 850px; border-radius: 40px; box-shadow: 0 30px 80px rgba(0,0,0,0.15); }
+    body {
+      font-family: 'Assistant', sans-serif;
+      background: linear-gradient(135deg, #FFFCF7 0%, #F8F4EF 100%);
+      min-height: 100vh;
+      direction: rtl;
     }
     
-    .screen { display: none; width: 100%; height: 100%; flex-direction: column; overflow: hidden; }
-    .screen.active { display: flex; animation: fadeIn 0.4s ease; }
-    
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    .header {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: white;
-      padding: 20px;
-      text-align: center;
-      border-radius: 0 0 30px 30px;
-      box-shadow: 0 4px 20px rgba(168, 213, 186, 0.3);
+    .container {
+      max-width: 428px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+      box-shadow: 0 0 40px rgba(0,0,0,0.1);
       position: relative;
     }
     
-    .header h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 5px; }
-    .header .subtitle { font-size: 15px; opacity: 0.9; font-weight: 400; }
-    
-    .nav-buttons {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      right: 20px;
-      display: flex;
-      justify-content: space-between;
-      z-index: 10;
+    .screen {
+      display: none;
+      padding: 20px;
+      min-height: 100vh;
     }
     
-    .nav-btn-top {
-      background: rgba(255,255,255,0.3);
+    .screen.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #A8D5BA 0%, #7EBA9B 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 0 0 20px 20px;
+      margin: -20px -20px 20px -20px;
+      position: relative;
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+    
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .back-button, .home-button {
+      position: absolute;
+      top: 20px;
+      background: rgba(255,255,255,0.2);
       border: none;
       color: white;
       width: 40px;
       height: 40px;
       border-radius: 50%;
+      font-size: 20px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      transition: all 0.3s ease;
+      transition: all 0.3s;
     }
     
-    .nav-btn-top:active { transform: scale(0.9); }
-    
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-      -webkit-overflow-scrolling: touch;
+    .back-button {
+      left: 20px;
     }
     
-    .card {
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+    .home-button {
+      right: 20px;
     }
     
-    .btn {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 16px;
-      font-size: 17px;
+    .back-button:hover, .home-button:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.1);
+    }
+    
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: inherit;
-      letter-spacing: -0.3px;
+      margin-bottom: 8px;
+      color: #3D3D3D;
+      font-size: 16px;
     }
     
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: white;
-      box-shadow: 0 6px 20px rgba(168, 213, 186, 0.3);
-    }
-    
-    .btn-primary:active { transform: translateY(2px); }
-    
-    .btn-secondary {
-      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
-      color: var(--text);
-      box-shadow: 0 6px 20px rgba(255, 217, 160, 0.3);
-    }
-    
-    input, select {
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
       width: 100%;
       padding: 15px;
       border: 2px solid #E8E8E8;
       border-radius: 12px;
       font-size: 16px;
-      font-family: inherit;
-      transition: all 0.3s ease;
+      font-family: 'Assistant', sans-serif;
+      transition: all 0.3s;
       background: white;
     }
     
-    input:focus, select:focus {
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
       outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(168, 213, 186, 0.1);
+      border-color: #A8D5BA;
+      box-shadow: 0 0 0 3px rgba(168, 213, 186, 0.1);
     }
     
-    .form-group { margin-bottom: 18px; }
-    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text); font-size: 15px; }
-    
-    .lang-selector {
+    /* Gender Radio Buttons */
+    .gender-options {
       display: flex;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-top: 10px;
     }
     
-    .lang-btn {
+    .gender-option {
       flex: 1;
-      padding: 15px;
-      border: 2px solid #E8E8E8;
-      border-radius: 12px;
-      background: white;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      position: relative;
     }
     
-    .lang-btn.active {
-      border-color: var(--primary);
-      background: rgba(168, 213, 186, 0.1);
-      color: var(--primary-dark);
+    .gender-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
     }
     
-    .investment-links {
+    .gender-label {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-    }
-    
-    .investment-link {
-      display: flex;
-      align-items: center;
-      padding: 18px;
-      background: white;
-      border-radius: 14px;
-      text-decoration: none;
-      color: var(--text);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      transition: all 0.3s ease;
-    }
-    
-    .investment-link:active {
-      transform: scale(0.98);
-    }
-    
-    .investment-icon {
-      width: 50px;
-      height: 50px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--success) 100%);
-      border-radius: 12px;
-      display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      flex-shrink: 0;
-      margin-right: 15px;
-    }
-    
-    body.en .investment-icon {
-      margin-right: 0;
-      margin-left: 15px;
-    }
-    
-    .investment-text {
-      flex: 1;
-      text-align: right;
-    }
-    
-    body.en .investment-text {
-      text-align: left;
-    }
-    
-    .investment-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    
-    .investment-desc {
-      font-size: 13px;
-      color: var(--text-light);
-    }
-    
-    .history-table {
-      width: 100%;
-      border-collapse: collapse;
+      padding: 20px 10px;
+      border: 2px solid #E8E8E8;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
       background: white;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      min-height: 100px;
     }
     
-    .history-table th {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: white;
-      padding: 15px;
-      font-weight: 600;
-      text-align: center;
-    }
-    
-    .history-table td {
-      padding: 15px;
-      border-bottom: 1px solid #f0f0f0;
-      text-align: center;
-    }
-    
-    .history-table tr:last-child td {
-      border-bottom: none;
-    }
-    
-    .summary-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    
-    .summary-card {
-      background: white;
-      padding: 20px;
-      border-radius: 16px;
-      text-align: center;
-      box-shadow: 0 2px 15px rgba(0,0,0,0.06);
-    }
-    
-    .summary-value {
+    .gender-label .emoji {
       font-size: 32px;
-      font-weight: 700;
-      color: var(--primary-dark);
       margin-bottom: 8px;
     }
     
-    .summary-label {
+    .gender-label .text {
       font-size: 14px;
-      color: var(--text-light);
-      font-weight: 500;
+      font-weight: 600;
+      color: #757575;
     }
     
-    .success-banner {
-      background: linear-gradient(135deg, var(--success) 0%, #7FC99C 100%);
+    .gender-option input[type="radio"]:checked + .gender-label {
+      border-color: #A8D5BA;
+      background: rgba(168, 213, 186, 0.1);
+    }
+    
+    .gender-option input[type="radio"]:checked + .gender-label .text {
+      color: #7EBA9B;
+    }
+    
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Assistant', sans-serif;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #A8D5BA 0%, #7EBA9B 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(168, 213, 186, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 213, 186, 0.4);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #7EBA9B;
+      border: 2px solid #A8D5BA;
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(168, 213, 186, 0.1);
+    }
+    
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border: 1px solid #F0F0F0;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #3D3D3D;
+    }
+    
+    .card-amount {
+      font-size: 24px;
+      font-weight: 800;
+      color: #7EBA9B;
+    }
+    
+    .card-details {
+      display: flex;
+      gap: 15px;
+      font-size: 14px;
+      color: #757575;
+    }
+    
+    .card-detail {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #A8D5BA 0%, #7EBA9B 100%);
       color: white;
       padding: 20px;
       border-radius: 16px;
       text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    /* Purchase List */
+    .purchase-list {
+      max-height: 400px;
+      overflow-y: auto;
       margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(144, 212, 168, 0.3);
     }
     
-    .success-banner h2 {
-      font-size: 24px;
+    .purchase-item {
+      background: #FFFCF7;
+      border-radius: 12px;
+      padding: 15px;
       margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #F0F0F0;
     }
     
-    .success-banner p {
-      font-size: 15px;
-      opacity: 0.95;
+    .purchase-info {
+      flex: 1;
     }
     
+    .purchase-name {
+      font-weight: 600;
+      color: #3D3D3D;
+      margin-bottom: 5px;
+    }
+    
+    .purchase-time {
+      font-size: 12px;
+      color: #757575;
+    }
+    
+    .purchase-amount {
+      font-size: 20px;
+      font-weight: 700;
+      color: #FF6B6B;
+    }
+    
+    /* Empty State */
     .empty-state {
       text-align: center;
-      padding: 60px 20px;
-      color: var(--text-light);
+      padding: 40px 20px;
+      color: #757575;
     }
     
-    .empty-icon {
-      font-size: 60px;
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+    
+    /* Comparison Card */
+    .comparison-card {
+      background: linear-gradient(135deg, #FFD9A0 0%, #FFB88C 100%);
+      border-radius: 16px;
+      padding: 20px;
       margin-bottom: 20px;
-      opacity: 0.3;
+      color: white;
     }
     
-    .play-icon {
-      width: 120px;
-      height: 120px;
-      margin: 40px auto 30px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--success) 100%);
-      border-radius: 50%;
+    .comparison-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+    
+    .comparison-row {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      box-shadow: 0 10px 40px rgba(168, 213, 186, 0.4);
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    
+    .comparison-label {
+      opacity: 0.9;
+    }
+    
+    .comparison-value {
+      font-weight: 700;
+      font-size: 20px;
+    }
+    
+    .comparison-footer {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      font-size: 14px;
+      text-align: center;
+    }
+    
+    /* Analytics Badge */
+    .analytics-badge {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #4CAF50;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+      z-index: 1000;
       animation: pulse 2s infinite;
     }
     
@@ -333,871 +415,799 @@
       50% { transform: scale(1.05); }
     }
     
-    .play-icon::before {
-      content: '';
-      width: 0;
-      height: 0;
-      border-top: 25px solid transparent;
-      border-bottom: 25px solid transparent;
-      border-right: 40px solid white;
-      margin-right: -5px;
+    /* Language Toggle */
+    .lang-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
     }
     
-    body.en .play-icon::before {
-      border-right: none;
-      border-left: 40px solid white;
-      margin-right: 0;
-      margin-left: -5px;
-    }
-    
-    .feature-list {
-      text-align: right;
-      margin: 30px 0;
-    }
-    
-    body.en .feature-list {
-      text-align: left;
-    }
-    
-    .feature-item {
-      padding: 15px;
-      margin-bottom: 10px;
+    .lang-btn {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #E8E8E8;
       background: white;
       border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s;
     }
     
-    .feature-icon {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--success) 100%);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
+    .lang-btn.active {
+      background: #A8D5BA;
+      color: white;
+      border-color: #A8D5BA;
     }
     
-    .feature-text {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text);
-      text-align: right;
-    }
-    
-    body.en .feature-text {
-      text-align: left;
+    /* Responsive */
+    @media (max-width: 428px) {
+      .container {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <!-- Welcome Screen -->
-    <div class="screen active" id="welcome">
+  <div class="container">
+    <!-- Analytics Badge -->
+    <div class="analytics-badge" id="analyticsBadge">
+      📊 Analytics Active
+    </div>
+    
+    <!-- Screen 1: Welcome -->
+    <div class="screen active" id="welcomeScreen">
       <div class="header">
-        <h1 data-lang="app_name">SKIPAPP</h1>
-        <div class="subtitle" data-lang="app_tagline">דלג על ההוצאה, צבור לעתיד</div>
+        <h1>ברוכים הבאים ל-SKIPAPP</h1>
+        <p>דלג על ההוצאה, צבור לעתיד 💰</p>
       </div>
       
-      <div class="content">
-        <div style="text-align: center; padding: 40px 30px;">
-          <div class="play-icon"></div>
-          
-          <div style="font-size: 48px; font-weight: 800; background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 15px; letter-spacing: -1px;">SKIPAPP</div>
-          <div style="font-size: 18px; color: var(--text-light); margin-bottom: 40px; font-weight: 500;" data-lang="welcome_subtitle">משחק החיסכון שישנה לך את החיים</div>
-          
-          <div class="feature-list">
-            <div class="feature-item">
-              <div class="feature-icon">✓</div>
-              <div class="feature-text" data-lang="feature_1">תעד כל רכישה שוויתרת עליה</div>
+      <div style="text-align: center; margin: 60px 0;">
+        <div style="width: 150px; height: 150px; background: linear-gradient(135deg, #A8D5BA 0%, #7EBA9B 100%); border-radius: 50%; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 40px rgba(168, 213, 186, 0.3);">
+          <div style="font-size: 80px; color: white;">✓</div>
+        </div>
+        <h2 style="font-size: 24px; margin-bottom: 15px; color: #3D3D3D;">החיסכון שמשנה חיים</h2>
+        <p style="color: #757575; font-size: 16px; margin-bottom: 40px;">עקוב אחרי הדילוגים שלך וראה<br>איך הכסף הקטן הופך לגדול</p>
+      </div>
+      
+      <button class="btn btn-primary" onclick="app.showScreen('registerScreen')">
+        התחל עכשיו 🚀
+      </button>
+    </div>
+    
+    <!-- Screen 2: Register -->
+    <div class="screen" id="registerScreen">
+      <div class="header">
+        <button class="back-button" onclick="app.showScreen('welcomeScreen')">←</button>
+        <h1>הרשמה</h1>
+        <p>בואו נכיר!</p>
+      </div>
+      
+      <!-- Language Toggle -->
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="app.setLanguage('he')">🇮🇱 עברית</button>
+        <button class="lang-btn" onclick="app.setLanguage('en')">🇬🇧 English</button>
+      </div>
+      
+      <form onsubmit="app.register(event)">
+        <div class="form-group">
+          <label>איך קוראים לך?</label>
+          <input type="text" id="userName" placeholder="שם מלא" required>
+        </div>
+        
+        <div class="form-group">
+          <label>כמה אתה בן/בת?</label>
+          <input type="number" id="userAge" placeholder="גיל" min="13" max="120" required>
+        </div>
+        
+        <div class="form-group">
+          <label>מגדר</label>
+          <div class="gender-options">
+            <div class="gender-option">
+              <input type="radio" id="genderMale" name="gender" value="male" required>
+              <label for="genderMale" class="gender-label">
+                <span class="emoji">👨</span>
+                <span class="text">זכר</span>
+              </label>
             </div>
-            <div class="feature-item">
-              <div class="feature-icon">💰</div>
-              <div class="feature-text" data-lang="feature_2">צבור נקודות וראה את החיסכון שלך</div>
+            <div class="gender-option">
+              <input type="radio" id="genderFemale" name="gender" value="female">
+              <label for="genderFemale" class="gender-label">
+                <span class="emoji">👩</span>
+                <span class="text">נקבה</span>
+              </label>
             </div>
-            <div class="feature-item">
-              <div class="feature-icon">📊</div>
-              <div class="feature-text" data-lang="feature_3">עקוב אחרי ההתקדמות שלך</div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon">🎯</div>
-              <div class="feature-text" data-lang="feature_4">השג מטרות והתפתח</div>
+            <div class="gender-option">
+              <input type="radio" id="genderOther" name="gender" value="other">
+              <label for="genderOther" class="gender-label">
+                <span class="emoji">🧑</span>
+                <span class="text">אחר</span>
+              </label>
             </div>
           </div>
-          
-          <button class="btn btn-primary" onclick="checkRegistration()" data-lang="btn_start">בואו נתחיל!</button>
         </div>
-      </div>
-    </div>
-
-    <!-- Register Screen -->
-    <div class="screen" id="register">
-      <div class="header">
-        <div class="nav-buttons">
-          <button class="nav-btn-top" onclick="showScreen('welcome')">←</button>
+        
+        <div class="form-group">
+          <label>למה אתה חוסך?</label>
+          <input type="text" id="userGoal" placeholder='למשל: "טיול בחו״ל" או "מכונית"' required>
         </div>
-        <h1 data-lang="register_title">הרשמה</h1>
-        <div class="subtitle" data-lang="register_subtitle">בואו נכיר!</div>
-      </div>
-      
-      <div class="content">
-        <div class="card">
-          <div class="form-group">
-            <label data-lang="lang_label">בחר שפה / Choose Language</label>
-            <div class="lang-selector">
-              <button class="lang-btn active" onclick="setLanguage('he')" data-lang-btn="he">🇮🇱 עברית</button>
-              <button class="lang-btn" onclick="setLanguage('en')" data-lang-btn="en">🇬🇧 English</button>
-            </div>
-          </div>
-          
-          <form id="registerForm" onsubmit="saveRegistration(event)">
-            <div class="form-group">
-              <label data-lang="first_name_label">שם פרטי</label>
-              <input type="text" id="firstName" data-lang-placeholder="first_name_placeholder" placeholder="איך קוראים לך?" required>
-            </div>
-            
-            <div class="form-group">
-              <label data-lang="age_label">גיל</label>
-              <input type="number" id="age" data-lang-placeholder="age_placeholder" placeholder="כמה אתה בן/בת?" required min="1" max="120">
-            </div>
-            
-            <div class="form-group">
-              <label data-lang="goal_label">מטרת חיסכון (אופציונלי)</label>
-              <input type="text" id="goal" data-lang-placeholder="goal_placeholder" placeholder="למה אתה חוסך?">
-            </div>
-            
-            <button type="submit" class="btn btn-primary" data-lang="btn_start_saving">התחל לחסוך! 🚀</button>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Home Screen -->
-    <div class="screen" id="home">
-      <div class="header">
-        <h1>SKIPAPP</h1>
-        <div class="subtitle"><span data-lang="hello">שלום</span>, <span id="userName">משתמש</span>!</div>
-      </div>
-      
-      <div class="content">
-        <button class="btn btn-primary" onclick="showScreen('addSkip')" style="margin-bottom: 15px;" data-lang="btn_add_skip">
-          + הוסף דילוג חדש
+        
+        <button type="submit" class="btn btn-primary">
+          המשך →
         </button>
+      </form>
+    </div>
+    
+    <!-- Screen 3: Home Dashboard -->
+    <div class="screen" id="homeScreen">
+      <div class="header">
+        <h1 id="welcomeMessage">שלום, משתמש!</h1>
+        <p>המסע שלך לחיסכון חכם</p>
+      </div>
+      
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="totalSkips">0</div>
+          <div class="stat-label">דילוגים</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalSavings">₪0</div>
+          <div class="stat-label">חסכון</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalPoints">0</div>
+          <div class="stat-label">נקודות</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalPurchases">0</div>
+          <div class="stat-label">קניות בפועל</div>
+        </div>
+      </div>
+      
+      <!-- Quick Actions -->
+      <h3 style="margin: 20px 0 15px; font-size: 18px; color: #3D3D3D;">פעולות מהירות</h3>
+      
+      <button class="btn btn-primary" onclick="app.showScreen('addSkipScreen')">
+        💸 תעד דילוג
+      </button>
+      
+      <button class="btn btn-secondary" onclick="app.showScreen('addPurchaseScreen')">
+        🛒 תעד קנייה בפועל
+      </button>
+      
+      <button class="btn btn-secondary" onclick="app.showScreen('investmentScreen')">
+        💡 למד להשקיע
+      </button>
+      
+      <button class="btn btn-secondary" onclick="app.showScreen('historyScreen')">
+        📊 היסטוריה ומעקב
+      </button>
+    </div>
+    
+    <!-- Screen 4: Add Skip -->
+    <div class="screen" id="addSkipScreen">
+      <div class="header">
+        <button class="back-button" onclick="app.showScreen('homeScreen')">←</button>
+        <button class="home-button" onclick="app.showScreen('homeScreen')">🏠</button>
+        <h1>תעד דילוג</h1>
+        <p>על מה דילגת?</p>
+      </div>
+      
+      <form onsubmit="app.addSkip(event)">
+        <div class="form-group">
+          <label>על מה דילגת?</label>
+          <input type="text" id="skipItem" placeholder='למשל: "קפה", "ארוחת צהריים"' required>
+        </div>
         
-        <button class="btn btn-secondary" onclick="showScreen('settings')" style="margin-bottom: 15px;" data-lang="btn_settings">
-          ⚙️ הגדרות
+        <div class="form-group">
+          <label>כמה זה היה עולה?</label>
+          <input type="number" id="skipAmount" placeholder="סכום בש״ח" min="1" step="0.01" required>
+        </div>
+        
+        <div class="form-group">
+          <label>קטגוריה</label>
+          <select id="skipCategory" required>
+            <option value="">בחר קטגוריה</option>
+            <option value="food">אוכל ושתייה</option>
+            <option value="clothes">בגדים</option>
+            <option value="entertainment">בילויים</option>
+            <option value="transport">תחבורה</option>
+            <option value="tech">טכנולוגיה</option>
+            <option value="other">אחר</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>הערות (אופציונלי)</label>
+          <textarea id="skipNotes" rows="3" placeholder="למה החלטת לדלג?"></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">
+          שמור דילוג ✓
+        </button>
+      </form>
+    </div>
+    
+    <!-- Screen 5: Add Actual Purchase (NEW!) -->
+    <div class="screen" id="addPurchaseScreen">
+      <div class="header">
+        <button class="back-button" onclick="app.showScreen('homeScreen')">←</button>
+        <button class="home-button" onclick="app.showScreen('homeScreen')">🏠</button>
+        <h1>תעד קנייה בפועל</h1>
+        <p>מה קנית היום?</p>
+      </div>
+      
+      <div class="card" style="background: #FFF3E0; border-color: #FFB88C;">
+        <p style="font-size: 14px; color: #757575; line-height: 1.6;">
+          📌 <strong>למה זה חשוב?</strong><br>
+          כשאתה מתעד גם מה שקנית בפועל, אתה יכול לראות האם הדילוגים משפיעים על ההוצאות שלך או שאתה פשוט קונה דברים אחרים במקום.
+        </p>
+      </div>
+      
+      <form onsubmit="app.addPurchase(event)">
+        <div class="form-group">
+          <label>מה קנית?</label>
+          <input type="text" id="purchaseItem" placeholder='למשל: "פיצה", "חולצה"' required>
+        </div>
+        
+        <div class="form-group">
+          <label>כמה שילמת?</label>
+          <input type="number" id="purchaseAmount" placeholder="סכום בש״ח" min="0.01" step="0.01" required>
+        </div>
+        
+        <div class="form-group">
+          <label>קטגוריה</label>
+          <select id="purchaseCategory" required>
+            <option value="">בחר קטגוריה</option>
+            <option value="food">אוכל ושתייה</option>
+            <option value="clothes">בגדים</option>
+            <option value="entertainment">בילויים</option>
+            <option value="transport">תחבורה</option>
+            <option value="tech">טכנולוגיה</option>
+            <option value="other">אחר</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>באיזו שעה? (אופציונלי)</label>
+          <input type="time" id="purchaseTime">
+        </div>
+        
+        <div class="form-group">
+          <label>הערות (אופציונלי)</label>
+          <textarea id="purchaseNotes" rows="3" placeholder="למה קנית את זה?"></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">
+          שמור קנייה 🛒
+        </button>
+      </form>
+    </div>
+    
+    <!-- Screen 6: Investment Education -->
+    <div class="screen" id="investmentScreen">
+      <div class="header">
+        <button class="back-button" onclick="app.showScreen('homeScreen')">←</button>
+        <button class="home-button" onclick="app.showScreen('homeScreen')">🏠</button>
+        <h1>למד להשקיע</h1>
+        <p>חינוך פיננסי בחינם</p>
+      </div>
+      
+      <h3 style="margin-bottom: 15px; font-size: 18px; color: #3D3D3D;">מקורות מומלצים</h3>
+      
+      <div class="card" onclick="app.openLink('https://www.investopedia.com/terms/c/compoundinterest.asp')">
+        <div class="card-header">
+          <div>
+            <div class="card-title">📈 ריבית דריבית</div>
+            <p style="font-size: 14px; color: #757575; margin-top: 5px;">הכוח של חיסכון לטווח ארוך</p>
+          </div>
+          <div style="font-size: 24px;">→</div>
+        </div>
+      </div>
+      
+      <div class="card" onclick="app.openLink('https://www.investopedia.com/articles/personal-finance/040315/why-save-retirement-your-20s.asp')">
+        <div class="card-header">
+          <div>
+            <div class="card-title">🌱 חיסכון מצעיר</div>
+            <p style="font-size: 14px; color: #757575; margin-top: 5px;">למה להתחיל מוקדם?</p>
+          </div>
+          <div style="font-size: 24px;">→</div>
+        </div>
+      </div>
+      
+      <div class="card" onclick="app.openLink('https://www.investopedia.com/investing/invest-101-what-are-stocks/')">
+        <div class="card-header">
+          <div>
+            <div class="card-title">📊 מהי מניה?</div>
+            <p style="font-size: 14px; color: #757575; margin-top: 5px;">מבוא להשקעות בשוק ההון</p>
+          </div>
+          <div style="font-size: 24px;">→</div>
+        </div>
+      </div>
+      
+      <div class="card" onclick="app.openLink('https://www.investopedia.com/terms/b/bond.asp')">
+        <div class="card-header">
+          <div>
+            <div class="card-title">💼 מהו אג״ח?</div>
+            <p style="font-size: 14px; color: #757575; margin-top: 5px;">השקעה בטוחה יותר</p>
+          </div>
+          <div style="font-size: 24px;">→</div>
+        </div>
+      </div>
+      
+      <div class="card" onclick="app.openLink('https://www.investopedia.com/investing/diversification-importance-investing/')">
+        <div class="card-header">
+          <div>
+            <div class="card-title">🎯 פיזור סיכונים</div>
+            <p style="font-size: 14px; color: #757575; margin-top: 5px;">אל תשים הכל בסל אחד</p>
+          </div>
+          <div style="font-size: 24px;">→</div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" onclick="app.showScreen('homeScreen')">
+        חזרה לדף הבית
+      </button>
+    </div>
+    
+    <!-- Screen 7: History & Analytics -->
+    <div class="screen" id="historyScreen">
+      <div class="header">
+        <button class="back-button" onclick="app.showScreen('homeScreen')">←</button>
+        <button class="home-button" onclick="app.showScreen('homeScreen')">🏠</button>
+        <h1>היסטוריה ומעקב</h1>
+        <p>הדילוגים והקניות שלך</p>
+      </div>
+      
+      <!-- Today's Comparison -->
+      <div class="comparison-card">
+        <div class="comparison-title">📅 היום</div>
+        <div class="comparison-row">
+          <span class="comparison-label">דילגתי על:</span>
+          <span class="comparison-value" id="todaySkips">₪0</span>
+        </div>
+        <div class="comparison-row">
+          <span class="comparison-label">קניתי בפועל:</span>
+          <span class="comparison-value" id="todayPurchases">₪0</span>
+        </div>
+        <div class="comparison-footer" id="todayComparison">
+          מחכה לנתונים...
+        </div>
+      </div>
+      
+      <!-- Tabs -->
+      <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <button class="btn btn-secondary" style="flex: 1;" onclick="app.showHistoryTab('skips')">
+          💸 דילוגים
+        </button>
+        <button class="btn btn-secondary" style="flex: 1;" onclick="app.showHistoryTab('purchases')">
+          🛒 קניות
         </button>
       </div>
-    </div>
-
-    <!-- Add Skip Screen -->
-    <div class="screen" id="addSkip">
-      <div class="header">
-        <div class="nav-buttons">
-          <button class="nav-btn-top" onclick="showScreen('home')">←</button>
-          <button class="nav-btn-top" onclick="showScreen('home')">🏠</button>
-        </div>
-        <h1 data-lang="add_skip_title">דילוג חדש</h1>
-        <div class="subtitle" data-lang="add_skip_subtitle">תעד רכישה שדילגת עליה</div>
+      
+      <!-- Skips List -->
+      <div id="skipsTab">
+        <h3 style="margin-bottom: 15px; font-size: 18px; color: #3D3D3D;">📜 היסטוריית דילוגים</h3>
+        <div id="skipsList"></div>
       </div>
       
-      <div class="content">
-        <form id="skipForm" onsubmit="addSkip(event)">
-          <div class="form-group">
-            <label data-lang="category_label">קטגוריה</label>
-            <select id="category" required>
-              <option value="" data-lang="category_select">בחר קטגוריה</option>
-              <option value="אוכל ומשקאות" data-lang="cat_food">🍕 אוכל ומשקאות</option>
-              <option value="אופנה וביגוד" data-lang="cat_fashion">👕 אופנה וביגוד</option>
-              <option value="בידור" data-lang="cat_entertainment">🎬 בידור</option>
-              <option value="טכנולוגיה" data-lang="cat_tech">📱 טכנולוגיה</option>
-              <option value="יופי וטיפוח" data-lang="cat_beauty">💄 יופי וטיפוח</option>
-              <option value="תחבורה" data-lang="cat_transport">🚗 תחבורה</option>
-              <option value="מנויים" data-lang="cat_subscriptions">📺 מנויים</option>
-              <option value="קניות דחף" data-lang="cat_impulse">🛍️ קניות דחף</option>
-              <option value="חברתי" data-lang="cat_social">🎉 חברתי</option>
-              <option value="אחר" data-lang="cat_other">📦 אחר</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label data-lang="amount_label">סכום (₪)</label>
-            <input type="number" id="amount" data-lang-placeholder="amount_placeholder" placeholder="כמה חסכת?" required min="1" step="0.01">
-          </div>
-          
-          <div class="form-group">
-            <label data-lang="description_label">תיאור (אופציונלי)</label>
-            <input type="text" id="description" data-lang-placeholder="description_placeholder" placeholder="על מה ויתרת?">
-          </div>
-          
-          <button type="submit" class="btn btn-primary" data-lang="btn_save_continue">שמור והמשך</button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Investment Channels Screen -->
-    <div class="screen" id="investmentChannels">
-      <div class="header">
-        <div class="nav-buttons">
-          <button class="nav-btn-top" onclick="goBack()">←</button>
-          <button class="nav-btn-top" onclick="showScreen('home')">🏠</button>
-        </div>
-        <h1 data-lang="investment_title">אפיקי השקעה</h1>
-        <div class="subtitle" data-lang="investment_subtitle">למד איך להשקיע את החיסכון שלך</div>
+      <!-- Purchases List -->
+      <div id="purchasesTab" style="display: none;">
+        <h3 style="margin-bottom: 15px; font-size: 18px; color: #3D3D3D;">📜 היסטוריית קניות</h3>
+        <div id="purchasesList"></div>
       </div>
       
-      <div class="content">
-        <div class="card" style="background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%); color: var(--text); margin-bottom: 20px;">
-          <h3 style="margin-bottom: 10px; font-size: 20px;" data-lang="investment_intro_title">למה חשוב להשקיע?</h3>
-          <p style="font-size: 15px; line-height: 1.6;" data-lang="investment_intro_text">
-            החיסכון שלך יכול לגדול! למד על דרכים חכמות להשקיע את הכסף שחסכת.
-          </p>
-        </div>
-        
-        <div class="investment-links">
-          <a href="https://www.supermarker.themarker.com/Investments/WhatIs-CompoundInterest.aspx" target="_blank" class="investment-link">
-            <div class="investment-icon">📈</div>
-            <div class="investment-text">
-              <div class="investment-title" data-lang="link_compound">ריבית דריבית</div>
-              <div class="investment-desc" data-lang="link_compound_desc">הכוח הקסום שמגדיל את הכסף</div>
-            </div>
-          </a>
-          
-          <a href="https://www.globes.co.il/news/article.aspx?did=1001420080" target="_blank" class="investment-link">
-            <div class="investment-icon">🌱</div>
-            <div class="investment-text">
-              <div class="investment-title" data-lang="link_young">חיסכון מגיל צעיר</div>
-              <div class="investment-desc" data-lang="link_young_desc">למה כדאי להתחיל מוקדם?</div>
-            </div>
-          </a>
-          
-          <a href="https://financa.co.il/אפיקי-השקעה-מומלצים/" target="_blank" class="investment-link">
-            <div class="investment-icon">💼</div>
-            <div class="investment-text">
-              <div class="investment-title" data-lang="link_channels">אפיקי השקעה</div>
-              <div class="investment-desc" data-lang="link_channels_desc">היכן כדאי להשקיע?</div>
-            </div>
-          </a>
-          
-          <a href="https://www.supermarker.themarker.com/Investments/InvestingInStocks.aspx" target="_blank" class="investment-link">
-            <div class="investment-icon">📊</div>
-            <div class="investment-text">
-              <div class="investment-title" data-lang="link_stocks">מהי מניה?</div>
-              <div class="investment-desc" data-lang="link_stocks_desc">הבנת השקעה במניות</div>
-            </div>
-          </a>
-          
-          <a href="https://www.globes.co.il/news/article.aspx?did=1000483243" target="_blank" class="investment-link">
-            <div class="investment-icon">📜</div>
-            <div class="investment-text">
-              <div class="investment-title" data-lang="link_bonds">מהו אג"ח?</div>
-              <div class="investment-desc" data-lang="link_bonds_desc">הבנת אגרות חוב</div>
-            </div>
-          </a>
-        </div>
-        
-        <button class="btn btn-primary" onclick="showScreen('historyTable')" style="margin-top: 20px;" data-lang="btn_continue">המשך</button>
-      </div>
+      <button class="btn btn-primary" onclick="app.showScreen('summaryScreen')">
+        📊 סיכום מלא
+      </button>
     </div>
-
-    <!-- History Table Screen -->
-    <div class="screen" id="historyTable">
+    
+    <!-- Screen 8: Summary -->
+    <div class="screen" id="summaryScreen">
       <div class="header">
-        <div class="nav-buttons">
-          <button class="nav-btn-top" onclick="goBack()">←</button>
-          <button class="nav-btn-top" onclick="showScreen('home')">🏠</button>
-        </div>
-        <h1 data-lang="history_title">היסטוריית דילוגים</h1>
-        <div class="subtitle" data-lang="history_subtitle">כל הדילוגים שלך במבט אחד</div>
+        <button class="back-button" onclick="app.showScreen('historyScreen')">←</button>
+        <button class="home-button" onclick="app.showScreen('homeScreen')">🏠</button>
+        <h1>סיכום מלא</h1>
+        <p>הנתונים שלך במבט אחד</p>
       </div>
       
-      <div class="content">
-        <div class="card" style="padding: 0; overflow-x: auto;">
-          <table class="history-table" id="historyTableContent">
-            <thead>
-              <tr>
-                <th data-lang="table_date">תאריך</th>
-                <th data-lang="table_category">קטגוריה</th>
-                <th data-lang="table_amount">סכום</th>
-                <th data-lang="table_points">נקודות</th>
-              </tr>
-            </thead>
-            <tbody id="historyTableBody">
-              <tr>
-                <td colspan="4">
-                  <div class="empty-state">
-                    <div class="empty-icon">📝</div>
-                    <div data-lang="no_skips">אין דילוגים עדיין</div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="summaryTotalSkips">0</div>
+          <div class="stat-label">סה״כ דילוגים</div>
         </div>
-        
-        <button class="btn btn-primary" onclick="showScreen('summary')" style="margin-top: 20px;" data-lang="btn_continue">המשך</button>
-      </div>
-    </div>
-
-    <!-- Summary Screen -->
-    <div class="screen" id="summary">
-      <div class="header">
-        <div class="nav-buttons">
-          <button class="nav-btn-top" onclick="goBack()">←</button>
-          <button class="nav-btn-top" onclick="showScreen('home')">🏠</button>
+        <div class="stat-card">
+          <div class="stat-value" id="summaryTotalSavings">₪0</div>
+          <div class="stat-label">סה״כ חסכון</div>
         </div>
-        <h1 data-lang="summary_title">סיכום</h1>
-        <div class="subtitle" data-lang="summary_subtitle">כל הכבוד על ההישגים שלך!</div>
+        <div class="stat-card">
+          <div class="stat-value" id="summaryTotalPoints">0</div>
+          <div class="stat-label">סה״כ נקודות</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="summaryAvgSkip">₪0</div>
+          <div class="stat-label">ממוצע דילוג</div>
+        </div>
       </div>
       
-      <div class="content">
-        <div class="success-banner">
-          <h2 data-lang="summary_congrats">🎉 כל הכבוד!</h2>
-          <p data-lang="summary_congrats_text">אתה בדרך הנכונה לעתיד פיננסי טוב יותר</p>
-        </div>
-        
-        <div class="summary-stats">
-          <div class="summary-card">
-            <div class="summary-value" id="summaryTotalSkips">0</div>
-            <div class="summary-label" data-lang="summary_total_skips">סה"כ דילוגים</div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-value" id="summaryTotalSavings">₪0</div>
-            <div class="summary-label" data-lang="summary_total_savings">סה"כ חסכון</div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-value" id="summaryTotalPoints">0</div>
-            <div class="summary-label" data-lang="summary_total_points">סה"כ נקודות</div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-value" id="summaryAvgSkip">₪0</div>
-            <div class="summary-label" data-lang="summary_avg_skip">ממוצע דילוג</div>
+      <h3 style="margin: 20px 0 15px; font-size: 18px; color: #3D3D3D;">📊 ניתוח התנהגותי</h3>
+      
+      <div class="card">
+        <div class="card-title">💸 סה״כ דילגתי על</div>
+        <div class="card-amount" id="summarySkipsAmount">₪0</div>
+        <div class="card-details">
+          <div class="card-detail">
+            <span id="summarySkipsCount">0</span>
+            <span>דילוגים</span>
           </div>
         </div>
-        
-        <div class="card">
-          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;" data-lang="summary_insights">תובנות</h3>
-          <p style="font-size: 15px; line-height: 1.8; color: var(--text-light);" id="summaryInsights" data-lang="summary_insights_text">
-            המשך כך! כל דילוג הוא צעד נוסף לעבר החופש הפיננסי שלך.
-          </p>
-        </div>
-        
-        <button class="btn btn-primary" onclick="showScreen('home')" data-lang="btn_back_home">חזרה לדף הבית</button>
-      </div>
-    </div>
-
-    <!-- Settings Screen -->
-    <div class="screen" id="settings">
-      <div class="header">
-        <div class="nav-buttons">
-          <button class="nav-btn-top" onclick="showScreen('home')">←</button>
-          <button class="nav-btn-top" onclick="showScreen('home')">🏠</button>
-        </div>
-        <h1 data-lang="settings_title">הגדרות</h1>
-        <div class="subtitle" data-lang="settings_subtitle">התאם אישית את החוויה</div>
       </div>
       
-      <div class="content">
-        <div class="card">
-          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;" data-lang="profile_title">פרופיל שלי</h3>
-          <div style="color: var(--text-light); line-height: 1.8;">
-            <p><strong data-lang="profile_name">שם:</strong> <span id="profileName">-</span></p>
-            <p><strong data-lang="profile_age">גיל:</strong> <span id="profileAge">-</span></p>
-            <p><strong data-lang="profile_goal">מטרה:</strong> <span id="profileGoal">-</span></p>
-            <p><strong data-lang="profile_lang">שפה:</strong> <span id="profileLang">עברית</span></p>
+      <div class="card">
+        <div class="card-title">🛒 סה״כ קניתי בפועל</div>
+        <div class="card-amount" style="color: #FF6B6B;" id="summaryPurchasesAmount">₪0</div>
+        <div class="card-details">
+          <div class="card-detail">
+            <span id="summaryPurchasesCount">0</span>
+            <span>קניות</span>
           </div>
         </div>
-        
-        <div class="card">
-          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;" data-lang="about_title">אודות SKIPAPP</h3>
-          <p style="color: var(--text-light); line-height: 1.6; margin-bottom: 10px;" data-lang="about_text">
-            SKIPAPP היא אפליקציה חינוכית שמבוססת על מחקר בכלכלה התנהגותית. 
-            האפליקציה מלמדת אוריינות פיננסית באמצעות תיעוד הוצאות שנמנעו.
-          </p>
-          <p style="color: var(--text-light); line-height: 1.6;">
-            <span data-lang="about_version">גרסה: 4.0 (רב-לשונית)</span><br>
-            <span data-lang="about_developer">פותח על ידי: ד"ר אלירן</span><br>
-            <span data-lang="about_method">מבוסס על מתודולוגיית AST</span>
-          </p>
-        </div>
-        
-        <div class="card">
-          <h3 style="margin-bottom: 15px; color: var(--text); font-size: 18px;" data-lang="actions_title">פעולות</h3>
-          <button class="btn btn-secondary" onclick="changeLanguage()" style="margin-bottom: 10px;" data-lang="btn_change_lang">
-            🌐 שנה שפה
-          </button>
+      </div>
+      
+      <div class="comparison-card">
+        <div class="comparison-title">🎯 האם הדילוגים עוזרים?</div>
+        <div id="behaviorAnalysis" style="font-size: 16px; line-height: 1.8;">
+          מחכה לנתונים...
         </div>
       </div>
+      
+      <button class="btn btn-primary" onclick="app.showScreen('homeScreen')">
+        חזרה לדף הבית
+      </button>
     </div>
   </div>
 
   <script>
-    // Translation dictionary
-    const translations = {
-      he: {
-        app_name: 'SKIPAPP',
-        app_tagline: 'דלג על ההוצאה, צבור לעתיד',
-        welcome_subtitle: 'משחק החיסכון שישנה לך את החיים',
-        feature_1: 'תעד כל רכישה שוויתרת עליה',
-        feature_2: 'צבור נקודות וראה את החיסכון שלך',
-        feature_3: 'עקוב אחרי ההתקדמות שלך',
-        feature_4: 'השג מטרות והתפתח',
-        btn_start: 'בואו נתחיל!',
-        register_title: 'הרשמה',
-        register_subtitle: 'בואו נכיר!',
-        lang_label: 'בחר שפה / Choose Language',
-        first_name_label: 'שם פרטי',
-        first_name_placeholder: 'איך קוראים לך?',
-        age_label: 'גיל',
-        age_placeholder: 'כמה אתה בן/בת?',
-        goal_label: 'מטרת חיסכון (אופציונלי)',
-        goal_placeholder: 'למה אתה חוסך?',
-        btn_start_saving: 'התחל לחסוך! 🚀',
-        hello: 'שלום',
-        btn_add_skip: '+ הוסף דילוג חדש',
-        btn_settings: '⚙️ הגדרות',
-        add_skip_title: 'דילוג חדש',
-        add_skip_subtitle: 'תעד רכישה שדילגת עליה',
-        category_label: 'קטגוריה',
-        category_select: 'בחר קטגוריה',
-        cat_food: '🍕 אוכל ומשקאות',
-        cat_fashion: '👕 אופנה וביגוד',
-        cat_entertainment: '🎬 בידור',
-        cat_tech: '📱 טכנולוגיה',
-        cat_beauty: '💄 יופי וטיפוח',
-        cat_transport: '🚗 תחבורה',
-        cat_subscriptions: '📺 מנויים',
-        cat_impulse: '🛍️ קניות דחף',
-        cat_social: '🎉 חברתי',
-        cat_other: '📦 אחר',
-        amount_label: 'סכום (₪)',
-        amount_placeholder: 'כמה חסכת?',
-        description_label: 'תיאור (אופציונלי)',
-        description_placeholder: 'על מה ויתרת?',
-        btn_save_continue: 'שמור והמשך',
-        investment_title: 'אפיקי השקעה',
-        investment_subtitle: 'למד איך להשקיע את החיסכון שלך',
-        investment_intro_title: 'למה חשוב להשקיע?',
-        investment_intro_text: 'החיסכון שלך יכול לגדול! למד על דרכים חכמות להשקיע את הכסף שחסכת.',
-        link_compound: 'ריבית דריבית',
-        link_compound_desc: 'הכוח הקסום שמגדיל את הכסף',
-        link_young: 'חיסכון מגיל צעיר',
-        link_young_desc: 'למה כדאי להתחיל מוקדם?',
-        link_channels: 'אפיקי השקעה',
-        link_channels_desc: 'היכן כדאי להשקיע?',
-        link_stocks: 'מהי מניה?',
-        link_stocks_desc: 'הבנת השקעה במניות',
-        link_bonds: 'מהו אג"ח?',
-        link_bonds_desc: 'הבנת אגרות חוב',
-        btn_continue: 'המשך',
-        history_title: 'היסטוריית דילוגים',
-        history_subtitle: 'כל הדילוגים שלך במבט אחד',
-        table_date: 'תאריך',
-        table_category: 'קטגוריה',
-        table_amount: 'סכום',
-        table_points: 'נקודות',
-        no_skips: 'אין דילוגים עדיין',
-        summary_title: 'סיכום',
-        summary_subtitle: 'כל הכבוד על ההישגים שלך!',
-        summary_congrats: '🎉 כל הכבוד!',
-        summary_congrats_text: 'אתה בדרך הנכונה לעתיד פיננסי טוב יותר',
-        summary_total_skips: 'סה"כ דילוגים',
-        summary_total_savings: 'סה"כ חסכון',
-        summary_total_points: 'סה"כ נקודות',
-        summary_avg_skip: 'ממוצע דילוג',
-        summary_insights: 'תובנות',
-        summary_insights_text: 'המשך כך! כל דילוג הוא צעד נוסף לעבר החופש הפיננסי שלך.',
-        btn_back_home: 'חזרה לדף הבית',
-        settings_title: 'הגדרות',
-        settings_subtitle: 'התאם אישית את החוויה',
-        profile_title: 'פרופיל שלי',
-        profile_name: 'שם:',
-        profile_age: 'גיל:',
-        profile_goal: 'מטרה:',
-        profile_lang: 'שפה:',
-        about_title: 'אודות SKIPAPP',
-        about_text: 'SKIPAPP היא אפליקציה חינוכית שמבוססת על מחקר בכלכלה התנהגותית. האפליקציה מלמדת אוריינות פיננסית באמצעות תיעוד הוצאות שנמנעו.',
-        about_version: 'גרסה: 4.0 (רב-לשונית)',
-        about_developer: 'פותח על ידי: ד"ר אלירן',
-        about_method: 'מבוסס על מתודולוגיית AST',
-        actions_title: 'פעולות',
-        btn_change_lang: '🌐 שנה שפה'
-      },
-      en: {
-        app_name: 'SKIPAPP',
-        app_tagline: 'Skip the Expense, Save for the Future',
-        welcome_subtitle: 'The savings game that will change your life',
-        feature_1: 'Track every purchase you skipped',
-        feature_2: 'Earn points and watch your savings grow',
-        feature_3: 'Follow your progress',
-        feature_4: 'Achieve goals and grow',
-        btn_start: "Let's Start!",
-        register_title: 'Registration',
-        register_subtitle: "Let's get to know each other!",
-        lang_label: 'Choose Language / בחר שפה',
-        first_name_label: 'First Name',
-        first_name_placeholder: "What's your name?",
-        age_label: 'Age',
-        age_placeholder: 'How old are you?',
-        goal_label: 'Savings Goal (Optional)',
-        goal_placeholder: 'What are you saving for?',
-        btn_start_saving: 'Start Saving! 🚀',
-        hello: 'Hello',
-        btn_add_skip: '+ Add New Skip',
-        btn_settings: '⚙️ Settings',
-        add_skip_title: 'New Skip',
-        add_skip_subtitle: 'Record a purchase you skipped',
-        category_label: 'Category',
-        category_select: 'Select Category',
-        cat_food: '🍕 Food & Drinks',
-        cat_fashion: '👕 Fashion & Clothing',
-        cat_entertainment: '🎬 Entertainment',
-        cat_tech: '📱 Technology',
-        cat_beauty: '💄 Beauty & Care',
-        cat_transport: '🚗 Transportation',
-        cat_subscriptions: '📺 Subscriptions',
-        cat_impulse: '🛍️ Impulse Shopping',
-        cat_social: '🎉 Social',
-        cat_other: '📦 Other',
-        amount_label: 'Amount (₪)',
-        amount_placeholder: 'How much did you save?',
-        description_label: 'Description (Optional)',
-        description_placeholder: 'What did you skip?',
-        btn_save_continue: 'Save & Continue',
-        investment_title: 'Investment Channels',
-        investment_subtitle: 'Learn how to invest your savings',
-        investment_intro_title: 'Why is investing important?',
-        investment_intro_text: 'Your savings can grow! Learn smart ways to invest the money you saved.',
-        link_compound: 'Compound Interest',
-        link_compound_desc: 'The magic power that grows your money',
-        link_young: 'Saving from Young Age',
-        link_young_desc: 'Why start early?',
-        link_channels: 'Investment Channels',
-        link_channels_desc: 'Where should you invest?',
-        link_stocks: 'What is a Stock?',
-        link_stocks_desc: 'Understanding stock investments',
-        link_bonds: 'What is a Bond?',
-        link_bonds_desc: 'Understanding bonds',
-        btn_continue: 'Continue',
-        history_title: 'Skip History',
-        history_subtitle: 'All your skips at a glance',
-        table_date: 'Date',
-        table_category: 'Category',
-        table_amount: 'Amount',
-        table_points: 'Points',
-        no_skips: 'No skips yet',
-        summary_title: 'Summary',
-        summary_subtitle: 'Great job on your achievements!',
-        summary_congrats: '🎉 Well Done!',
-        summary_congrats_text: "You're on the right path to a better financial future",
-        summary_total_skips: 'Total Skips',
-        summary_total_savings: 'Total Savings',
-        summary_total_points: 'Total Points',
-        summary_avg_skip: 'Avg Skip',
-        summary_insights: 'Insights',
-        summary_insights_text: 'Keep it up! Every skip is another step towards your financial freedom.',
-        btn_back_home: 'Back to Home',
-        settings_title: 'Settings',
-        settings_subtitle: 'Customize your experience',
-        profile_title: 'My Profile',
-        profile_name: 'Name:',
-        profile_age: 'Age:',
-        profile_goal: 'Goal:',
-        profile_lang: 'Language:',
-        about_title: 'About SKIPAPP',
-        about_text: 'SKIPAPP is an educational app based on behavioral economics research. The app teaches financial literacy through tracking abstained expenses.',
-        about_version: 'Version: 4.0 (Multilingual)',
-        about_developer: 'Developed by: Dr. Eliran',
-        about_method: 'Based on AST methodology',
-        actions_title: 'Actions',
-        btn_change_lang: '🌐 Change Language'
-      }
+    // Firebase Configuration - REPLACE WITH YOUR CONFIG!
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY_HERE",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID",
+      measurementId: "YOUR_MEASUREMENT_ID"
     };
     
-    // Initialize data
-    let userData = null;
-    let skipsData = [];
-    let currentLang = 'he';
-    let screenHistory = [];
-    
-    // Load from localStorage
+    // Initialize Firebase
+    let analytics = null;
     try {
-      const storedUser = localStorage.getItem('skipapp_user');
-      const storedData = localStorage.getItem('skipapp_data');
-      const storedLang = localStorage.getItem('skipapp_lang');
-      
-      if (storedUser && storedUser !== 'null') {
-        userData = JSON.parse(storedUser);
-      }
-      
-      if (storedData && storedData !== '[]') {
-        skipsData = JSON.parse(storedData);
-      }
-      
-      if (storedLang) {
-        currentLang = storedLang;
-        setLanguage(currentLang, false);
-      }
+      firebase.initializeApp(firebaseConfig);
+      analytics = firebase.analytics();
+      console.log('✅ Firebase Analytics initialized');
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.warn('⚠️ Firebase not configured. Add your config to enable analytics.');
     }
     
-    // Set language
-    function setLanguage(lang, save = true) {
-      currentLang = lang;
-      document.documentElement.lang = lang;
-      document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
-      document.body.className = lang;
+    // App State
+    const app = {
+      currentScreen: 'welcomeScreen',
+      language: 'he',
+      user: {},
+      skips: [],
+      purchases: [],
       
-      // Update all translatable elements
-      document.querySelectorAll('[data-lang]').forEach(el => {
-        const key = el.getAttribute('data-lang');
-        if (translations[lang][key]) {
-          el.textContent = translations[lang][key];
-        }
-      });
+      // Initialize
+      init() {
+        this.loadData();
+        this.updateUI();
+        this.trackPageView('welcome');
+      },
       
-      // Update placeholders
-      document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-lang-placeholder');
-        if (translations[lang][key]) {
-          el.placeholder = translations[lang][key];
-        }
-      });
+      // Navigation
+      showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        this.currentScreen = screenId;
+        this.trackPageView(screenId);
+      },
       
-      // Update language buttons
-      document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('data-lang-btn') === lang) {
-          btn.classList.add('active');
-        }
-      });
+      // Language
+      setLanguage(lang) {
+        this.language = lang;
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        this.trackEvent('language_selected', { language: lang });
+      },
       
-      if (save) {
-        localStorage.setItem('skipapp_lang', lang);
-        if (userData) {
-          userData.language = lang;
-          localStorage.setItem('skipapp_user', JSON.stringify(userData));
-        }
-      }
-      
-      // Update profile language display
-      const profileLangEl = document.getElementById('profileLang');
-      if (profileLangEl) {
-        profileLangEl.textContent = lang === 'he' ? 'עברית' : 'English';
-      }
-    }
-    
-    // Check registration
-    function checkRegistration() {
-      if (userData && userData.firstName) {
-        showScreen('home');
-        updateUserGreeting();
-      } else {
-        showScreen('register');
-      }
-    }
-    
-    // Save registration
-    function saveRegistration(event) {
-      event.preventDefault();
-      
-      try {
-        const firstName = document.getElementById('firstName').value.trim();
-        const age = document.getElementById('age').value;
-        const goal = document.getElementById('goal').value.trim();
+      // Registration
+      register(e) {
+        e.preventDefault();
         
-        if (!firstName || !age) {
-          alert(currentLang === 'he' ? 'נא למלא את כל השדות החובה' : 'Please fill all required fields');
-          return;
-        }
+        const name = document.getElementById('userName').value;
+        const age = parseInt(document.getElementById('userAge').value);
+        const gender = document.querySelector('input[name="gender"]:checked').value;
+        const goal = document.getElementById('userGoal').value;
         
-        userData = {
-          firstName: firstName,
-          age: parseInt(age),
-          goal: goal || (currentLang === 'he' ? 'לעתיד טוב יותר' : 'For a better future'),
-          language: currentLang,
+        this.user = {
+          name,
+          age,
+          gender,
+          goal,
+          language: this.language,
           registeredAt: new Date().toISOString()
         };
         
-        localStorage.setItem('skipapp_user', JSON.stringify(userData));
+        this.saveData();
         
-        showScreen('home');
-        updateUserGreeting();
-      } catch (error) {
-        console.error('Error saving registration:', error);
-        alert(currentLang === 'he' ? 'שגיאה בשמירת הרשמה. נסה שוב.' : 'Error saving registration. Please try again.');
-      }
-    }
-    
-    // Update user greeting
-    function updateUserGreeting() {
-      if (userData && userData.firstName) {
-        const userNameEl = document.getElementById('userName');
-        const profileNameEl = document.getElementById('profileName');
-        const profileAgeEl = document.getElementById('profileAge');
-        const profileGoalEl = document.getElementById('profileGoal');
-        
-        if (userNameEl) userNameEl.textContent = userData.firstName;
-        if (profileNameEl) profileNameEl.textContent = userData.firstName;
-        if (profileAgeEl) profileAgeEl.textContent = userData.age;
-        if (profileGoalEl) profileGoalEl.textContent = userData.goal;
-      }
-    }
-    
-    // Show screen
-    function showScreen(screenId) {
-      try {
-        const screens = document.querySelectorAll('.screen');
-        screens.forEach(s => s.classList.remove('active'));
-        
-        const targetScreen = document.getElementById(screenId);
-        if (targetScreen) {
-          targetScreen.classList.add('active');
-          screenHistory.push(screenId);
-          if (screenHistory.length > 10) screenHistory.shift();
+        // Set user properties in Analytics
+        if (analytics) {
+          analytics.setUserProperties({
+            age_group: this.getAgeGroup(age),
+            gender: gender,
+            language: this.language
+          });
         }
         
-        if (screenId === 'historyTable') {
-          loadHistoryTable();
-        } else if (screenId === 'summary') {
-          loadSummary();
-        } else if (screenId === 'settings') {
-          updateUserGreeting();
-        }
-      } catch (error) {
-        console.error('Error showing screen:', error);
-      }
-    }
-    
-    // Go back
-    function goBack() {
-      if (screenHistory.length > 1) {
-        screenHistory.pop();
-        const prevScreen = screenHistory[screenHistory.length - 1];
-        showScreen(prevScreen);
-      } else {
-        showScreen('home');
-      }
-    }
-    
-    // Add skip
-    function addSkip(event) {
-      event.preventDefault();
+        this.trackEvent('user_registered', {
+          age,
+          gender,
+          language: this.language
+        });
+        
+        document.getElementById('welcomeMessage').textContent = `שלום, ${name}!`;
+        this.showScreen('homeScreen');
+      },
       
-      try {
-        const category = document.getElementById('category').value;
-        const amount = parseFloat(document.getElementById('amount').value);
-        const description = document.getElementById('description').value.trim();
-        
-        if (!category || !amount || amount <= 0) {
-          alert(currentLang === 'he' ? 'נא למלא את כל השדות החובה' : 'Please fill all required fields');
-          return;
-        }
+      // Add Skip
+      addSkip(e) {
+        e.preventDefault();
         
         const skip = {
           id: Date.now(),
-          category: category,
-          amount: amount,
-          description: description,
-          date: new Date().toISOString(),
-          points: Math.round(amount * 0.5)
+          item: document.getElementById('skipItem').value,
+          amount: parseFloat(document.getElementById('skipAmount').value),
+          category: document.getElementById('skipCategory').value,
+          notes: document.getElementById('skipNotes').value,
+          points: parseFloat(document.getElementById('skipAmount').value) * 0.5,
+          date: new Date().toISOString()
         };
         
-        skipsData.unshift(skip);
-        localStorage.setItem('skipapp_data', JSON.stringify(skipsData));
+        this.skips.push(skip);
+        this.saveData();
         
-        const form = document.getElementById('skipForm');
-        if (form) form.reset();
+        this.trackEvent('skip_added', {
+          category: skip.category,
+          amount: skip.amount,
+          age: this.user.age,
+          gender: this.user.gender
+        });
         
-        showScreen('investmentChannels');
-      } catch (error) {
-        console.error('Error adding skip:', error);
-        alert(currentLang === 'he' ? 'שגיאה בשמירת הדילוג. נסה שוב.' : 'Error saving skip. Please try again.');
-      }
-    }
-    
-    // Load history table
-    function loadHistoryTable() {
-      try {
-        const tbody = document.getElementById('historyTableBody');
-        if (!tbody) return;
+        e.target.reset();
+        alert(`כל הכבוד! 🎉\nדילגת על ${skip.item}\nקיבלת ${skip.points} נקודות!`);
+        this.showScreen('investmentScreen');
+      },
+      
+      // Add Purchase (NEW!)
+      addPurchase(e) {
+        e.preventDefault();
         
-        if (skipsData.length === 0) {
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="4">
-                <div class="empty-state">
-                  <div class="empty-icon">📝</div>
-                  <div data-lang="no_skips">${translations[currentLang].no_skips}</div>
-                </div>
-              </td>
-            </tr>
-          `;
+        const purchase = {
+          id: Date.now(),
+          item: document.getElementById('purchaseItem').value,
+          amount: parseFloat(document.getElementById('purchaseAmount').value),
+          category: document.getElementById('purchaseCategory').value,
+          time: document.getElementById('purchaseTime').value,
+          notes: document.getElementById('purchaseNotes').value,
+          date: new Date().toISOString()
+        };
+        
+        this.purchases.push(purchase);
+        this.saveData();
+        
+        this.trackEvent('purchase_added', {
+          category: purchase.category,
+          amount: purchase.amount,
+          age: this.user.age,
+          gender: this.user.gender
+        });
+        
+        e.target.reset();
+        alert(`נרשם! 📝\nקנית ${purchase.item} ב-${purchase.amount} ש״ח`);
+        this.showScreen('historyScreen');
+      },
+      
+      // History Tabs
+      showHistoryTab(tab) {
+        if (tab === 'skips') {
+          document.getElementById('skipsTab').style.display = 'block';
+          document.getElementById('purchasesTab').style.display = 'none';
         } else {
-          tbody.innerHTML = skipsData.map(skip => {
-            const date = new Date(skip.date);
-            const dateStr = date.toLocaleDateString(currentLang === 'he' ? 'he-IL' : 'en-US', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit'
-            });
-            
-            return `
-              <tr>
-                <td>${dateStr}</td>
-                <td>${skip.category || (currentLang === 'he' ? 'אחר' : 'Other')}</td>
-                <td>₪${(skip.amount || 0).toLocaleString()}</td>
-                <td>+${skip.points || 0}</td>
-              </tr>
-            `;
-          }).join('');
+          document.getElementById('skipsTab').style.display = 'none';
+          document.getElementById('purchasesTab').style.display = 'block';
         }
-      } catch (error) {
-        console.error('Error loading history table:', error);
-      }
-    }
-    
-    // Load summary
-    function loadSummary() {
-      try {
-        const totalSkips = skipsData.length;
-        const totalSavings = skipsData.reduce((sum, skip) => sum + (skip.amount || 0), 0);
-        const totalPoints = skipsData.reduce((sum, skip) => sum + (skip.points || 0), 0);
-        const avgSkip = totalSkips > 0 ? Math.round(totalSavings / totalSkips) : 0;
         
-        const summaryTotalSkipsEl = document.getElementById('summaryTotalSkips');
-        const summaryTotalSavingsEl = document.getElementById('summaryTotalSavings');
-        const summaryTotalPointsEl = document.getElementById('summaryTotalPoints');
-        const summaryAvgSkipEl = document.getElementById('summaryAvgSkip');
+        this.updateHistoryUI();
+      },
+      
+      // Update UI
+      updateUI() {
+        // Home stats
+        const totalSkipsCount = this.skips.length;
+        const totalSavings = this.skips.reduce((sum, s) => sum + s.amount, 0);
+        const totalPoints = this.skips.reduce((sum, s) => sum + s.points, 0);
+        const totalPurchasesCount = this.purchases.length;
         
-        if (summaryTotalSkipsEl) summaryTotalSkipsEl.textContent = totalSkips;
-        if (summaryTotalSavingsEl) summaryTotalSavingsEl.textContent = `₪${totalSavings.toLocaleString()}`;
-        if (summaryTotalPointsEl) summaryTotalPointsEl.textContent = totalPoints.toLocaleString();
-        if (summaryAvgSkipEl) summaryAvgSkipEl.textContent = `₪${avgSkip.toLocaleString()}`;
-      } catch (error) {
-        console.error('Error loading summary:', error);
-      }
-    }
-    
-    // Change language
-    function changeLanguage() {
-      const newLang = currentLang === 'he' ? 'en' : 'he';
-      setLanguage(newLang);
-    }
-    
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      try {
-        if (userData && userData.firstName) {
-          updateUserGreeting();
+        document.getElementById('totalSkips').textContent = totalSkipsCount;
+        document.getElementById('totalSavings').textContent = `₪${totalSavings.toFixed(0)}`;
+        document.getElementById('totalPoints').textContent = totalPoints.toFixed(0);
+        document.getElementById('totalPurchases').textContent = totalPurchasesCount;
+        
+        // Today's data
+        const today = new Date().toDateString();
+        const todaySkips = this.skips.filter(s => new Date(s.date).toDateString() === today);
+        const todayPurchases = this.purchases.filter(p => new Date(p.date).toDateString() === today);
+        
+        const todaySkipsAmount = todaySkips.reduce((sum, s) => sum + s.amount, 0);
+        const todayPurchasesAmount = todayPurchases.reduce((sum, p) => sum + p.amount, 0);
+        
+        document.getElementById('todaySkips').textContent = `₪${todaySkipsAmount.toFixed(0)}`;
+        document.getElementById('todayPurchases').textContent = `₪${todayPurchasesAmount.toFixed(0)}`;
+        
+        const difference = todaySkipsAmount - todayPurchasesAmount;
+        let comparisonText = '';
+        if (difference > 0) {
+          comparisonText = `✅ מעולה! חסכת ${difference.toFixed(0)} ש״ח היום!`;
+        } else if (difference < 0) {
+          comparisonText = `⚠️ הוצאת ${Math.abs(difference).toFixed(0)} ש״ח יותר ממה שדילגת`;
+        } else {
+          comparisonText = `🎯 איזון מושלם!`;
         }
-      } catch (error) {
-        console.error('Error during initialization:', error);
+        document.getElementById('todayComparison').textContent = comparisonText;
+        
+        // Summary stats
+        document.getElementById('summaryTotalSkips').textContent = totalSkipsCount;
+        document.getElementById('summaryTotalSavings').textContent = `₪${totalSavings.toFixed(0)}`;
+        document.getElementById('summaryTotalPoints').textContent = totalPoints.toFixed(0);
+        document.getElementById('summaryAvgSkip').textContent = totalSkipsCount > 0 ? `₪${(totalSavings / totalSkipsCount).toFixed(0)}` : '₪0';
+        
+        document.getElementById('summarySkipsAmount').textContent = `₪${totalSavings.toFixed(0)}`;
+        document.getElementById('summarySkipsCount').textContent = totalSkipsCount;
+        
+        const totalPurchasesAmount = this.purchases.reduce((sum, p) => sum + p.amount, 0);
+        document.getElementById('summaryPurchasesAmount').textContent = `₪${totalPurchasesAmount.toFixed(0)}`;
+        document.getElementById('summaryPurchasesCount').textContent = totalPurchasesCount;
+        
+        // Behavior analysis
+        let analysis = '';
+        if (totalSkipsCount === 0 && totalPurchasesCount === 0) {
+          analysis = 'התחל לתעד דילוגים וקניות כדי לראות ניתוח!';
+        } else if (totalSavings > totalPurchasesAmount) {
+          const netSaving = totalSavings - totalPurchasesAmount;
+          analysis = `🎉 מצוין! דילגת על ${totalSavings.toFixed(0)} ש״ח וקנית רק ${totalPurchasesAmount.toFixed(0)} ש״ח. חיסכון נקי: ${netSaving.toFixed(0)} ש״ח!`;
+        } else if (totalSavings < totalPurchasesAmount) {
+          analysis = `🤔 דילגת על ${totalSavings.toFixed(0)} ש״ח אבל קנית ${totalPurchasesAmount.toFixed(0)} ש״ח. נסה לדלג על יותר דברים או להפחית קניות!`;
+        } else {
+          analysis = `⚖️ איזון מושלם! דילגת וקנית בסכומים דומים.`;
+        }
+        document.getElementById('behaviorAnalysis').innerHTML = analysis;
+        
+        this.updateHistoryUI();
+      },
+      
+      // Update History UI
+      updateHistoryUI() {
+        // Skips list
+        const skipsList = document.getElementById('skipsList');
+        if (this.skips.length === 0) {
+          skipsList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>עדיין לא דילגת על כלום<br>התחל עכשיו!</p></div>';
+        } else {
+          const sortedSkips = [...this.skips].reverse();
+          skipsList.innerHTML = sortedSkips.map(skip => `
+            <div class="purchase-item">
+              <div class="purchase-info">
+                <div class="purchase-name">${skip.item}</div>
+                <div class="purchase-time">${new Date(skip.date).toLocaleDateString('he-IL')} | ${skip.category}</div>
+              </div>
+              <div class="purchase-amount" style="color: #7EBA9B;">₪${skip.amount.toFixed(0)}</div>
+            </div>
+          `).join('');
+        }
+        
+        // Purchases list
+        const purchasesList = document.getElementById('purchasesList');
+        if (this.purchases.length === 0) {
+          purchasesList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛒</div><p>עדיין לא תיעדת קניות<br>התחל לעקוב!</p></div>';
+        } else {
+          const sortedPurchases = [...this.purchases].reverse();
+          purchasesList.innerHTML = sortedPurchases.map(purchase => `
+            <div class="purchase-item">
+              <div class="purchase-info">
+                <div class="purchase-name">${purchase.item}</div>
+                <div class="purchase-time">${new Date(purchase.date).toLocaleDateString('he-IL')} ${purchase.time ? `| ${purchase.time}` : ''} | ${purchase.category}</div>
+              </div>
+              <div class="purchase-amount">₪${purchase.amount.toFixed(0)}</div>
+            </div>
+          `).join('');
+        }
+      },
+      
+      // Open Link
+      openLink(url) {
+        this.trackEvent('investment_link_clicked', { url });
+        window.open(url, '_blank');
+      },
+      
+      // Analytics Tracking
+      trackPageView(screenName) {
+        if (analytics) {
+          analytics.logEvent('screen_view', {
+            screen_name: screenName,
+            app_version: '5.0'
+          });
+        }
+        console.log('📊 Page view:', screenName);
+      },
+      
+      trackEvent(eventName, params = {}) {
+        if (analytics) {
+          analytics.logEvent(eventName, {
+            ...params,
+            timestamp: new Date().toISOString()
+          });
+        }
+        console.log('📊 Event:', eventName, params);
+      },
+      
+      // Helper: Age Group
+      getAgeGroup(age) {
+        if (age < 18) return '13-17';
+        if (age < 25) return '18-24';
+        if (age < 35) return '25-34';
+        if (age < 45) return '35-44';
+        if (age < 55) return '45-54';
+        return '55+';
+      },
+      
+      // Storage
+      saveData() {
+        localStorage.setItem('skipapp_user', JSON.stringify(this.user));
+        localStorage.setItem('skipapp_skips', JSON.stringify(this.skips));
+        localStorage.setItem('skipapp_purchases', JSON.stringify(this.purchases));
+        this.updateUI();
+      },
+      
+      loadData() {
+        const user = localStorage.getItem('skipapp_user');
+        const skips = localStorage.getItem('skipapp_skips');
+        const purchases = localStorage.getItem('skipapp_purchases');
+        
+        if (user) {
+          this.user = JSON.parse(user);
+          document.getElementById('welcomeMessage').textContent = `שלום, ${this.user.name}!`;
+          this.showScreen('homeScreen');
+        }
+        
+        if (skips) this.skips = JSON.parse(skips);
+        if (purchases) this.purchases = JSON.parse(purchases);
+      }
+    };
+    
+    // Initialize app
+    window.addEventListener('DOMContentLoaded', () => {
+      app.init();
+      
+      // Register Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+          .register('/service-worker.js')
+          .then((registration) => {
+            console.log('✅ Service Worker registered:', registration.scope);
+          })
+          .catch((error) => {
+            console.warn('⚠️ Service Worker registration failed:', error);
+          });
       }
     });
   </script>
