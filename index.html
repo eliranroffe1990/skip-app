@@ -1764,7 +1764,7 @@
       
       loadData() {
         const user = localStorage.getItem('skipapp_user');
-        const skips = localStorage.setItem('skipapp_skips');
+        const skips = localStorage.getItem('skipapp_skips');
         const purchases = localStorage.getItem('skipapp_purchases');
         
         if (user) this.user = JSON.parse(user);
