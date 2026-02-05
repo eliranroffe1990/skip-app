@@ -645,15 +645,16 @@
         <div class="lang-selector">
           <div class="lang-option" onclick="app.selectLanguage('he')">
             <div class="lang-flag">🇮🇱</div>
-           const firebaseConfig = {
-  apiKey: "AIzaSyDRB7jnKYNOQh7Ee3urpm3F-b3rMeCsl6k",
-  authDomain: "skippapp-ffc0a.firebaseapp.com",
-  projectId: "skippapp-ffc0a",
-  storageBucket: "skippapp-ffc0a.firebasestorage.app",
-  messagingSenderId: "727113113410",
-  appId: "1:727113113410:web:99e9de80faab5fc5db32db",
-  measurementId: "G-G5K00YSZXC"
-};
+            <div class="lang-name">עברית</div>
+          </div>
+          <div class="lang-option" onclick="app.selectLanguage('en')">
+            <div class="lang-flag">🇬🇧</div>
+            <div class="lang-name">English</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <!-- Screen 2: Intro & Terms -->
     <div class="screen" id="introScreen">
       <div class="header">
@@ -776,7 +777,7 @@
     <!-- Screen 5: Home Dashboard -->
     <div class="screen" id="homeScreen">
       <div class="header">
-        <h1 id="homeTitle">שלום, משתמש!</h1>
+        <h1 id="homeTitle">שלום, {name}!</h1>
         <p id="homeSubtitle">המסע שלך לחיסכון חכם</p>
       </div>
       
@@ -1051,11 +1052,8 @@
     // Translations
     const translations = {
       he: {
-        // Language Screen
         appTitle: 'SKIPAPP',
         appSubtitle: 'דלג על ההוצאה, צבור לעתיד',
-        
-        // Intro Screen
         introTitle: 'אודות האפליקציה',
         introSubtitle: 'למה SKIPAPP?',
         whatIsTitle: 'מה זה SKIPAPP?',
@@ -1070,8 +1068,6 @@
         termsTitle: 'תנאי שימוש',
         acceptLabel: 'אני מסכים/ה לתנאי השימוש ומבין/ה שהנתונים ישמשו למחקר אקדמי',
         continueBtnText: 'המשך להרשמה →',
-        
-        // Register Screen
         registerTitle: 'הרשמה',
         registerSubtitle: 'בואו נכיר!',
         nameLabel: 'איך קוראים לך?',
@@ -1081,15 +1077,11 @@
         femaleTxt: 'נקבה',
         otherTxt: 'אחר',
         registerBtn: 'שמור והמשך →',
-        
-        // Welcome Screen
         welcomeTitle: 'ברוך הבא!',
         welcomeSubtitle: 'אתה מוכן להתחיל לחסוך',
         welcomeMsg: 'מעולה! הצלחת להירשם',
         welcomeDesc: 'עכשיו אתה יכול להתחיל לתעד דילוגים,\nלצבור נקודות, וללמוד על השקעות חכמות!',
         startBtn: 'בואו נתחיל! 🚀',
-        
-        // Home Screen
         homeTitle: 'שלום, {name}!',
         homeSubtitle: 'המסע שלך לחיסכון חכם',
         skipsLabel: 'דילוגים',
@@ -1101,8 +1093,6 @@
         addPurchaseBtn: '🛒 תעד קנייה',
         learnBtn: '💡 למד להשקיע',
         historyBtn: '📊 היסטוריה ומעקב',
-        
-        // Add Skip Screen
         skipTitle: 'תעד דילוג',
         skipSubtitle: 'על מה דילגת?',
         skipItemLabel: 'על מה דילגת?',
@@ -1110,8 +1100,6 @@
         skipCategoryLabel: 'קטגוריה',
         skipNotesLabel: 'הערות (אופציונלי)',
         saveSkipBtn: 'שמור דילוג ✓',
-        
-        // Add Purchase Screen
         purchaseTitle: 'תעד קנייה',
         purchaseSubtitle: 'מה קנית?',
         purchaseItemLabel: 'מה קנית?',
@@ -1120,16 +1108,12 @@
         purchaseTimeLabel: 'באיזו שעה?',
         purchaseNotesLabel: 'הערות (אופציונלי)',
         savePurchaseBtn: 'שמור קנייה 🛒',
-        
-        // Categories
         catFood: 'אוכל ושתייה',
         catClothes: 'בגדים',
         catEntertainment: 'בילויים',
         catTransport: 'תחבורה',
         catTech: 'טכנולוגיה',
         catOther: 'אחר',
-        
-        // Investment Screen
         investTitle: 'למד להשקיע',
         investSubtitle: 'חינוך פיננסי',
         investResourcesTitle: 'מקורות מומלצים',
@@ -1138,8 +1122,6 @@
         link3: '📊 מהי מניה?',
         link4: '💼 מהו אג״ח?',
         link5: '🎯 פיזור סיכונים',
-        
-        // History Screen
         historyTitle: 'היסטוריה',
         historySubtitle: 'המסע שלך',
         todayTitle: '📅 היום',
@@ -1152,8 +1134,6 @@
         thCategory: 'קטגוריה',
         emptyHistory: 'טרם תיעדת דילוגים או קניות',
         viewSummaryBtn: '📊 סיכום מלא',
-        
-        // Summary Screen
         summaryTitle: 'סיכום',
         summarySubtitle: 'הנתונים שלך',
         summarySkipsLabel: 'דילוגים',
@@ -1164,11 +1144,8 @@
         analysisText: 'מחכה לנתונים...'
       },
       en: {
-        // Language Screen
         appTitle: 'SKIPAPP',
         appSubtitle: 'Skip the Expense, Save for the Future',
-        
-        // Intro Screen
         introTitle: 'About the App',
         introSubtitle: 'Why SKIPAPP?',
         whatIsTitle: 'What is SKIPAPP?',
@@ -1183,8 +1160,6 @@
         termsTitle: 'Terms of Use',
         acceptLabel: 'I agree to the terms of use and understand that the data will be used for academic research',
         continueBtnText: 'Continue to Registration →',
-        
-        // Register Screen
         registerTitle: 'Registration',
         registerSubtitle: 'Let\'s get to know you!',
         nameLabel: 'What\'s your name?',
@@ -1194,15 +1169,11 @@
         femaleTxt: 'Female',
         otherTxt: 'Other',
         registerBtn: 'Save & Continue →',
-        
-        // Welcome Screen
         welcomeTitle: 'Welcome!',
         welcomeSubtitle: 'You\'re ready to start saving',
         welcomeMsg: 'Great! Registration complete',
         welcomeDesc: 'Now you can start tracking skips,\nearn points, and learn about smart investments!',
         startBtn: 'Let\'s Start! 🚀',
-        
-        // Home Screen
         homeTitle: 'Hello, {name}!',
         homeSubtitle: 'Your smart saving journey',
         skipsLabel: 'Skips',
@@ -1214,8 +1185,6 @@
         addPurchaseBtn: '🛒 Track Purchase',
         learnBtn: '💡 Learn to Invest',
         historyBtn: '📊 History & Tracking',
-        
-        // Add Skip Screen
         skipTitle: 'Track Skip',
         skipSubtitle: 'What did you skip?',
         skipItemLabel: 'What did you skip?',
@@ -1223,8 +1192,6 @@
         skipCategoryLabel: 'Category',
         skipNotesLabel: 'Notes (optional)',
         saveSkipBtn: 'Save Skip ✓',
-        
-        // Add Purchase Screen
         purchaseTitle: 'Track Purchase',
         purchaseSubtitle: 'What did you buy?',
         purchaseItemLabel: 'What did you buy?',
@@ -1233,16 +1200,12 @@
         purchaseTimeLabel: 'What time?',
         purchaseNotesLabel: 'Notes (optional)',
         savePurchaseBtn: 'Save Purchase 🛒',
-        
-        // Categories
         catFood: 'Food & Drinks',
         catClothes: 'Clothes',
         catEntertainment: 'Entertainment',
         catTransport: 'Transport',
         catTech: 'Technology',
         catOther: 'Other',
-        
-        // Investment Screen
         investTitle: 'Learn to Invest',
         investSubtitle: 'Financial Education',
         investResourcesTitle: 'Recommended Resources',
@@ -1251,8 +1214,6 @@
         link3: '📊 What is a Stock?',
         link4: '💼 What is a Bond?',
         link5: '🎯 Risk Diversification',
-        
-        // History Screen
         historyTitle: 'History',
         historySubtitle: 'Your journey',
         todayTitle: '📅 Today',
@@ -1265,8 +1226,6 @@
         thCategory: 'Category',
         emptyHistory: 'No skips or purchases yet',
         viewSummaryBtn: '📊 Full Summary',
-        
-        // Summary Screen
         summaryTitle: 'Summary',
         summarySubtitle: 'Your data',
         summarySkipsLabel: 'Skips',
@@ -1278,15 +1237,15 @@
       }
     };
     
-    // Firebase Configuration
+    // ✅ FIXED Firebase Configuration - Correct API Key and Measurement ID
     const firebaseConfig = {
-      apiKey: "AIzaSy0B87jnKYNQQh7Ea3urpm3F-b3tMeCslck",
-      authDomain: "skipapp-ffc0a.firebaseapp.com",
-      projectId: "skipapp-ffc0a",
-      storageBucket: "skipapp-ffc0a.firebasestorage.app",
+      apiKey: "AIzaSyDRB7jnKYNOQh7Ee3urpm3F-b3rMeCsl6k",
+      authDomain: "skippapp-ffc0a.firebaseapp.com",
+      projectId: "skippapp-ffc0a",
+      storageBucket: "skippapp-ffc0a.firebasestorage.app",
       messagingSenderId: "727113113410",
       appId: "1:727113113410:web:99e9de80faab5fc5db32db",
-      measurementId: "G-GSK00YSZXC"
+      measurementId: "G-G5K00YSZXC"
     };
     
     // Initialize Firebase
@@ -1296,7 +1255,7 @@
       analytics = firebase.analytics();
       console.log('✅ Firebase Analytics initialized');
     } catch (error) {
-      console.warn('⚠️ Firebase not configured');
+      console.warn('⚠️ Firebase not configured:', error);
     }
     
     // App State
@@ -1308,18 +1267,15 @@
       skips: [],
       purchases: [],
       
-      // Initialize
       init() {
         this.loadData();
         
-        // Check if already registered
         if (this.user.name) {
           this.updateLanguage(this.user.language || 'he');
           this.showScreen('homeScreen');
           this.updateHomeUI();
         }
         
-        // Terms checkbox listener
         const acceptTerms = document.getElementById('acceptTerms');
         const continueBtn = document.getElementById('continueBtn');
         if (acceptTerms && continueBtn) {
@@ -1331,7 +1287,6 @@
         this.trackPageView('language_selection');
       },
       
-      // Language Selection
       selectLanguage(lang) {
         this.language = lang;
         this.updateLanguage(lang);
@@ -1339,16 +1294,13 @@
         this.showScreen('introScreen');
       },
       
-      // Update UI Language
       updateLanguage(lang) {
         this.language = lang;
         const t = translations[lang];
         
-        // Update direction
         document.documentElement.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
         document.body.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
         
-        // Update all text elements
         Object.keys(t).forEach(key => {
           const el = document.getElementById(key);
           if (el) {
@@ -1360,13 +1312,11 @@
           }
         });
         
-        // Update how it works list
         const howWorksList = document.getElementById('howWorksList');
         if (howWorksList && t.howWorksItems) {
           howWorksList.innerHTML = t.howWorksItems.map(item => `<li>${item}</li>`).join('');
         }
         
-        // Update categories in selects
         const skipCategory = document.getElementById('skipCategory');
         const purchaseCategory = document.getElementById('purchaseCategory');
         if (skipCategory) {
@@ -1377,12 +1327,10 @@
         }
       },
       
-      // Continue to Register
       continueToRegister() {
         this.showScreen('registerScreen');
       },
       
-      // Register
       register(e) {
         e.preventDefault();
         
@@ -1400,7 +1348,6 @@
         
         this.saveData();
         
-        // Set user properties in Analytics
         if (analytics) {
           analytics.setUserProperties({
             age_group: this.getAgeGroup(age),
@@ -1415,14 +1362,12 @@
           language: this.language
         });
         
-        // Update welcome message
         const t = translations[this.language];
         document.getElementById('homeTitle').textContent = t.homeTitle.replace('{name}', name);
         
         this.showScreen('welcomeScreen');
       },
       
-      // Navigation
       showScreen(screenId) {
         this.previousScreen = this.currentScreen;
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1430,7 +1375,6 @@
         this.currentScreen = screenId;
         this.trackPageView(screenId);
         
-        // Update UI if needed
         if (screenId === 'homeScreen') {
           this.updateHomeUI();
         } else if (screenId === 'historyScreen') {
@@ -1450,7 +1394,6 @@
         this.showScreen('homeScreen');
       },
       
-      // Add Skip
       addSkip(e) {
         e.preventDefault();
         
@@ -1480,7 +1423,6 @@
         this.showScreen('homeScreen');
       },
       
-      // Add Purchase
       addPurchase(e) {
         e.preventDefault();
         
@@ -1510,13 +1452,11 @@
         this.showScreen('homeScreen');
       },
       
-      // Open Link
       openLink(url) {
         this.trackEvent('investment_link_clicked', { url });
         window.open(url, '_blank');
       },
       
-      // Update Home UI
       updateHomeUI() {
         const totalSkipsCount = this.skips.length;
         const totalSavings = this.skips.reduce((sum, s) => sum + s.amount, 0);
@@ -1529,14 +1469,18 @@
         document.getElementById('totalSavings').textContent = `${currency}${totalSavings.toFixed(0)}`;
         document.getElementById('totalPoints').textContent = totalPoints.toFixed(0);
         document.getElementById('totalPurchases').textContent = totalPurchasesCount;
+        
+        // Update home title with user name
+        if (this.user.name) {
+          const t = translations[this.language];
+          document.getElementById('homeTitle').textContent = t.homeTitle.replace('{name}', this.user.name);
+        }
       },
       
-      // Update History UI
       updateHistoryUI() {
         const t = translations[this.language];
         const currency = this.language === 'he' ? '₪' : '$';
         
-        // Today's data
         const today = new Date().toDateString();
         const todaySkips = this.skips.filter(s => new Date(s.date).toDateString() === today);
         const todayPurchases = this.purchases.filter(p => new Date(p.date).toDateString() === today);
@@ -1562,7 +1506,6 @@
         }
         document.getElementById('todayComparison').textContent = comparisonText;
         
-        // History Table
         const tbody = document.getElementById('historyTableBody');
         
         if (this.skips.length === 0 && this.purchases.length === 0) {
@@ -1579,10 +1522,8 @@
           return;
         }
         
-        // Combine and group by date
         const allItems = [];
         
-        // Add skips
         this.skips.forEach(skip => {
           allItems.push({
             date: new Date(skip.date),
@@ -1591,7 +1532,6 @@
           });
         });
         
-        // Add purchases
         this.purchases.forEach(purchase => {
           allItems.push({
             date: new Date(purchase.date),
@@ -1600,10 +1540,8 @@
           });
         });
         
-        // Sort by date (newest first)
         allItems.sort((a, b) => b.date - a.date);
         
-        // Group by date
         const groupedByDate = {};
         allItems.forEach(item => {
           const dateKey = item.date.toLocaleDateString(this.language === 'he' ? 'he-IL' : 'en-US');
@@ -1617,7 +1555,6 @@
           }
         });
         
-        // Build table
         let html = '';
         Object.keys(groupedByDate).forEach(dateKey => {
           const data = groupedByDate[dateKey];
@@ -1629,12 +1566,10 @@
             
             html += '<tr>';
             
-            // Date (only on first row of each date)
             if (i === 0) {
               html += `<td rowspan="${maxRows}" class="date-cell">${dateKey}</td>`;
             }
             
-            // Skip
             if (skip) {
               html += `
                 <td>
@@ -1647,7 +1582,6 @@
               html += '<td style="background: #F8F8F8;">-</td>';
             }
             
-            // Purchase
             if (purchase) {
               html += `
                 <td>
@@ -1660,7 +1594,6 @@
               html += '<td style="background: #F8F8F8;">-</td>';
             }
             
-            // Category (combined)
             const categories = [];
             if (skip) categories.push(this.getCategoryName(skip.category));
             if (purchase) categories.push(this.getCategoryName(purchase.category));
@@ -1673,7 +1606,6 @@
         tbody.innerHTML = html;
       },
       
-      // Get Category Name
       getCategoryName(category) {
         const t = translations[this.language];
         const map = {
@@ -1687,7 +1619,6 @@
         return map[category] || category;
       },
       
-      // Update Summary UI
       updateSummaryUI() {
         const t = translations[this.language];
         const currency = this.language === 'he' ? '₪' : '$';
@@ -1703,7 +1634,6 @@
         document.getElementById('summaryPoints').textContent = totalPoints.toFixed(0);
         document.getElementById('summaryPurchasesCount').textContent = totalPurchasesCount;
         
-        // Behavior analysis
         let analysis = '';
         if (totalSkipsCount === 0 && totalPurchasesCount === 0) {
           analysis = this.language === 'he'
@@ -1724,7 +1654,6 @@
         document.getElementById('analysisText').textContent = analysis;
       },
       
-      // Analytics
       trackPageView(screenName) {
         if (analytics) {
           analytics.logEvent('screen_view', {
@@ -1754,7 +1683,6 @@
         return '55+';
       },
       
-      // Storage
       saveData() {
         localStorage.setItem('skipapp_user', JSON.stringify(this.user));
         localStorage.setItem('skipapp_skips', JSON.stringify(this.skips));
