@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SKIPAPP">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#A8D5BA">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>SKIPAPP - משחק החיסכון החכם</title>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics-compat.js"></script>
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; overflow: hidden; }
+    body { font-family: 'Assistant', sans-serif; background: linear-gradient(135deg, #A8D5BA 0%, #D4E9DF 100%); min-height: 100vh; }
+    
+    :root {
+      --primary: #A8D5BA;
+      --primary-dark: #7EBA9B;
+      --secondary: #FFD9A0;
+      --accent: #FFB88C;
+      --bg: #FFFCF7;
+      --text: #3D3D3D;
+      --text-light: #757575;
+      --success: #90D4A8;
+      --danger: #FF9B9B;
+      --card-bg: #FFFFFF;
+    }
+    
+    .app { width: 100%; height: 100vh; max-width: 500px; margin: 0 auto; background: var(--bg); position: relative; overflow: hidden; }
+    @media (min-width: 501px) { body { display: flex; justify-content: center; align-items: center; padding: 20px; } .app { height: 90vh; max-height: 800px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); } }
+    
+    .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; background: var(--bg); overflow-y: auto; padding-bottom: 80px; }
+    .screen.active { display: flex; }
+    
+    /* Welcome Screen */
+    .welcome-screen { justify-content: center; align-items: center; background: linear-gradient(180deg, #A8D5BA 0%, #D4E9DF 50%, var(--bg) 100%); padding: 40px 30px; text-align: center; }
+    .welcome-logo { width: 120px; height: 120px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 30px; display: flex; justify-content: center; align-items: center; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(168, 213, 186, 0.4); }
+    .welcome-logo .play-icon { width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+    .welcome-logo .play-icon::before { content: ''; border-style: solid; border-width: 12px 0 12px 20px; border-color: transparent transparent transparent var(--primary-dark); margin-left: 4px; }
+    .welcome-title { font-size: 42px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+    .welcome-subtitle { font-size: 18px; color: var(--text-light); margin-bottom: 40px; line-height: 1.6; }
+    .welcome-btn { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 18px 50px; border-radius: 30px; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(168, 213, 186, 0.5); transition: all 0.3s; font-family: inherit; }
+    .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(168, 213, 186, 0.6); }
+    
+    /* Terms Screen */
+    .terms-screen { padding: 30px 20px; }
+    .terms-header { text-align: center; margin-bottom: 20px; }
+    .terms-title { font-size: 24px; font-weight: 700; color: var(--text); }
+    .terms-content { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; max-height: 50vh; overflow-y: auto; font-size: 14px; line-height: 1.8; color: var(--text); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .terms-content h3 { margin: 15px 0 10px; color: var(--primary-dark); }
+    .terms-agree-box { display: flex; align-items: center; gap: 12px; padding: 15px; background: #f8f9fa; border-radius: 15px; margin-bottom: 20px; }
+    .terms-checkbox { width: 24px; height: 24px; accent-color: var(--primary-dark); cursor: pointer; }
+    .terms-label { font-size: 15px; color: var(--text); cursor: pointer; }
+    .btn-accept { width: 100%; background: #ccc; color: white; border: none; padding: 16px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: not-allowed; transition: all 0.3s; font-family: inherit; }
+    .btn-accept.enabled { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); cursor: pointer; box-shadow: 0 6px 20px rgba(168, 213, 186, 0.4); }
+    
+    /* Register Screen */
+    .register-screen { padding: 30px 20px; }
+    .register-header { text-align: center; margin-bottom: 25px; }
+    .register-title { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .register-subtitle { font-size: 15px; color: var(--text-light); }
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .form-input, .form-select { width: 100%; padding: 14px 18px; border: 2px solid #e8e8e8; border-radius: 15px; font-size: 16px; font-family: inherit; background: white; transition: all 0.3s; }
+    .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(168, 213, 186, 0.2); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .btn-register { width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 16px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; font-family: inherit; box-shadow: 0 6px 20px rgba(168, 213, 186, 0.4); transition: all 0.3s; }
+    .btn-register:hover { transform: translateY(-2px); }
+    
+    /* Dashboard */
+    .dashboard { padding: 0; }
+    .dash-header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 30px 20px 40px; border-radius: 0 0 30px 30px; }
+    .dash-greeting { color: white; font-size: 16px; opacity: 0.9; }
+    .dash-name { color: white; font-size: 28px; font-weight: 700; margin-top: 5px; }
+    .dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: -25px 15px 20px; }
+    .stat-card { background: white; border-radius: 20px; padding: 18px 12px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+    .stat-icon { font-size: 28px; margin-bottom: 8px; }
+    .stat-value { font-size: 24px; font-weight: 800; color: var(--text); }
+    .stat-label { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+    
+    .dash-actions { padding: 0 20px; }
+    .action-btn { display: flex; align-items: center; gap: 15px; background: white; border: none; width: 100%; padding: 18px 20px; border-radius: 20px; margin-bottom: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.3s; font-family: inherit; }
+    .action-btn:hover { transform: translateX(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+    .action-icon { width: 50px; height: 50px; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 24px; }
+    .action-icon.skip { background: linear-gradient(135deg, #90D4A8 0%, #6BC48E 100%); }
+    .action-icon.purchase { background: linear-gradient(135deg, #FFB88C 0%, #FF9B6A 100%); }
+    .action-text { text-align: right; flex: 1; }
+    .action-title { font-size: 17px; font-weight: 700; color: var(--text); }
+    .action-desc { font-size: 13px; color: var(--text-light); margin-top: 3px; }
+    
+    /* Form Screen */
+    .form-screen { padding: 20px; }
+    .form-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+    .back-btn { width: 44px; height: 44px; background: white; border: none; border-radius: 14px; font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; }
+    .form-title { font-size: 22px; font-weight: 700; color: var(--text); }
+    
+    .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .category-btn { background: white; border: 2px solid #e8e8e8; border-radius: 15px; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.3s; }
+    .category-btn.active { border-color: var(--primary); background: rgba(168, 213, 186, 0.1); }
+    .category-icon { font-size: 28px; margin-bottom: 5px; }
+    .category-name { font-size: 13px; color: var(--text); font-weight: 600; }
+    
+    .amount-input-wrap { position: relative; margin-bottom: 20px; }
+    .amount-input { width: 100%; padding: 20px; padding-left: 50px; border: 2px solid #e8e8e8; border-radius: 20px; font-size: 28px; font-weight: 700; text-align: center; font-family: inherit; }
+    .amount-input:focus { outline: none; border-color: var(--primary); }
+    .currency-symbol { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 24px; color: var(--text-light); }
+    
+    .btn-save { width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 18px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 6px 20px rgba(168, 213, 186, 0.4); }
+    
+    /* History */
+    .history-screen { padding: 20px; }
+    .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .history-title { font-size: 24px; font-weight: 700; color: var(--text); }
+    .history-list { display: flex; flex-direction: column; gap: 12px; }
+    .history-item { background: white; border-radius: 18px; padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .history-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .history-icon.skip { background: rgba(144, 212, 168, 0.2); }
+    .history-icon.purchase { background: rgba(255, 184, 140, 0.2); }
+    .history-info { flex: 1; }
+    .history-desc { font-size: 15px; font-weight: 600; color: var(--text); }
+    .history-date { font-size: 12px; color: var(--text-light); margin-top: 3px; }
+    .history-amount { font-size: 18px; font-weight: 700; }
+    .history-amount.skip { color: var(--success); }
+    .history-amount.purchase { color: var(--accent); }
+    .history-empty { text-align: center; padding: 40px; color: var(--text-light); }
+    
+    /* Investment Screen */
+    .investment-screen { padding: 20px; }
+    .invest-header { text-align: center; margin-bottom: 25px; }
+    .invest-title { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .invest-subtitle { font-size: 14px; color: var(--text-light); }
+    .invest-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .invest-tab { flex: 1; padding: 12px; background: white; border: 2px solid #e8e8e8; border-radius: 15px; text-align: center; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s; }
+    .invest-tab.active { border-color: var(--primary); background: rgba(168, 213, 186, 0.1); color: var(--primary-dark); }
+    .invest-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .invest-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .invest-card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
+    .invest-card-title { font-size: 17px; font-weight: 700; color: var(--text); }
+    .invest-card-desc { font-size: 13px; color: var(--text-light); line-height: 1.6; margin-bottom: 15px; }
+    .invest-card-footer { display: flex; gap: 10px; }
+    .invest-link { flex: 1; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; font-family: inherit; }
+    .invest-phone { flex: 1; padding: 12px; background: white; border: 2px solid var(--primary); color: var(--primary-dark); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; }
+    
+    /* Summary Screen */
+    .summary-screen { padding: 20px; text-align: center; }
+    .summary-header { margin-bottom: 30px; }
+    .summary-title { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+    .summary-subtitle { font-size: 15px; color: var(--text-light); }
+    .summary-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+    .summary-stat { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+    .summary-stat-icon { font-size: 32px; margin-bottom: 10px; }
+    .summary-stat-value { font-size: 28px; font-weight: 800; color: var(--text); }
+    .summary-stat-label { font-size: 13px; color: var(--text-light); margin-top: 5px; }
+    .summary-tip { background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%); border-radius: 20px; padding: 20px; margin-bottom: 25px; }
+    .summary-tip-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .summary-tip-text { font-size: 14px; color: var(--text); line-height: 1.6; }
+    .summary-actions { display: flex; flex-direction: column; gap: 12px; }
+    .btn-summary { padding: 16px; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all 0.3s; }
+    .btn-summary.primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; }
+    .btn-summary.secondary { background: white; color: var(--text); border: 2px solid #e8e8e8; }
+    .btn-summary.danger { background: white; color: var(--danger); border: 2px solid var(--danger); }
+    
+    /* Bottom Nav */
+    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; background: white; padding: 12px 20px 20px; display: flex; justify-content: space-around; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 25px 25px 0 0; z-index: 100; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 15px; border-radius: 15px; transition: all 0.3s; background: none; border: none; font-family: inherit; }
+    .nav-item.active { background: rgba(168, 213, 186, 0.2); }
+    .nav-icon { font-size: 24px; }
+    .nav-label { font-size: 11px; font-weight: 600; color: var(--text-light); }
+    .nav-item.active .nav-label { color: var(--primary-dark); }
+    
+    /* Toast */
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 14px 28px; border-radius: 30px; font-size: 15px; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .toast.show { opacity: 1; }
+    
+    /* Hebrew Calendar */
+    .date-display { font-size: 12px; color: var(--text-light); margin-top: 2px; direction: rtl; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    
+    <!-- Welcome Screen -->
+    <div class="screen welcome-screen active" id="welcome-screen">
+      <div class="welcome-logo">
+        <div class="play-icon"></div>
+      </div>
+      <h1 class="welcome-title">SKIPAPP</h1>
+      <p class="welcome-subtitle">משחק החיסכון החכם<br>דלג על הוצאות קטנות, צבור נקודות, והפוך את החיסכון להרגל!</p>
+      <button class="welcome-btn" onclick="goTo('terms-screen')">בואו נתחיל! 🚀</button>
+    </div>
+    
+    <!-- Terms Screen -->
+    <div class="screen terms-screen" id="terms-screen">
+      <div class="terms-header">
+        <h2 class="terms-title">📜 תנאי שימוש</h2>
+      </div>
+      <div class="terms-content">
+        <h3>ברוכים הבאים ל-SKIPAPP!</h3>
+        <p>האפליקציה פותחה במסגרת מחקר דוקטורט בכלכלה התנהגותית באוניברסיטת אדם מיקביץ' בפוזנן, פולין.</p>
+        
+        <h3>מטרת האפליקציה</h3>
+        <p>לעזור לך לפתח מודעות להוצאות קטנות ולהבין את הכוח המצטבר של חיסכון קטן לאורך זמן.</p>
+        
+        <h3>איסוף נתונים</h3>
+        <p>האפליקציה אוספת נתונים אנונימיים לצורכי מחקר בלבד: גיל, מין, דפוסי שימוש. המידע משמש לניתוח סטטיסטי ולא ניתן לזיהוי אישי.</p>
+        
+        <h3>פרטיות</h3>
+        <p>אנו מחויבים להגנה על פרטיותך. הנתונים נשמרים בצורה מאובטחת ולא משותפים עם גורמים חיצוניים.</p>
+        
+        <h3>שימוש אחראי</h3>
+        <p>האפליקציה מספקת כלים חינוכיים בלבד ואינה מהווה ייעוץ פיננסי מקצועי.</p>
+      </div>
+      <div class="terms-agree-box">
+        <input type="checkbox" id="terms-agree" class="terms-checkbox" onchange="toggleAccept()">
+        <label for="terms-agree" class="terms-label">קראתי ואני מסכים/ה לתנאי השימוש</label>
+      </div>
+      <button class="btn-accept" id="btn-accept" onclick="acceptTerms()">המשך להרשמה</button>
+    </div>
+    
+    <!-- Register Screen -->
+    <div class="screen register-screen" id="register-screen">
+      <div class="register-header">
+        <h2 class="register-title">📝 הרשמה</h2>
+        <p class="register-subtitle">ספר/י לנו קצת על עצמך</p>
+      </div>
+      <form id="register-form" onsubmit="return submitRegister(event)">
+        <div class="form-group">
+          <label class="form-label">שם מלא</label>
+          <input type="text" class="form-input" id="reg-name" required placeholder="הכנס/י את שמך">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">גיל</label>
+            <input type="number" class="form-input" id="reg-age" required min="8" max="120" placeholder="גיל">
+          </div>
+          <div class="form-group">
+            <label class="form-label">מין</label>
+            <select class="form-select" id="reg-gender" required>
+              <option value="">בחר/י</option>
+              <option value="male">זכר</option>
+              <option value="female">נקבה</option>
+              <option value="other">אחר</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">שפה מועדפת</label>
+          <select class="form-select" id="reg-language">
+            <option value="he">עברית</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-register">התחל לחסוך! 💰</button>
+      </form>
+    </div>
+    
+    <!-- Dashboard -->
+    <div class="screen dashboard" id="dashboard">
+      <div class="dash-header">
+        <p class="dash-greeting">שלום,</p>
+        <h2 class="dash-name" id="user-name">משתמש</h2>
+      </div>
+      <div class="dash-stats">
+        <div class="stat-card">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-value" id="stat-skips">0</div>
+          <div class="stat-label">דילוגים</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-value" id="stat-points">0</div>
+          <div class="stat-label">נקודות</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-value" id="stat-streak">0</div>
+          <div class="stat-label">רצף ימים</div>
+        </div>
+      </div>
+      <div class="dash-actions">
+        <button class="action-btn" onclick="goTo('skip-form')">
+          <div class="action-icon skip">✓</div>
+          <div class="action-text">
+            <div class="action-title">הוסף דילוג</div>
+            <div class="action-desc">תעד קנייה שדילגת עליה</div>
+          </div>
+        </button>
+        <button class="action-btn" onclick="goTo('purchase-form')">
+          <div class="action-icon purchase">🛒</div>
+          <div class="action-text">
+            <div class="action-title">הוסף קנייה</div>
+            <div class="action-desc">תעד קנייה שביצעת</div>
+          </div>
+        </button>
+        <button class="action-btn" onclick="goTo('history-screen')">
+          <div class="action-icon" style="background: linear-gradient(135deg, #B8A9D4 0%, #9B89C4 100%);">📊</div>
+          <div class="action-text">
+            <div class="action-title">היסטוריה</div>
+            <div class="action-desc">צפה בכל הפעילות שלך</div>
+          </div>
+        </button>
+        <button class="action-btn" onclick="goTo('investment-screen')">
+          <div class="action-icon" style="background: linear-gradient(135deg, #FFD9A0 0%, #FFCC80 100%);">💡</div>
+          <div class="action-text">
+            <div class="action-title">אפיקי השקעה</div>
+            <div class="action-desc">למד איך להשקיע את החיסכון</div>
+          </div>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Skip Form -->
+    <div class="screen form-screen" id="skip-form">
+      <div class="form-header">
+        <button class="back-btn" onclick="goTo('dashboard')">→</button>
+        <h2 class="form-title">הוסף דילוג</h2>
+      </div>
+      <p style="color: var(--text-light); margin-bottom: 20px; font-size: 14px;">על מה דילגת היום?</p>
+      <div class="category-grid" id="skip-categories">
+        <div class="category-btn" onclick="selectCategory(this, 'אוכל')"><div class="category-icon">🍕</div><div class="category-name">אוכל</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'שתייה')"><div class="category-icon">☕</div><div class="category-name">שתייה</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'בילויים')"><div class="category-icon">🎬</div><div class="category-name">בילויים</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'קניות')"><div class="category-icon">🛍️</div><div class="category-name">קניות</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'תחבורה')"><div class="category-icon">🚗</div><div class="category-name">תחבורה</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'אחר')"><div class="category-icon">📦</div><div class="category-name">אחר</div></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">תיאור קצר</label>
+        <input type="text" class="form-input" id="skip-desc" placeholder="לדוגמה: קפה בבוקר">
+      </div>
+      <div class="amount-input-wrap">
+        <span class="currency-symbol">₪</span>
+        <input type="number" class="amount-input" id="skip-amount" placeholder="0" min="1">
+      </div>
+      <button class="btn-save" onclick="saveSkip()">שמור דילוג ✓</button>
+    </div>
+    
+    <!-- Purchase Form -->
+    <div class="screen form-screen" id="purchase-form">
+      <div class="form-header">
+        <button class="back-btn" onclick="goTo('dashboard')">→</button>
+        <h2 class="form-title">הוסף קנייה</h2>
+      </div>
+      <p style="color: var(--text-light); margin-bottom: 20px; font-size: 14px;">מה קנית היום?</p>
+      <div class="category-grid" id="purchase-categories">
+        <div class="category-btn" onclick="selectCategory(this, 'אוכל')"><div class="category-icon">🍕</div><div class="category-name">אוכל</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'שתייה')"><div class="category-icon">☕</div><div class="category-name">שתייה</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'בילויים')"><div class="category-icon">🎬</div><div class="category-name">בילויים</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'קניות')"><div class="category-icon">🛍️</div><div class="category-name">קניות</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'תחבורה')"><div class="category-icon">🚗</div><div class="category-name">תחבורה</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'אחר')"><div class="category-icon">📦</div><div class="category-name">אחר</div></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">תיאור קצר</label>
+        <input type="text" class="form-input" id="purchase-desc" placeholder="לדוגמה: ארוחת צהריים">
+      </div>
+      <div class="amount-input-wrap">
+        <span class="currency-symbol">₪</span>
+        <input type="number" class="amount-input" id="purchase-amount" placeholder="0" min="1">
+      </div>
+      <button class="btn-save" style="background: linear-gradient(135deg, var(--accent) 0%, #FF9B6A 100%);" onclick="savePurchase()">שמור קנייה 🛒</button>
+    </div>
+    
+    <!-- History Screen -->
+    <div class="screen history-screen" id="history-screen">
+      <div class="history-header">
+        <button class="back-btn" onclick="goTo('dashboard')">→</button>
+        <h2 class="history-title">היסטוריה</h2>
+      </div>
+      <div class="history-list" id="history-list">
+        <div class="history-empty">
+          <p>עדיין אין פעילות</p>
+          <p style="font-size: 13px; margin-top: 8px;">התחל לתעד דילוגים וקניות!</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Investment Screen -->
+    <div class="screen investment-screen" id="investment-screen">
+      <div class="form-header">
+        <button class="back-btn" onclick="goTo('dashboard')">→</button>
+        <h2 class="form-title">אפיקי השקעה</h2>
+      </div>
+      <div class="invest-tabs">
+        <div class="invest-tab active" onclick="showInvestTab('adult')">למבוגרים (18+)</div>
+        <div class="invest-tab" onclick="showInvestTab('youth')">לנוער</div>
+      </div>
+      <div id="invest-adult">
+        <div class="invest-card">
+          <div class="invest-card-header">
+            <div class="invest-card-icon">🏦</div>
+            <div class="invest-card-title">Pillow - חיסכון חכם</div>
+          </div>
+          <div class="invest-card-desc">אפליקציה לחיסכון אוטומטי עם תשואה יומית. מינימום 1₪.</div>
+          <div class="invest-card-footer">
+            <a href="https://www.pillow.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
+          </div>
+        </div>
+        <div class="invest-card">
+          <div class="invest-card-header">
+            <div class="invest-card-icon">📈</div>
+            <div class="invest-card-title">eToro - מסחר בשוק ההון</div>
+          </div>
+          <div class="invest-card-desc">פלטפורמה בינלאומית למסחר במניות, קריפטו ועוד. מינימום $50.</div>
+          <div class="invest-card-footer">
+            <a href="https://www.etoro.com" target="_blank" class="invest-link">🌐 לאתר</a>
+          </div>
+        </div>
+        <div class="invest-card">
+          <div class="invest-card-header">
+            <div class="invest-card-icon">💼</div>
+            <div class="invest-card-title">מיטב דש - קרנות נאמנות</div>
+          </div>
+          <div class="invest-card-desc">בית השקעות מוביל בישראל עם מגוון קרנות נאמנות.</div>
+          <div class="invest-card-footer">
+            <a href="https://www.meitav.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
+            <a href="tel:*6569" class="invest-phone">📞 *6569</a>
+          </div>
+        </div>
+      </div>
+      <div id="invest-youth" style="display: none;">
+        <div class="invest-card">
+          <div class="invest-card-header">
+            <div class="invest-card-icon">👶</div>
+            <div class="invest-card-title">חיסכון לכל ילד</div>
+          </div>
+          <div class="invest-card-desc">תוכנית ממשלתית לחיסכון ארוך טווח לילדים. ניתן לבחור מסלול השקעה.</div>
+          <div class="invest-card-footer">
+            <a href="tel:*6050" class="invest-phone">📞 *6050</a>
+          </div>
+        </div>
+        <div class="invest-card">
+          <div class="invest-card-header">
+            <div class="invest-card-icon">🏧</div>
+            <div class="invest-card-title">בנק הפועלים - נוער</div>
+          </div>
+          <div class="invest-card-desc">חשבון חיסכון לנוער עם הטבות מיוחדות.</div>
+          <div class="invest-card-footer">
+            <a href="https://www.bankhapoalim.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
+            <a href="tel:*2407" class="invest-phone">📞 *2407</a>
+          </div>
+        </div>
+        <div class="invest-card">
+          <div class="invest-card-header">
+            <div class="invest-card-icon">🏧</div>
+            <div class="invest-card-title">בנק לאומי - נוער</div>
+          </div>
+          <div class="invest-card-desc">תוכניות חיסכון ייעודיות לגילאי 12-18.</div>
+          <div class="invest-card-footer">
+            <a href="https://www.leumi.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
+            <a href="tel:*5522" class="invest-phone">📞 *5522</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Summary Screen -->
+    <div class="screen summary-screen" id="summary-screen">
+      <div class="summary-header">
+        <h2 class="summary-title">🎉 סיכום</h2>
+        <p class="summary-subtitle">הנה ההישגים שלך עד כה</p>
+      </div>
+      <div class="summary-stats">
+        <div class="summary-stat">
+          <div class="summary-stat-icon">🎯</div>
+          <div class="summary-stat-value" id="summary-skips">0</div>
+          <div class="summary-stat-label">דילוגים</div>
+        </div>
+        <div class="summary-stat">
+          <div class="summary-stat-icon">⭐</div>
+          <div class="summary-stat-value" id="summary-points">0</div>
+          <div class="summary-stat-label">נקודות</div>
+        </div>
+        <div class="summary-stat">
+          <div class="summary-stat-icon">💰</div>
+          <div class="summary-stat-value" id="summary-saved">₪0</div>
+          <div class="summary-stat-label">נחסך</div>
+        </div>
+        <div class="summary-stat">
+          <div class="summary-stat-icon">🔥</div>
+          <div class="summary-stat-value" id="summary-streak">0</div>
+          <div class="summary-stat-label">רצף ימים</div>
+        </div>
+      </div>
+      <div class="summary-tip">
+        <div class="summary-tip-title">💡 טיפ לחיסכון</div>
+        <div class="summary-tip-text" id="summary-tip">כל שקל קטן הופך לגדול עם הזמן! המשך לדלג על הוצאות קטנות ותראה איך החיסכון גדל.</div>
+      </div>
+      <div class="summary-actions">
+        <button class="btn-summary primary" onclick="goTo('dashboard')">🏠 חזרה לדשבורד</button>
+        <button class="btn-summary secondary" onclick="shareResults()">📤 שתף את ההישגים</button>
+        <button class="btn-summary danger" onclick="resetApp()">🔄 התחל מחדש</button>
+      </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav" id="bottom-nav" style="display: none;">
+      <button class="nav-item active" onclick="goTo('dashboard')">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">בית</span>
+      </button>
+      <button class="nav-item" onclick="goTo('history-screen')">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">היסטוריה</span>
+      </button>
+      <button class="nav-item" onclick="goTo('investment-screen')">
+        <span class="nav-icon">💡</span>
+        <span class="nav-label">השקעות</span>
+      </button>
+      <button class="nav-item" onclick="goTo('summary-screen')">
+        <span class="nav-icon">🎯</span>
+        <span class="nav-label">סיכום</span>
+      </button>
+    </nav>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    // ========== FIREBASE CONFIGURATION ==========
+    // ⚠️ IMPORTANT: Replace with your Firebase config!
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY_HERE",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID",
+      measurementId: "YOUR_MEASUREMENT_ID"
+    };
+
+    // Initialize Firebase
+    let analytics = null;
+    try {
+      if (firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
+        firebase.initializeApp(firebaseConfig);
+        analytics = firebase.analytics();
+        console.log("✅ Firebase Analytics initialized");
+      } else {
+        console.warn("⚠️ Firebase not configured - using demo mode");
+      }
+    } catch (e) {
+      console.error("Firebase init error:", e);
+    }
+
+    // Track event helper
+    function trackEvent(eventName, params = {}) {
+      if (analytics) {
+        analytics.logEvent(eventName, params);
+        console.log("📊 Event:", eventName, params);
+      }
+    }
+
+    // Set user properties
+    function setUserProperties(props) {
+      if (analytics) {
+        Object.keys(props).forEach(key => {
+          analytics.setUserProperties({ [key]: props[key] });
+        });
+        console.log("👤 User properties set:", props);
+      }
+    }
+
+    // ========== APP STATE ==========
+    let app = {
+      termsAccepted: false,
+      user: null,
+      skips: [],
+      purchases: [],
+      streak: 0,
+      lastActivity: null
+    };
+
+    let selectedCategory = '';
+
+    // ========== LOAD/SAVE ==========
+    function save() {
+      localStorage.setItem('skipapp_data', JSON.stringify(app));
+    }
+
+    function load() {
+      const data = localStorage.getItem('skipapp_data');
+      if (data) {
+        app = JSON.parse(data);
+        return true;
+      }
+      return false;
+    }
+
+    // ========== NAVIGATION ==========
+    function goTo(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      
+      // Track screen view
+      trackEvent('screen_view', { screen_name: screenId });
+      
+      // Show/hide bottom nav
+      const showNav = ['dashboard', 'history-screen', 'investment-screen', 'summary-screen'].includes(screenId);
+      document.getElementById('bottom-nav').style.display = showNav ? 'flex' : 'none';
+      
+      // Update active nav item
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      const navMap = { 'dashboard': 0, 'history-screen': 1, 'investment-screen': 2, 'summary-screen': 3 };
+      if (navMap[screenId] !== undefined) {
+        document.querySelectorAll('.nav-item')[navMap[screenId]].classList.add('active');
+      }
+      
+      // Update data displays
+      if (screenId === 'dashboard') updateDashboard();
+      if (screenId === 'history-screen') updateHistory();
+      if (screenId === 'summary-screen') updateSummary();
+    }
+
+    // ========== TERMS ==========
+    function toggleAccept() {
+      const checkbox = document.getElementById('terms-agree');
+      const btn = document.getElementById('btn-accept');
+      if (checkbox && btn) {
+        if (checkbox.checked) {
+          btn.classList.add('enabled');
+        } else {
+          btn.classList.remove('enabled');
+        }
+      }
+    }
+
+    function acceptTerms() {
+      const checkbox = document.getElementById('terms-agree');
+      if (!checkbox || !checkbox.checked) {
+        showToast('יש לאשר את תנאי השימוש');
+        return;
+      }
+      app.termsAccepted = true;
+      save();
+      trackEvent('terms_accepted');
+      goTo('register-screen');
+    }
+
+    // ========== REGISTRATION ==========
+    function submitRegister(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('reg-name').value.trim();
+      const age = parseInt(document.getElementById('reg-age').value);
+      const gender = document.getElementById('reg-gender').value;
+      const language = document.getElementById('reg-language').value;
+      
+      if (!name || !age || !gender) {
+        showToast('נא למלא את כל השדות');
+        return false;
+      }
+      
+      app.user = { name, age, gender, language, registeredAt: new Date().toISOString() };
+      save();
+      
+      // Set user properties for analytics
+      setUserProperties({
+        age_group: getAgeGroup(age),
+        gender: gender,
+        language: language
+      });
+      
+      trackEvent('registration_complete', {
+        age_group: getAgeGroup(age),
+        gender: gender
+      });
+      
+      showToast('ברוך הבא, ' + name + '! 🎉');
+      goTo('dashboard');
+      return false;
+    }
+
+    function getAgeGroup(age) {
+      if (age < 13) return '8-12';
+      if (age < 18) return '13-17';
+      if (age < 25) return '18-24';
+      if (age < 35) return '25-34';
+      if (age < 45) return '35-44';
+      if (age < 55) return '45-54';
+      return '55+';
+    }
+
+    // ========== SKIP & PURCHASE ==========
+    function selectCategory(el, category) {
+      const parent = el.closest('.category-grid');
+      parent.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+      el.classList.add('active');
+      selectedCategory = category;
+    }
+
+    function saveSkip() {
+      const desc = document.getElementById('skip-desc').value.trim();
+      const amount = parseFloat(document.getElementById('skip-amount').value);
+      
+      if (!selectedCategory) {
+        showToast('נא לבחור קטגוריה');
+        return;
+      }
+      if (!amount || amount <= 0) {
+        showToast('נא להזין סכום');
+        return;
+      }
+      
+      const skip = {
+        id: Date.now(),
+        type: 'skip',
+        category: selectedCategory,
+        description: desc || selectedCategory,
+        amount: amount,
+        points: Math.round(amount * 0.5),
+        date: new Date().toISOString(),
+        hebrewDate: getHebrewDate()
+      };
+      
+      app.skips.push(skip);
+      updateStreak();
+      save();
+      
+      trackEvent('skip_added', {
+        category: selectedCategory,
+        amount: amount,
+        points: skip.points
+      });
+      
+      showToast('דילוג נשמר! +' + skip.points + ' נקודות ⭐');
+      
+      // Clear form
+      document.getElementById('skip-desc').value = '';
+      document.getElementById('skip-amount').value = '';
+      selectedCategory = '';
+      document.querySelectorAll('#skip-categories .category-btn').forEach(btn => btn.classList.remove('active'));
+      
+      goTo('dashboard');
+    }
+
+    function savePurchase() {
+      const desc = document.getElementById('purchase-desc').value.trim();
+      const amount = parseFloat(document.getElementById('purchase-amount').value);
+      
+      if (!selectedCategory) {
+        showToast('נא לבחור קטגוריה');
+        return;
+      }
+      if (!amount || amount <= 0) {
+        showToast('נא להזין סכום');
+        return;
+      }
+      
+      const purchase = {
+        id: Date.now(),
+        type: 'purchase',
+        category: selectedCategory,
+        description: desc || selectedCategory,
+        amount: amount,
+        date: new Date().toISOString(),
+        hebrewDate: getHebrewDate()
+      };
+      
+      app.purchases.push(purchase);
+      save();
+      
+      trackEvent('purchase_added', {
+        category: selectedCategory,
+        amount: amount
+      });
+      
+      showToast('קנייה נרשמה 🛒');
+      
+      // Clear form
+      document.getElementById('purchase-desc').value = '';
+      document.getElementById('purchase-amount').value = '';
+      selectedCategory = '';
+      document.querySelectorAll('#purchase-categories .category-btn').forEach(btn => btn.classList.remove('active'));
+      
+      goTo('dashboard');
+    }
+
+    // ========== HEBREW DATE ==========
+    function getHebrewDate() {
+      try {
+        const now = new Date();
+        const hebrewFormatter = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        return hebrewFormatter.format(now);
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function formatDate(isoDate) {
+      const date = new Date(isoDate);
+      const gregorian = date.toLocaleDateString('he-IL', { day: 'numeric', month: 'short', year: 'numeric' });
+      let hebrew = '';
+      try {
+        hebrew = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', { day: 'numeric', month: 'long' }).format(date);
+      } catch (e) {}
+      return { gregorian, hebrew };
+    }
+
+    // ========== STREAK ==========
+    function updateStreak() {
+      const today = new Date().toDateString();
+      if (app.lastActivity !== today) {
+        const yesterday = new Date(Date.now() - 86400000).toDateString();
+        if (app.lastActivity === yesterday) {
+          app.streak++;
+        } else if (app.lastActivity !== today) {
+          app.streak = 1;
+        }
+        app.lastActivity = today;
+      }
+    }
+
+    // ========== UPDATE UI ==========
+    function updateDashboard() {
+      if (app.user) {
+        document.getElementById('user-name').textContent = app.user.name;
+      }
+      const totalSkips = app.skips.length;
+      const totalPoints = app.skips.reduce((sum, s) => sum + s.points, 0);
+      
+      document.getElementById('stat-skips').textContent = totalSkips;
+      document.getElementById('stat-points').textContent = totalPoints;
+      document.getElementById('stat-streak').textContent = app.streak;
+    }
+
+    function updateHistory() {
+      const list = document.getElementById('history-list');
+      const allItems = [...app.skips, ...app.purchases].sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      if (allItems.length === 0) {
+        list.innerHTML = '<div class="history-empty"><p>עדיין אין פעילות</p><p style="font-size: 13px; margin-top: 8px;">התחל לתעד דילוגים וקניות!</p></div>';
+        return;
+      }
+      
+      list.innerHTML = allItems.map(item => {
+        const dates = formatDate(item.date);
+        const isSkip = item.type === 'skip';
+        return `
+          <div class="history-item">
+            <div class="history-icon ${item.type}">${isSkip ? '✓' : '🛒'}</div>
+            <div class="history-info">
+              <div class="history-desc">${item.description}</div>
+              <div class="history-date">${dates.gregorian}${dates.hebrew ? ' | ' + dates.hebrew : ''}</div>
+            </div>
+            <div class="history-amount ${item.type}">${isSkip ? '+' : '-'}₪${item.amount}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateSummary() {
+      const totalSkips = app.skips.length;
+      const totalPoints = app.skips.reduce((sum, s) => sum + s.points, 0);
+      const totalSaved = app.skips.reduce((sum, s) => sum + s.amount, 0);
+      
+      document.getElementById('summary-skips').textContent = totalSkips;
+      document.getElementById('summary-points').textContent = totalPoints;
+      document.getElementById('summary-saved').textContent = '₪' + totalSaved;
+      document.getElementById('summary-streak').textContent = app.streak;
+      
+      // Dynamic tip
+      const tips = [
+        'כל שקל קטן הופך לגדול עם הזמן! המשך לדלג על הוצאות קטנות.',
+        'ידעת? אם תחסוך 20₪ ביום, תצבור 7,300₪ בשנה!',
+        'הרגל של חיסכון נבנה צעד אחרי צעד. אתה בדרך הנכונה!',
+        'חשוב על כל דילוג כהשקעה בעתיד שלך.',
+        'מחקרים מראים שאנשים שמתעדים הוצאות חוסכים יותר.'
+      ];
+      document.getElementById('summary-tip').textContent = tips[Math.floor(Math.random() * tips.length)];
+    }
+
+    // ========== INVESTMENT TABS ==========
+    function showInvestTab(tab) {
+      document.querySelectorAll('.invest-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('invest-adult').style.display = tab === 'adult' ? 'block' : 'none';
+      document.getElementById('invest-youth').style.display = tab === 'youth' ? 'block' : 'none';
+      
+      trackEvent('investment_tab_view', { tab: tab });
+    }
+
+    // ========== SHARE ==========
+    function shareResults() {
+      const totalPoints = app.skips.reduce((sum, s) => sum + s.points, 0);
+      const totalSaved = app.skips.reduce((sum, s) => sum + s.amount, 0);
+      
+      const text = `🎉 הצלחתי לחסוך ₪${totalSaved} עם SKIPAPP!\n⭐ צברתי ${totalPoints} נקודות\n🔥 רצף של ${app.streak} ימים\n\nהצטרפו גם אתם למשחק החיסכון החכם!`;
+      
+      if (navigator.share) {
+        navigator.share({ title: 'SKIPAPP - החיסכון שלי', text: text });
+      } else {
+        navigator.clipboard.writeText(text);
+        showToast('הטקסט הועתק! 📋');
+      }
+      
+      trackEvent('share_results', { points: totalPoints, saved: totalSaved });
+    }
+
+    // ========== RESET ==========
+    function resetApp() {
+      if (confirm('האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים יימחקו.')) {
+        trackEvent('app_reset');
+        localStorage.removeItem('skipapp_data');
+        location.reload();
+      }
+    }
+
+    // ========== TOAST ==========
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ========== INIT ==========
+    window.onload = function() {
+      if (load()) {
+        if (app.user) {
+          // Set user properties on load
+          setUserProperties({
+            age_group: getAgeGroup(app.user.age),
+            gender: app.user.gender,
+            language: app.user.language || 'he'
+          });
+          goTo('dashboard');
+        } else if (app.termsAccepted) {
+          goTo('register-screen');
+        }
+      }
+      
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').then(() => {
+          console.log('✅ Service Worker registered');
+        }).catch(err => {
+          console.log('SW registration failed:', err);
+        });
+      }
+    };
+  </script>
+</body>
+</html>
