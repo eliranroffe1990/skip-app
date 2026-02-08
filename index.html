@@ -695,97 +695,133 @@
 
     // ========== SKIP & PURCHASE ==========
     function selectCategory(el, category) {
+      console.log('selectCategory called with:', category);
       const parent = el.closest('.category-grid');
       parent.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
       el.classList.add('active');
       selectedCategory = category;
+      console.log('selectedCategory set to:', selectedCategory);
     }
 
     function saveSkip() {
-      const desc = document.getElementById('skip-desc').value.trim();
-      const amount = parseFloat(document.getElementById('skip-amount').value);
-      
-      if (!selectedCategory) {
-        showToast('נא לבחור קטגוריה');
-        return;
+      try {
+        console.log('saveSkip called');
+        console.log('selectedCategory:', selectedCategory);
+        
+        const desc = document.getElementById('skip-desc').value.trim();
+        const amount = parseFloat(document.getElementById('skip-amount').value);
+        
+        console.log('desc:', desc);
+        console.log('amount:', amount);
+        
+        if (!selectedCategory) {
+          showToast('❌ נא לבחור קטגוריה');
+          return;
+        }
+        if (!desc || desc.length === 0) {
+          showToast('❌ נא להזין תיאור');
+          return;
+        }
+        if (!amount || amount <= 0 || isNaN(amount)) {
+          showToast('❌ נא להזין סכום תקין');
+          return;
+        }
+        
+        const skip = {
+          id: Date.now(),
+          type: 'skip',
+          category: selectedCategory,
+          description: desc,
+          amount: amount,
+          points: Math.round(amount * 0.5),
+          date: new Date().toISOString(),
+          hebrewDate: getHebrewDate()
+        };
+        
+        console.log('Skip to save:', skip);
+        
+        app.skips.push(skip);
+        updateStreak();
+        save();
+        
+        trackEvent('skip_added', {
+          category: selectedCategory,
+          amount: amount,
+          points: skip.points
+        });
+        
+        showToast('✅ דילוג נשמר! +' + skip.points + ' נקודות ⭐');
+        
+        // Clear form
+        document.getElementById('skip-desc').value = '';
+        document.getElementById('skip-amount').value = '';
+        selectedCategory = '';
+        document.querySelectorAll('#skip-categories .category-btn').forEach(btn => btn.classList.remove('active'));
+        
+        goTo('dashboard');
+      } catch (error) {
+        console.error('Error in saveSkip:', error);
+        showToast('❌ שגיאה בשמירת הדילוג: ' + error.message);
       }
-      if (!amount || amount <= 0) {
-        showToast('נא להזין סכום');
-        return;
-      }
-      
-      const skip = {
-        id: Date.now(),
-        type: 'skip',
-        category: selectedCategory,
-        description: desc || selectedCategory,
-        amount: amount,
-        points: Math.round(amount * 0.5),
-        date: new Date().toISOString(),
-        hebrewDate: getHebrewDate()
-      };
-      
-      app.skips.push(skip);
-      updateStreak();
-      save();
-      
-      trackEvent('skip_added', {
-        category: selectedCategory,
-        amount: amount,
-        points: skip.points
-      });
-      
-      showToast('דילוג נשמר! +' + skip.points + ' נקודות ⭐');
-      
-      // Clear form
-      document.getElementById('skip-desc').value = '';
-      document.getElementById('skip-amount').value = '';
-      selectedCategory = '';
-      document.querySelectorAll('#skip-categories .category-btn').forEach(btn => btn.classList.remove('active'));
-      
-      goTo('dashboard');
     }
 
     function savePurchase() {
-      const desc = document.getElementById('purchase-desc').value.trim();
-      const amount = parseFloat(document.getElementById('purchase-amount').value);
-      
-      if (!selectedCategory) {
-        showToast('נא לבחור קטגוריה');
-        return;
+      try {
+        console.log('savePurchase called');
+        console.log('selectedCategory:', selectedCategory);
+        
+        const desc = document.getElementById('purchase-desc').value.trim();
+        const amount = parseFloat(document.getElementById('purchase-amount').value);
+        
+        console.log('desc:', desc);
+        console.log('amount:', amount);
+        
+        if (!selectedCategory) {
+          showToast('❌ נא לבחור קטגוריה');
+          return;
+        }
+        if (!desc || desc.length === 0) {
+          showToast('❌ נא להזין תיאור');
+          return;
+        }
+        if (!amount || amount <= 0 || isNaN(amount)) {
+          showToast('❌ נא להזין סכום תקין');
+          return;
+        }
+        
+        const purchase = {
+          id: Date.now(),
+          type: 'purchase',
+          category: selectedCategory,
+          description: desc,
+          amount: amount,
+          date: new Date().toISOString(),
+          hebrewDate: getHebrewDate()
+        };
+        
+        console.log('Purchase to save:', purchase);
+        
+        app.purchases.push(purchase);
+        save();
+        
+        trackEvent('purchase_added', {
+          category: selectedCategory,
+          amount: amount
+        });
+        
+        showToast('✅ קנייה נרשמה 🛒');
+        
+        // Clear form
+        document.getElementById('purchase-desc').value = '';
+        document.getElementById('purchase-amount').value = '';
+        selectedCategory = '';
+        document.querySelectorAll('#purchase-categories .category-btn').forEach(btn => btn.classList.remove('active'));
+        
+        goTo('dashboard');
+      } catch (error) {
+        console.error('Error in savePurchase:', error);
+        showToast('❌ שגיאה בשמירת הקנייה: ' + error.message);
       }
-      if (!amount || amount <= 0) {
-        showToast('נא להזין סכום');
-        return;
-      }
-      
-      const purchase = {
-        id: Date.now(),
-        type: 'purchase',
-        category: selectedCategory,
-        description: desc || selectedCategory,
-        amount: amount,
-        date: new Date().toISOString(),
-        hebrewDate: getHebrewDate()
-      };
-      
-      app.purchases.push(purchase);
-      save();
-      
-      trackEvent('purchase_added', {
-        category: selectedCategory,
-        amount: amount
-      });
-      
-      showToast('קנייה נרשמה 🛒');
-      
-      // Clear form
-      document.getElementById('purchase-desc').value = '';
-      document.getElementById('purchase-amount').value = '';
-      selectedCategory = '';
-      document.querySelectorAll('#purchase-categories .category-btn').forEach(btn => btn.classList.remove('active'));
-      
-      goTo('dashboard');
     }
 
     // ========== HEBREW DATE ==========
