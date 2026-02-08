@@ -223,7 +223,7 @@
         <input type="checkbox" id="terms-agree" class="terms-checkbox" onchange="toggleAccept()">
         <label for="terms-agree" class="terms-label">קראתי ואני מסכים/ה לתנאי השימוש</label>
       </div>
-      <button class="btn-accept" id="btn-accept" onclick="acceptTerms()">המשך להרשמה</button>
+      <button class="btn-accept" id="btn-accept" onclick="acceptTerms()" disabled>המשך להרשמה</button>
     </div>
     
     <!-- Register Screen -->
@@ -629,8 +629,10 @@
       if (checkbox && btn) {
         if (checkbox.checked) {
           btn.classList.add('enabled');
+          btn.disabled = false;
         } else {
           btn.classList.remove('enabled');
+          btn.disabled = true;
         }
       }
     }
