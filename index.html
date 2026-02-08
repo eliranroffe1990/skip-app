@@ -586,13 +586,33 @@
     // ========== LOAD/SAVE ==========
     function save() {
       localStorage.setItem('skipapp_data', JSON.stringify(app));
+      console.log('Data saved:', app);
     }
 
     function load() {
-      const data = localStorage.getItem('skipapp_data');
-      if (data) {
-        app = JSON.parse(data);
-        return true;
+      try {
+        const data = localStorage.getItem('skipapp_data');
+        if (data) {
+          const loaded = JSON.parse(data);
+          console.log('Data loaded from localStorage:', loaded);
+          
+          // Merge with defaults to ensure all fields exist
+          app = {
+            termsAccepted: loaded.termsAccepted || false,
+            user: loaded.user || null,
+            skips: Array.isArray(loaded.skips) ? loaded.skips : [],
+            purchases: Array.isArray(loaded.purchases) ? loaded.purchases : [],
+            streak: loaded.streak || 0,
+            lastActivity: loaded.lastActivity || null
+          };
+          
+          console.log('App after merge:', app);
+          return true;
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+        // Reset to defaults if there's an error
+        localStorage.removeItem('skipapp_data');
       }
       return false;
     }
@@ -952,11 +972,32 @@
     // ========== RESET ==========
     function resetApp() {
       if (confirm('האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים יימחקו.')) {
-        trackEvent('app_reset');
-        localStorage.removeItem('skipapp_data');
+        clearData();
         location.reload();
       }
     }
+    
+    function clearData() {
+      console.log('Clearing all data...');
+      trackEvent('app_reset');
+      localStorage.removeItem('skipapp_data');
+      app = {
+        termsAccepted: false,
+        user: null,
+        skips: [],
+        purchases: [],
+        streak: 0,
+        lastActivity: null
+      };
+    }
+    
+    // Emergency reset - call this from console if needed
+    window.emergencyReset = function() {
+      console.log('🚨 Emergency reset triggered!');
+      clearData();
+      alert('הנתונים נמחקו! הדף יטען מחדש.');
+      location.reload();
+    };
 
     // ========== TOAST ==========
     function showToast(message) {
