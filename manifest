@@ -1,118 +1,65 @@
 {
-  "name": "SKIPAPP - חיסכון חכם",
+  "name": "SKIPAPP - משחק החיסכון החכם",
   "short_name": "SKIPAPP",
-  "description": "עקוב אחרי הדילוגים שלך וראה איך הכסף הקטן הופך לגדול. אפליקציה למחקר Small Amount Fallacy.",
-  "version": "5.0.0",
-  "start_url": "/index.html",
+  "description": "אפליקציה לתיעוד דילוגים על הוצאות וחיסכון חכם",
+  "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#FFFCF7",
+  "background_color": "#A8D5BA",
   "theme_color": "#A8D5BA",
-  "scope": "/",
+  "orientation": "portrait",
   "lang": "he",
   "dir": "rtl",
-  "categories": ["finance", "lifestyle", "education"],
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
+      "src": "icons/icon-72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-96x96.png",
+      "src": "icons/icon-96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-128x128.png",
+      "src": "icons/icon-128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-144x144.png",
+      "src": "icons/icon-144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-152x152.png",
+      "src": "icons/icon-152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-192x192.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-384x384.png",
+      "src": "icons/icon-384.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshots/home.png",
-      "sizes": "540x720",
-      "type": "image/png",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "/screenshots/skip.png",
-      "sizes": "540x720",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "תעד דילוג",
-      "short_name": "דילוג",
-      "description": "תעד דילוג מהיר",
-      "url": "/index.html?action=add-skip",
-      "icons": [
-        {
-          "src": "/icons/icon-96x96.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "תעד קנייה",
-      "short_name": "קנייה",
-      "description": "תעד קנייה בפועל",
-      "url": "/index.html?action=add-purchase",
-      "icons": [
-        {
-          "src": "/icons/icon-96x96.png",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
-  "share_target": {
-    "action": "/index.html",
-    "method": "GET",
-    "enctype": "application/x-www-form-urlencoded",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
-    }
-  },
-  "related_applications": [],
-  "prefer_related_applications": false,
-  "iarc_rating_id": ""
+  "categories": ["finance", "education", "lifestyle"],
+  "screenshots": [],
+  "prefer_related_applications": false
 }
