@@ -1,8 +1,8 @@
-const CACHE_NAME = 'skipapp-v6';
+const CACHE_NAME = 'skipapp-v7';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  '/skip-app/',
+  '/skip-app/index.html',
+  '/skip-app/manifest.json'
 ];
 
 // Install
