@@ -41,6 +41,14 @@
     .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; background: var(--bg); overflow-y: auto; padding-bottom: 80px; }
     .screen.active { display: flex; }
     
+    /* Navigation Bar */
+    .nav-bar { position: absolute; top: 0; left: 0; right: 0; height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 100; }
+    .nav-btn { background: none; border: none; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; font-size: 20px; }
+    .nav-btn:hover { background: #f5f5f5; }
+    .nav-btn:active { transform: scale(0.95); }
+    .lang-btn { font-size: 14px; font-weight: 600; color: var(--primary-dark); min-width: 45px; }
+    .screen-with-nav { padding-top: 60px; }
+    
     /* Welcome Screen */
     .welcome-screen { justify-content: center; align-items: center; background: linear-gradient(180deg, #A8D5BA 0%, #D4E9DF 50%, var(--bg) 100%); padding: 40px 30px; text-align: center; }
     .welcome-logo { width: 120px; height: 120px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 30px; display: flex; justify-content: center; align-items: center; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(168, 213, 186, 0.4); }
@@ -50,6 +58,9 @@
     .welcome-subtitle { font-size: 18px; color: var(--text-light); margin-bottom: 40px; line-height: 1.6; }
     .welcome-btn { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 18px 50px; border-radius: 30px; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(168, 213, 186, 0.5); transition: all 0.3s; font-family: inherit; }
     .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(168, 213, 186, 0.6); }
+    .lang-selector { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; }
+    .lang-option { background: white; border: 2px solid transparent; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .lang-option.active { border-color: var(--primary); background: var(--primary); color: white; }
     
     /* Terms Screen */
     .terms-screen { padding: 30px 20px; }
@@ -81,7 +92,7 @@
     .dash-header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 30px 20px 40px; border-radius: 0 0 30px 30px; }
     .dash-greeting { color: white; font-size: 16px; opacity: 0.9; }
     .dash-name { color: white; font-size: 28px; font-weight: 700; margin-top: 5px; }
-    .dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: -25px 15px 20px; }
+    .dash-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: -25px 15px 20px; }
     .stat-card { background: white; border-radius: 20px; padding: 18px 12px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
     .stat-icon { font-size: 28px; margin-bottom: 8px; }
     .stat-value { font-size: 24px; font-weight: 800; color: var(--text); }
@@ -98,939 +109,961 @@
     .action-desc { font-size: 13px; color: var(--text-light); margin-top: 3px; }
     
     /* Form Screen */
-    .form-screen { padding: 20px; }
-    .form-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
-    .back-btn { width: 44px; height: 44px; background: white; border: none; border-radius: 14px; font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; }
-    .form-title { font-size: 22px; font-weight: 700; color: var(--text); }
+    .form-screen { padding: 80px 20px 20px; }
+    .form-header { text-align: center; margin-bottom: 25px; }
+    .form-header-icon { width: 70px; height: 70px; border-radius: 20px; margin: 0 auto 15px; display: flex; justify-content: center; align-items: center; font-size: 35px; }
+    .form-header-icon.skip { background: linear-gradient(135deg, #90D4A8 0%, #6BC48E 100%); }
+    .form-header-icon.purchase { background: linear-gradient(135deg, #FFB88C 0%, #FF9B6A 100%); }
+    .form-title { font-size: 24px; font-weight: 700; color: var(--text); }
     
-    .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-    .category-btn { background: white; border: 2px solid #e8e8e8; border-radius: 15px; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.3s; }
-    .category-btn.active { border-color: var(--primary); background: rgba(168, 213, 186, 0.1); }
-    .category-icon { font-size: 28px; margin-bottom: 5px; }
-    .category-name { font-size: 13px; color: var(--text); font-weight: 600; }
+    .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .category-btn { background: white; border: 3px solid #e8e8e8; padding: 15px 10px; border-radius: 18px; cursor: pointer; transition: all 0.3s; text-align: center; }
+    .category-btn.selected { border-color: var(--primary); background: linear-gradient(135deg, #f0f9f4 0%, #e6f5ec 100%); }
+    .category-icon { font-size: 32px; margin-bottom: 6px; }
+    .category-name { font-size: 13px; font-weight: 600; color: var(--text); }
     
-    .amount-input-wrap { position: relative; margin-bottom: 20px; }
-    .amount-input { width: 100%; padding: 20px; padding-left: 50px; border: 2px solid #e8e8e8; border-radius: 20px; font-size: 28px; font-weight: 700; text-align: center; font-family: inherit; }
-    .amount-input:focus { outline: none; border-color: var(--primary); }
-    .currency-symbol { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 24px; color: var(--text-light); }
+    .amount-input-group { margin-bottom: 20px; }
+    .amount-input-wrapper { position: relative; }
+    .currency-symbol { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); font-size: 18px; font-weight: 700; color: var(--text-light); }
+    .amount-input { width: 100%; padding: 18px 18px 18px 45px; border: 2px solid #e8e8e8; border-radius: 15px; font-size: 24px; font-weight: 700; font-family: inherit; text-align: center; }
+    .amount-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(168, 213, 186, 0.2); }
     
-    .btn-save { width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 18px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 6px 20px rgba(168, 213, 186, 0.4); }
-    
-    /* History */
-    .history-screen { padding: 20px; }
-    .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .history-title { font-size: 24px; font-weight: 700; color: var(--text); }
-    .history-list { display: flex; flex-direction: column; gap: 12px; }
-    .history-item { background: white; border-radius: 18px; padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .history-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-    .history-icon.skip { background: rgba(144, 212, 168, 0.2); }
-    .history-icon.purchase { background: rgba(255, 184, 140, 0.2); }
-    .history-info { flex: 1; }
-    .history-desc { font-size: 15px; font-weight: 600; color: var(--text); }
-    .history-date { font-size: 12px; color: var(--text-light); margin-top: 3px; }
-    .history-amount { font-size: 18px; font-weight: 700; }
-    .history-amount.skip { color: var(--success); }
-    .history-amount.purchase { color: var(--accent); }
-    .history-empty { text-align: center; padding: 40px; color: var(--text-light); }
-    
-    /* Investment Screen */
-    .investment-screen { padding: 20px; }
-    .invest-header { text-align: center; margin-bottom: 25px; }
-    .invest-title { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-    .invest-subtitle { font-size: 14px; color: var(--text-light); }
-    .invest-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-    .invest-tab { flex: 1; padding: 12px; background: white; border: 2px solid #e8e8e8; border-radius: 15px; text-align: center; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s; }
-    .invest-tab.active { border-color: var(--primary); background: rgba(168, 213, 186, 0.1); color: var(--primary-dark); }
-    .invest-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    .invest-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .invest-card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
-    .invest-card-title { font-size: 17px; font-weight: 700; color: var(--text); }
-    .invest-card-desc { font-size: 13px; color: var(--text-light); line-height: 1.6; margin-bottom: 15px; }
-    .invest-card-footer { display: flex; gap: 10px; }
-    .invest-link { flex: 1; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; font-family: inherit; }
-    .invest-phone { flex: 1; padding: 12px; background: white; border: 2px solid var(--primary); color: var(--primary-dark); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; }
+    .btn-submit { width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 18px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 6px 20px rgba(168, 213, 186, 0.4); transition: all 0.3s; }
+    .btn-submit:hover { transform: translateY(-2px); }
     
     /* Summary Screen */
-    .summary-screen { padding: 20px; text-align: center; }
-    .summary-header { margin-bottom: 30px; }
-    .summary-title { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
-    .summary-subtitle { font-size: 15px; color: var(--text-light); }
-    .summary-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-    .summary-stat { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
-    .summary-stat-icon { font-size: 32px; margin-bottom: 10px; }
-    .summary-stat-value { font-size: 28px; font-weight: 800; color: var(--text); }
-    .summary-stat-label { font-size: 13px; color: var(--text-light); margin-top: 5px; }
-    .summary-tip { background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%); border-radius: 20px; padding: 20px; margin-bottom: 25px; }
-    .summary-tip-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-    .summary-tip-text { font-size: 14px; color: var(--text); line-height: 1.6; }
-    .summary-actions { display: flex; flex-direction: column; gap: 12px; }
-    .btn-summary { padding: 16px; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all 0.3s; }
-    .btn-summary.primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; }
-    .btn-summary.secondary { background: white; color: var(--text); border: 2px solid #e8e8e8; }
-    .btn-summary.danger { background: white; color: var(--danger); border: 2px solid var(--danger); }
+    .summary-screen { padding: 80px 20px 20px; }
+    .summary-icon { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; font-size: 40px; background: linear-gradient(135deg, var(--success) 0%, #6BC48E 100%); }
+    .summary-title { text-align: center; font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 30px; }
+    
+    .summary-cards { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
+    .summary-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .summary-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .summary-card-title { font-size: 16px; font-weight: 600; color: var(--text-light); }
+    .summary-card-amount { font-size: 32px; font-weight: 800; color: var(--text); }
+    .summary-card-currency { font-size: 18px; color: var(--text-light); }
+    
+    .btn-back-dash { width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 16px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    
+    /* History Screen */
+    .history-screen { padding: 80px 20px 20px; }
+    .history-header { text-align: center; margin-bottom: 25px; }
+    .history-title { font-size: 26px; font-weight: 700; color: var(--text); }
+    
+    .history-list { display: flex; flex-direction: column; gap: 12px; }
+    .history-item { background: white; border-radius: 18px; padding: 16px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .history-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 22px; }
+    .history-icon.skip { background: linear-gradient(135deg, #90D4A8 0%, #6BC48E 100%); }
+    .history-icon.purchase { background: linear-gradient(135deg, #FFB88C 0%, #FF9B6A 100%); }
+    .history-details { flex: 1; }
+    .history-category { font-size: 15px; font-weight: 700; color: var(--text); }
+    .history-date { font-size: 12px; color: var(--text-light); margin-top: 3px; }
+    .history-amount { font-size: 18px; font-weight: 800; color: var(--text); }
+    .history-empty { text-align: center; padding: 60px 20px; color: var(--text-light); }
+    .history-empty-icon { font-size: 60px; margin-bottom: 15px; opacity: 0.5; }
+    
+    .btn-clear-history { width: 100%; background: var(--danger); color: white; border: none; padding: 14px; border-radius: 20px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; font-family: inherit; }
+    
+    /* Investment Screen */
+    .investment-screen { padding: 80px 20px 20px; }
+    .investment-header { text-align: center; margin-bottom: 25px; }
+    .investment-title { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .investment-subtitle { font-size: 14px; color: var(--text-light); }
+    
+    .investment-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+    .investment-tab { background: white; border: 2px solid #e8e8e8; padding: 10px 20px; border-radius: 20px; cursor: pointer; white-space: nowrap; transition: all 0.3s; font-weight: 600; font-size: 14px; }
+    .investment-tab.active { border-color: var(--primary); background: var(--primary); color: white; }
+    
+    .investment-content { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .investment-content h3 { font-size: 18px; margin-bottom: 12px; color: var(--primary-dark); }
+    .investment-content p { font-size: 14px; line-height: 1.7; color: var(--text); margin-bottom: 10px; }
+    .investment-content ul { margin: 10px 0 10px 20px; }
+    .investment-content li { font-size: 14px; line-height: 1.7; color: var(--text); margin-bottom: 6px; }
     
     /* Bottom Nav */
-    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; background: white; padding: 12px 20px 20px; display: flex; justify-content: space-around; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 25px 25px 0 0; z-index: 100; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 15px; border-radius: 15px; transition: all 0.3s; background: none; border: none; font-family: inherit; }
-    .nav-item.active { background: rgba(168, 213, 186, 0.2); }
-    .nav-icon { font-size: 24px; }
+    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; background: white; display: flex; justify-content: space-around; padding: 12px 0 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 30px 30px 0 0; }
+    .bottom-nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; transition: all 0.3s; padding: 8px; }
+    .bottom-nav-item.active .nav-icon { color: var(--primary-dark); transform: scale(1.1); }
+    .nav-icon { font-size: 24px; color: var(--text-light); transition: all 0.3s; }
     .nav-label { font-size: 11px; font-weight: 600; color: var(--text-light); }
-    .nav-item.active .nav-label { color: var(--primary-dark); }
+    .bottom-nav-item.active .nav-label { color: var(--primary-dark); }
     
-    /* Toast */
-    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 14px 28px; border-radius: 30px; font-size: 15px; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-    .toast.show { opacity: 1; }
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .screen.active { animation: fadeIn 0.3s ease-out; }
     
-    /* Hebrew Calendar */
-    .date-display { font-size: 12px; color: var(--text-light); margin-top: 2px; direction: rtl; }
+    /* Responsive */
+    @media (max-width: 360px) {
+      .welcome-title { font-size: 36px; }
+      .dash-stats { grid-template-columns: 1fr; }
+      .category-grid { grid-template-columns: repeat(2, 1fr); }
+    }
   </style>
 </head>
 <body>
-  <div class="app">
+  <div class="app" id="app">
     
     <!-- Welcome Screen -->
     <div class="screen welcome-screen active" id="welcome-screen">
+      <div class="lang-selector">
+        <div class="lang-option active" data-lang="he">עברית</div>
+        <div class="lang-option" data-lang="en">English</div>
+      </div>
       <div class="welcome-logo">
         <div class="play-icon"></div>
       </div>
-      <h1 class="welcome-title">SKIPAPP</h1>
-      <p class="welcome-subtitle">משחק החיסכון החכם<br>דלג על הוצאות קטנות, צבור נקודות, והפוך את החיסכון להרגל!</p>
-      <button class="welcome-btn" onclick="goTo('terms-screen')">בואו נתחיל! 🚀</button>
+      <div class="welcome-title" data-i18n="welcome.title">SKIPAPP</div>
+      <div class="welcome-subtitle" data-i18n="welcome.subtitle">חסוך חכם, השקע נבון</div>
+      <button class="welcome-btn" onclick="goTo('terms')" data-i18n="welcome.start">בואו נתחיל!</button>
     </div>
     
     <!-- Terms Screen -->
     <div class="screen terms-screen" id="terms-screen">
-      <div class="terms-header">
-        <h2 class="terms-title">📜 תנאי שימוש</h2>
+      <div class="nav-bar">
+        <button class="nav-btn" onclick="goTo('welcome')">←</button>
+        <div class="nav-title" data-i18n="terms.title">תנאי שימוש</div>
+        <button class="nav-btn lang-btn" onclick="toggleLanguage()">EN</button>
       </div>
-      <div class="terms-content">
-        <h3>ברוכים הבאים ל-SKIPAPP!</h3>
-        <p>האפליקציה פותחה במסגרת מחקר דוקטורט בכלכלה התנהגותית באוניברסיטת אדם מיקביץ' בפוזנן, פולין.</p>
-        
-        <h3>מטרת האפליקציה</h3>
-        <p>לעזור לך לפתח מודעות להוצאות קטנות ולהבין את הכוח המצטבר של חיסכון קטן לאורך זמן.</p>
-        
-        <h3>איסוף נתונים</h3>
-        <p>האפליקציה אוספת נתונים אנונימיים לצורכי מחקר בלבד: גיל, מין, דפוסי שימוש. המידע משמש לניתוח סטטיסטי ולא ניתן לזיהוי אישי.</p>
-        
-        <h3>פרטיות</h3>
-        <p>אנו מחויבים להגנה על פרטיותך. הנתונים נשמרים בצורה מאובטחת ולא משותפים עם גורמים חיצוניים.</p>
-        
-        <h3>שימוש אחראי</h3>
-        <p>האפליקציה מספקת כלים חינוכיים בלבד ואינה מהווה ייעוץ פיננסי מקצועי.</p>
+      <div class="screen-with-nav">
+        <div class="terms-header">
+          <h2 class="terms-title" data-i18n="terms.title">תנאי שימוש והסכמת מחקר</h2>
+        </div>
+        <div class="terms-content">
+          <h3 data-i18n="terms.section1">מטרת האפליקציה</h3>
+          <p data-i18n="terms.purpose">אפליקציה זו מיועדת למחקר אקדמי בנושא כלכלה התנהגותית. השימוש באפליקציה הינו בהתנדבות ולמטרות מחקר בלבד.</p>
+          
+          <h3 data-i18n="terms.section2">איסוף מידע</h3>
+          <p data-i18n="terms.data">אנו אוספים נתונים אנונימיים על התנהגות חיסכון למטרות מחקר. המידע נשמר בצורה מאובטחת ולא ישמש למטרות מסחריות.</p>
+          
+          <h3 data-i18n="terms.section3">פרטיות</h3>
+          <p data-i18n="terms.privacy">הנתונים שלך מוצפנים ומאוחסנים בצורה בטוחה. לא נאסוף מידע אישי מזהה.</p>
+        </div>
+        <div class="terms-agree-box">
+          <input type="checkbox" id="terms-checkbox" class="terms-checkbox" onchange="toggleAcceptBtn()">
+          <label for="terms-checkbox" class="terms-label" data-i18n="terms.agree">אני מסכים/ה לתנאי השימוש ומאשר/ת השתתפות במחקר</label>
+        </div>
+        <button class="btn-accept" id="accept-btn" disabled onclick="acceptTerms()" data-i18n="terms.accept">המשך</button>
       </div>
-      <div class="terms-agree-box">
-        <input type="checkbox" id="terms-agree" class="terms-checkbox" onchange="toggleAccept()">
-        <label for="terms-agree" class="terms-label">קראתי ואני מסכים/ה לתנאי השימוש</label>
-      </div>
-      <button class="btn-accept" id="btn-accept" onclick="acceptTerms()" disabled>המשך להרשמה</button>
     </div>
     
     <!-- Register Screen -->
     <div class="screen register-screen" id="register-screen">
-      <div class="register-header">
-        <h2 class="register-title">📝 הרשמה</h2>
-        <p class="register-subtitle">ספר/י לנו קצת על עצמך</p>
+      <div class="nav-bar">
+        <button class="nav-btn" onclick="goTo('terms')">←</button>
+        <div class="nav-title" data-i18n="register.title">הרשמה</div>
+        <button class="nav-btn lang-btn" onclick="toggleLanguage()">EN</button>
       </div>
-      <form id="register-form" onsubmit="return submitRegister(event)">
-        <div class="form-group">
-          <label class="form-label">שם מלא</label>
-          <input type="text" class="form-input" id="reg-name" required placeholder="הכנס/י את שמך">
+      <div class="screen-with-nav">
+        <div class="register-header">
+          <h2 class="register-title" data-i18n="register.title">יצירת פרופיל</h2>
+          <p class="register-subtitle" data-i18n="register.subtitle">ספר/י לנו קצת עליך</p>
         </div>
-        <div class="form-row">
+        <form onsubmit="register(event)">
           <div class="form-group">
-            <label class="form-label">גיל</label>
-            <input type="number" class="form-input" id="reg-age" required min="8" max="120" placeholder="גיל">
+            <label class="form-label" data-i18n="register.name">שם מלא</label>
+            <input type="text" id="user-name" class="form-input" required>
           </div>
-          <div class="form-group">
-            <label class="form-label">מין</label>
-            <select class="form-select" id="reg-gender" required>
-              <option value="">בחר/י</option>
-              <option value="male">זכר</option>
-              <option value="female">נקבה</option>
-              <option value="other">אחר</option>
-            </select>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" data-i18n="register.age">טווח גיל</label>
+              <select id="user-age" class="form-select" required>
+                <option value="">בחר/י</option>
+                <option value="8-12">8-12</option>
+                <option value="13-17">13-17</option>
+                <option value="18-24">18-24</option>
+                <option value="25-34">25-34</option>
+                <option value="35-44">35-44</option>
+                <option value="45-54">45-54</option>
+                <option value="55+">55+</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="register.gender">מין</label>
+              <select id="user-gender" class="form-select" required>
+                <option value="">בחר/י</option>
+                <option value="male" data-i18n="register.male">זכר</option>
+                <option value="female" data-i18n="register.female">נקבה</option>
+                <option value="other" data-i18n="register.other">אחר</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">שפה מועדפת</label>
-          <select class="form-select" id="reg-language">
-            <option value="he">עברית</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-        <button type="submit" class="btn-register">התחל לחסוך! 💰</button>
-      </form>
+          <button type="submit" class="btn-register" data-i18n="register.submit">התחל לחסוך!</button>
+        </form>
+      </div>
     </div>
     
     <!-- Dashboard -->
     <div class="screen dashboard" id="dashboard">
-      <div class="dash-header">
-        <p class="dash-greeting">שלום,</p>
-        <h2 class="dash-name" id="user-name">משתמש</h2>
+      <div class="nav-bar">
+        <button class="nav-btn" style="visibility: hidden;">←</button>
+        <div class="nav-title" data-i18n="nav.home">בית</div>
+        <button class="nav-btn lang-btn" onclick="toggleLanguage()">EN</button>
       </div>
-      <div class="dash-stats">
-        <div class="stat-card">
-          <div class="stat-icon">🎯</div>
-          <div class="stat-value" id="stat-skips">0</div>
-          <div class="stat-label">דילוגים</div>
+      <div class="screen-with-nav">
+        <div class="dash-header">
+          <div class="dash-greeting" data-i18n="dashboard.greeting">שלום,</div>
+          <div class="dash-name" id="dash-user-name"></div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">⭐</div>
-          <div class="stat-value" id="stat-points">0</div>
-          <div class="stat-label">נקודות</div>
+        <div class="dash-stats">
+          <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-value" id="stat-saved">₪0</div>
+            <div class="stat-label" data-i18n="dashboard.saved">נחסך</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🛒</div>
+            <div class="stat-value" id="stat-spent">₪0</div>
+            <div class="stat-label" data-i18n="dashboard.spent">הוצא</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">🔥</div>
-          <div class="stat-value" id="stat-streak">0</div>
-          <div class="stat-label">רצף ימים</div>
+        <div class="dash-actions">
+          <button class="action-btn" onclick="goTo('skip-form')">
+            <div class="action-icon skip">✓</div>
+            <div class="action-text">
+              <div class="action-title" data-i18n="dashboard.skip">דילוג על הוצאה</div>
+              <div class="action-desc" data-i18n="dashboard.skipDesc">רשום מה לא קנית</div>
+            </div>
+          </button>
+          <button class="action-btn" onclick="goTo('purchase-form')">
+            <div class="action-icon purchase">₪</div>
+            <div class="action-text">
+              <div class="action-title" data-i18n="dashboard.purchase">רישום הוצאה</div>
+              <div class="action-desc" data-i18n="dashboard.purchaseDesc">רשום מה קנית</div>
+            </div>
+          </button>
         </div>
       </div>
-      <div class="dash-actions">
-        <button class="action-btn" onclick="goTo('skip-form')">
-          <div class="action-icon skip">✓</div>
-          <div class="action-text">
-            <div class="action-title">הוסף דילוג</div>
-            <div class="action-desc">תעד קנייה שדילגת עליה</div>
-          </div>
+      
+      <!-- Bottom Nav -->
+      <div class="bottom-nav">
+        <button class="bottom-nav-item active" onclick="goTo('dashboard')">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label" data-i18n="nav.home">בית</span>
         </button>
-        <button class="action-btn" onclick="goTo('purchase-form')">
-          <div class="action-icon purchase">🛒</div>
-          <div class="action-text">
-            <div class="action-title">הוסף קנייה</div>
-            <div class="action-desc">תעד קנייה שביצעת</div>
-          </div>
+        <button class="bottom-nav-item" onclick="goTo('history')">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label" data-i18n="nav.history">היסטוריה</span>
         </button>
-        <button class="action-btn" onclick="goTo('history-screen')">
-          <div class="action-icon" style="background: linear-gradient(135deg, #B8A9D4 0%, #9B89C4 100%);">📊</div>
-          <div class="action-text">
-            <div class="action-title">היסטוריה</div>
-            <div class="action-desc">צפה בכל הפעילות שלך</div>
-          </div>
-        </button>
-        <button class="action-btn" onclick="goTo('investment-screen')">
-          <div class="action-icon" style="background: linear-gradient(135deg, #FFD9A0 0%, #FFCC80 100%);">💡</div>
-          <div class="action-text">
-            <div class="action-title">אפיקי השקעה</div>
-            <div class="action-desc">למד איך להשקיע את החיסכון</div>
-          </div>
+        <button class="bottom-nav-item" onclick="goTo('investment')">
+          <span class="nav-icon">💡</span>
+          <span class="nav-label" data-i18n="nav.invest">השקעות</span>
         </button>
       </div>
     </div>
     
     <!-- Skip Form -->
     <div class="screen form-screen" id="skip-form">
-      <div class="form-header">
-        <button class="back-btn" onclick="goTo('dashboard')">→</button>
-        <h2 class="form-title">הוסף דילוג</h2>
+      <div class="nav-bar">
+        <button class="nav-btn" onclick="goTo('dashboard')">←</button>
+        <div class="nav-title" data-i18n="skip.title">דילוג על הוצאה</div>
+        <button class="nav-btn" onclick="goTo('dashboard')">🏠</button>
+        <button class="nav-btn lang-btn" onclick="toggleLanguage()">EN</button>
       </div>
-      <p style="color: var(--text-light); margin-bottom: 20px; font-size: 14px;">על מה דילגת היום?</p>
-      <div class="category-grid" id="skip-categories">
-        <div class="category-btn" onclick="selectCategory(this, 'אוכל')"><div class="category-icon">🍕</div><div class="category-name">אוכל</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'שתייה')"><div class="category-icon">☕</div><div class="category-name">שתייה</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'בילויים')"><div class="category-icon">🎬</div><div class="category-name">בילויים</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'קניות')"><div class="category-icon">🛍️</div><div class="category-name">קניות</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'תחבורה')"><div class="category-icon">🚗</div><div class="category-name">תחבורה</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'אחר')"><div class="category-icon">📦</div><div class="category-name">אחר</div></div>
+      <div class="screen-with-nav">
+        <div class="form-header">
+          <div class="form-header-icon skip">✓</div>
+          <h2 class="form-title" data-i18n="skip.title">דילוג על הוצאה</h2>
+        </div>
+        
+        <div class="form-label" data-i18n="skip.category">בחר קטגוריה:</div>
+        <div class="category-grid" id="skip-categories"></div>
+        
+        <div class="amount-input-group">
+          <label class="form-label" data-i18n="skip.amount">כמה חסכת?</label>
+          <div class="amount-input-wrapper">
+            <span class="currency-symbol">₪</span>
+            <input type="number" id="skip-amount" class="amount-input" placeholder="0" min="1" step="1" required>
+          </div>
+        </div>
+        
+        <button class="btn-submit" onclick="submitSkip()" data-i18n="skip.submit">שמור דילוג</button>
       </div>
-      <div class="form-group">
-        <label class="form-label">תיאור קצר</label>
-        <input type="text" class="form-input" id="skip-desc" placeholder="לדוגמה: קפה בבוקר">
-      </div>
-      <div class="amount-input-wrap">
-        <span class="currency-symbol">₪</span>
-        <input type="number" class="amount-input" id="skip-amount" placeholder="0" min="1">
-      </div>
-      <button class="btn-save" onclick="saveSkip()">שמור דילוג ✓</button>
     </div>
     
     <!-- Purchase Form -->
     <div class="screen form-screen" id="purchase-form">
-      <div class="form-header">
-        <button class="back-btn" onclick="goTo('dashboard')">→</button>
-        <h2 class="form-title">הוסף קנייה</h2>
+      <div class="nav-bar">
+        <button class="nav-btn" onclick="goTo('dashboard')">←</button>
+        <div class="nav-title" data-i18n="purchase.title">רישום הוצאה</div>
+        <button class="nav-btn" onclick="goTo('dashboard')">🏠</button>
+        <button class="nav-btn lang-btn" onclick="toggleLanguage()">EN</button>
       </div>
-      <p style="color: var(--text-light); margin-bottom: 20px; font-size: 14px;">מה קנית היום?</p>
-      <div class="category-grid" id="purchase-categories">
-        <div class="category-btn" onclick="selectCategory(this, 'אוכל')"><div class="category-icon">🍕</div><div class="category-name">אוכל</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'שתייה')"><div class="category-icon">☕</div><div class="category-name">שתייה</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'בילויים')"><div class="category-icon">🎬</div><div class="category-name">בילויים</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'קניות')"><div class="category-icon">🛍️</div><div class="category-name">קניות</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'תחבורה')"><div class="category-icon">🚗</div><div class="category-name">תחבורה</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'אחר')"><div class="category-icon">📦</div><div class="category-name">אחר</div></div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">תיאור קצר</label>
-        <input type="text" class="form-input" id="purchase-desc" placeholder="לדוגמה: ארוחת צהריים">
-      </div>
-      <div class="amount-input-wrap">
-        <span class="currency-symbol">₪</span>
-        <input type="number" class="amount-input" id="purchase-amount" placeholder="0" min="1">
-      </div>
-      <button class="btn-save" style="background: linear-gradient(135deg, var(--accent) 0%, #FF9B6A 100%);" onclick="savePurchase()">שמור קנייה 🛒</button>
-    </div>
-    
-    <!-- History Screen -->
-    <div class="screen history-screen" id="history-screen">
-      <div class="history-header">
-        <button class="back-btn" onclick="goTo('dashboard')">→</button>
-        <h2 class="history-title">היסטוריה</h2>
-      </div>
-      <div class="history-list" id="history-list">
-        <div class="history-empty">
-          <p>עדיין אין פעילות</p>
-          <p style="font-size: 13px; margin-top: 8px;">התחל לתעד דילוגים וקניות!</p>
+      <div class="screen-with-nav">
+        <div class="form-header">
+          <div class="form-header-icon purchase">₪</div>
+          <h2 class="form-title" data-i18n="purchase.title">רישום הוצאה</h2>
         </div>
-      </div>
-    </div>
-    
-    <!-- Investment Screen -->
-    <div class="screen investment-screen" id="investment-screen">
-      <div class="form-header">
-        <button class="back-btn" onclick="goTo('dashboard')">→</button>
-        <h2 class="form-title">אפיקי השקעה</h2>
-      </div>
-      <div class="invest-tabs">
-        <div class="invest-tab active" onclick="showInvestTab('adult')">למבוגרים (18+)</div>
-        <div class="invest-tab" onclick="showInvestTab('youth')">לנוער</div>
-      </div>
-      <div id="invest-adult">
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">🏦</div>
-            <div class="invest-card-title">Pillow - חיסכון חכם</div>
-          </div>
-          <div class="invest-card-desc">אפליקציה לחיסכון אוטומטי עם תשואה יומית. מינימום 1₪.</div>
-          <div class="invest-card-footer">
-            <a href="https://www.pillow.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
+        
+        <div class="form-label" data-i18n="purchase.category">בחר קטגוריה:</div>
+        <div class="category-grid" id="purchase-categories"></div>
+        
+        <div class="amount-input-group">
+          <label class="form-label" data-i18n="purchase.amount">כמה הוצאת?</label>
+          <div class="amount-input-wrapper">
+            <span class="currency-symbol">₪</span>
+            <input type="number" id="purchase-amount" class="amount-input" placeholder="0" min="1" step="1" required>
           </div>
         </div>
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">📈</div>
-            <div class="invest-card-title">eToro - מסחר בשוק ההון</div>
-          </div>
-          <div class="invest-card-desc">פלטפורמה בינלאומית למסחר במניות, קריפטו ועוד. מינימום $50.</div>
-          <div class="invest-card-footer">
-            <a href="https://www.etoro.com" target="_blank" class="invest-link">🌐 לאתר</a>
-          </div>
-        </div>
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">💼</div>
-            <div class="invest-card-title">מיטב דש - קרנות נאמנות</div>
-          </div>
-          <div class="invest-card-desc">בית השקעות מוביל בישראל עם מגוון קרנות נאמנות.</div>
-          <div class="invest-card-footer">
-            <a href="https://www.meitav.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
-            <a href="tel:*6569" class="invest-phone">📞 *6569</a>
-          </div>
-        </div>
-      </div>
-      <div id="invest-youth" style="display: none;">
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">👶</div>
-            <div class="invest-card-title">חיסכון לכל ילד</div>
-          </div>
-          <div class="invest-card-desc">תוכנית ממשלתית לחיסכון ארוך טווח לילדים. ניתן לבחור מסלול השקעה.</div>
-          <div class="invest-card-footer">
-            <a href="tel:*6050" class="invest-phone">📞 *6050</a>
-          </div>
-        </div>
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">🏧</div>
-            <div class="invest-card-title">בנק הפועלים - נוער</div>
-          </div>
-          <div class="invest-card-desc">חשבון חיסכון לנוער עם הטבות מיוחדות.</div>
-          <div class="invest-card-footer">
-            <a href="https://www.bankhapoalim.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
-            <a href="tel:*2407" class="invest-phone">📞 *2407</a>
-          </div>
-        </div>
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">🏧</div>
-            <div class="invest-card-title">בנק לאומי - נוער</div>
-          </div>
-          <div class="invest-card-desc">תוכניות חיסכון ייעודיות לגילאי 12-18.</div>
-          <div class="invest-card-footer">
-            <a href="https://www.leumi.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
-            <a href="tel:*5522" class="invest-phone">📞 *5522</a>
-          </div>
-        </div>
+        
+        <button class="btn-submit" onclick="submitPurchase()" data-i18n="purchase.submit">שמור הוצאה</button>
       </div>
     </div>
     
     <!-- Summary Screen -->
     <div class="screen summary-screen" id="summary-screen">
-      <div class="summary-header">
-        <h2 class="summary-title">🎉 סיכום</h2>
-        <p class="summary-subtitle">הנה ההישגים שלך עד כה</p>
+      <div class="nav-bar">
+        <button class="nav-btn" onclick="goTo('dashboard')">←</button>
+        <div class="nav-title" data-i18n="summary.title">סיכום</div>
+        <button class="nav-btn" onclick="goTo('dashboard')">🏠</button>
+        <button class="nav-btn lang-btn" onclick="toggleLanguage()">EN</button>
       </div>
-      <div class="summary-stats">
-        <div class="summary-stat">
-          <div class="summary-stat-icon">🎯</div>
-          <div class="summary-stat-value" id="summary-skips">0</div>
-          <div class="summary-stat-label">דילוגים</div>
+      <div class="screen-with-nav">
+        <div class="summary-icon">🎉</div>
+        <h2 class="summary-title" data-i18n="summary.congrats">כל הכבוד!</h2>
+        
+        <div class="summary-cards">
+          <div class="summary-card">
+            <div class="summary-card-header">
+              <span class="summary-card-title" data-i18n="summary.saved">חסכת:</span>
+            </div>
+            <div>
+              <span class="summary-card-amount" id="summary-saved">₪0</span>
+            </div>
+          </div>
         </div>
-        <div class="summary-stat">
-          <div class="summary-stat-icon">⭐</div>
-          <div class="summary-stat-value" id="summary-points">0</div>
-          <div class="summary-stat-label">נקודות</div>
-        </div>
-        <div class="summary-stat">
-          <div class="summary-stat-icon">💰</div>
-          <div class="summary-stat-value" id="summary-saved">₪0</div>
-          <div class="summary-stat-label">נחסך</div>
-        </div>
-        <div class="summary-stat">
-          <div class="summary-stat-icon">🔥</div>
-          <div class="summary-stat-value" id="summary-streak">0</div>
-          <div class="summary-stat-label">רצף ימים</div>
-        </div>
-      </div>
-      <div class="summary-tip">
-        <div class="summary-tip-title">💡 טיפ לחיסכון</div>
-        <div class="summary-tip-text" id="summary-tip">כל שקל קטן הופך לגדול עם הזמן! המשך לדלג על הוצאות קטנות ותראה איך החיסכון גדל.</div>
-      </div>
-      <div class="summary-actions">
-        <button class="btn-summary primary" onclick="goTo('dashboard')">🏠 חזרה לדשבורד</button>
-        <button class="btn-summary secondary" onclick="shareResults()">📤 שתף את ההישגים</button>
-        <button class="btn-summary danger" onclick="resetApp()">🔄 התחל מחדש</button>
+        
+        <button class="btn-back-dash" onclick="goTo('dashboard')" data-i18n="summary.back">חזרה לדף הבית</button>
       </div>
     </div>
     
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav" id="bottom-nav" style="display: none;">
-      <button class="nav-item active" onclick="goTo('dashboard')">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">בית</span>
-      </button>
-      <button class="nav-item" onclick="goTo('history-screen')">
-        <span class="nav-icon">📊</span>
-        <span class="nav-label">היסטוריה</span>
-      </button>
-      <button class="nav-item" onclick="goTo('investment-screen')">
-        <span class="nav-icon">💡</span>
-        <span class="nav-label">השקעות</span>
-      </button>
-      <button class="nav-item" onclick="goTo('summary-screen')">
-        <span class="nav-icon">🎯</span>
-        <span class="nav-label">סיכום</span>
-      </button>
-    </nav>
+    <!-- History Screen -->
+    <div class="screen history-screen" id="history-screen">
+      <div class="nav-bar">
+        <button class="nav-btn" onclick="goTo('dashboard')">←</button>
+        <div class="nav-title" data-i18n="history.title">היסטוריה</div>
+        <button class="nav-btn" onclick="goTo('dashboard')">🏠</button>
+        <button class="nav-btn lang-btn" onclick="toggleLanguage()">EN</button>
+      </div>
+      <div class="screen-with-nav">
+        <div class="history-header">
+          <h2 class="history-title" data-i18n="history.title">היסטוריה</h2>
+        </div>
+        
+        <div class="history-list" id="history-list"></div>
+        
+        <button class="btn-clear-history" onclick="clearHistory()" data-i18n="history.clear">נקה היסטוריה</button>
+      </div>
+      
+      <div class="bottom-nav">
+        <button class="bottom-nav-item" onclick="goTo('dashboard')">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label" data-i18n="nav.home">בית</span>
+        </button>
+        <button class="bottom-nav-item active" onclick="goTo('history')">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label" data-i18n="nav.history">היסטוריה</span>
+        </button>
+        <button class="bottom-nav-item" onclick="goTo('investment')">
+          <span class="nav-icon">💡</span>
+          <span class="nav-label" data-i18n="nav.invest">השקעות</span>
+        </button>
+      </div>
+    </div>
     
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
+    <!-- Investment Screen -->
+    <div class="screen investment-screen" id="investment-screen">
+      <div class="nav-bar">
+        <button class="nav-btn" onclick="goTo('dashboard')">←</button>
+        <div class="nav-title" data-i18n="investment.title">השקעות</div>
+        <button class="nav-btn" onclick="goTo('dashboard')">🏠</button>
+        <button class="nav-btn lang-btn" onclick="toggleLanguage()">EN</button>
+      </div>
+      <div class="screen-with-nav">
+        <div class="investment-header">
+          <h2 class="investment-title" data-i18n="investment.title">מדריך השקעות</h2>
+          <p class="investment-subtitle" data-i18n="investment.subtitle">למד איך להשקיע בחוכמה</p>
+        </div>
+        
+        <div class="investment-tabs">
+          <div class="investment-tab active" onclick="showInvestmentTab('savings')" data-i18n="investment.tab1">חסכונות</div>
+          <div class="investment-tab" onclick="showInvestmentTab('bonds')" data-i18n="investment.tab2">אגרות חוב</div>
+          <div class="investment-tab" onclick="showInvestmentTab('stocks')" data-i18n="investment.tab3">מניות</div>
+          <div class="investment-tab" onclick="showInvestmentTab('etf')" data-i18n="investment.tab4">תעודות סל</div>
+        </div>
+        
+        <div class="investment-content" id="investment-content"></div>
+      </div>
+      
+      <div class="bottom-nav">
+        <button class="bottom-nav-item" onclick="goTo('dashboard')">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label" data-i18n="nav.home">בית</span>
+        </button>
+        <button class="bottom-nav-item" onclick="goTo('history')">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label" data-i18n="nav.history">היסטוריה</span>
+        </button>
+        <button class="bottom-nav-item active" onclick="goTo('investment')">
+          <span class="nav-icon">💡</span>
+          <span class="nav-label" data-i18n="nav.invest">השקעות</span>
+        </button>
+      </div>
+    </div>
+    
   </div>
-
+  
   <script>
-    // ========== FIREBASE CONFIGURATION ==========
-    const firebaseConfig = {
-      apiKey: "AIzaSyDzPSY4vsIUX8qlp0I8_bBolZ1O7CaMDsc",
-      authDomain: "skipp-app-new.firebaseapp.com",
-      projectId: "skipp-app-new",
-      storageBucket: "skipp-app-new.firebasestorage.app",
-      messagingSenderId: "1083330335906",
-      appId: "1:1083330335906:web:8b8d24482193c168da33fb",
-      measurementId: "G-SQVTRYR5TQ"
+    // ===========================
+    // TRANSLATIONS
+    // ===========================
+    const translations = {
+      he: {
+        welcome: {
+          title: 'SKIPAPP',
+          subtitle: 'חסוך חכם, השקע נבון',
+          start: 'בואו נתחיל!'
+        },
+        terms: {
+          title: 'תנאי שימוש',
+          section1: 'מטרת האפליקציה',
+          purpose: 'אפליקציה זו מיועדת למחקר אקדמי בנושא כלכלה התנהגותית. השימוש באפליקציה הינו בהתנדבות ולמטרות מחקר בלבד.',
+          section2: 'איסוף מידע',
+          data: 'אנו אוספים נתונים אנונימיים על התנהגות חיסכון למטרות מחקר. המידע נשמר בצורה מאובטחת ולא ישמש למטרות מסחריות.',
+          section3: 'פרטיות',
+          privacy: 'הנתונים שלך מוצפנים ומאוחסנים בצורה בטוחה. לא נאסוף מידע אישי מזהה.',
+          agree: 'אני מסכים/ה לתנאי השימוש ומאשר/ת השתתפות במחקר',
+          accept: 'המשך'
+        },
+        register: {
+          title: 'יצירת פרופיל',
+          subtitle: 'ספר/י לנו קצת עליך',
+          name: 'שם מלא',
+          age: 'טווח גיל',
+          gender: 'מין',
+          male: 'זכר',
+          female: 'נקבה',
+          other: 'אחר',
+          submit: 'התחל לחסוך!'
+        },
+        dashboard: {
+          greeting: 'שלום,',
+          saved: 'נחסך',
+          spent: 'הוצא',
+          skip: 'דילוג על הוצאה',
+          skipDesc: 'רשום מה לא קנית',
+          purchase: 'רישום הוצאה',
+          purchaseDesc: 'רשום מה קנית'
+        },
+        skip: {
+          title: 'דילוג על הוצאה',
+          category: 'בחר קטגוריה:',
+          amount: 'כמה חסכת?',
+          submit: 'שמור דילוג'
+        },
+        purchase: {
+          title: 'רישום הוצאה',
+          category: 'בחר קטגוריה:',
+          amount: 'כמה הוצאת?',
+          submit: 'שמור הוצאה'
+        },
+        summary: {
+          title: 'סיכום',
+          congrats: 'כל הכבוד!',
+          saved: 'חסכת:',
+          back: 'חזרה לדף הבית'
+        },
+        history: {
+          title: 'היסטוריה',
+          clear: 'נקה היסטוריה',
+          empty: 'עדיין אין רשומות'
+        },
+        investment: {
+          title: 'מדריך השקעות',
+          subtitle: 'למד איך להשקיע בחוכמה',
+          tab1: 'חסכונות',
+          tab2: 'אגרות חוב',
+          tab3: 'מניות',
+          tab4: 'תעודות סל'
+        },
+        nav: {
+          home: 'בית',
+          history: 'היסטוריה',
+          invest: 'השקעות'
+        },
+        categories: {
+          food: 'אוכל',
+          drinks: 'שתייה',
+          entertainment: 'בילויים',
+          shopping: 'קניות',
+          transport: 'תחבורה',
+          other: 'אחר'
+        }
+      },
+      en: {
+        welcome: {
+          title: 'SKIPAPP',
+          subtitle: 'Save Smart, Invest Wise',
+          start: "Let's Start!"
+        },
+        terms: {
+          title: 'Terms of Use',
+          section1: 'Purpose',
+          purpose: 'This app is designed for academic research in behavioral economics. Use is voluntary and for research purposes only.',
+          section2: 'Data Collection',
+          data: 'We collect anonymous data on saving behavior for research. Data is stored securely and will not be used commercially.',
+          section3: 'Privacy',
+          privacy: 'Your data is encrypted and stored securely. No personally identifiable information is collected.',
+          agree: 'I agree to the terms and consent to participate in research',
+          accept: 'Continue'
+        },
+        register: {
+          title: 'Create Profile',
+          subtitle: 'Tell us about yourself',
+          name: 'Full Name',
+          age: 'Age Range',
+          gender: 'Gender',
+          male: 'Male',
+          female: 'Female',
+          other: 'Other',
+          submit: 'Start Saving!'
+        },
+        dashboard: {
+          greeting: 'Hello,',
+          saved: 'Saved',
+          spent: 'Spent',
+          skip: 'Skip Expense',
+          skipDesc: 'Record what you didn\'t buy',
+          purchase: 'Log Expense',
+          purchaseDesc: 'Record what you bought'
+        },
+        skip: {
+          title: 'Skip Expense',
+          category: 'Choose Category:',
+          amount: 'How much did you save?',
+          submit: 'Save Skip'
+        },
+        purchase: {
+          title: 'Log Expense',
+          category: 'Choose Category:',
+          amount: 'How much did you spend?',
+          submit: 'Save Expense'
+        },
+        summary: {
+          title: 'Summary',
+          congrats: 'Well Done!',
+          saved: 'You Saved:',
+          back: 'Back to Home'
+        },
+        history: {
+          title: 'History',
+          clear: 'Clear History',
+          empty: 'No records yet'
+        },
+        investment: {
+          title: 'Investment Guide',
+          subtitle: 'Learn to invest wisely',
+          tab1: 'Savings',
+          tab2: 'Bonds',
+          tab3: 'Stocks',
+          tab4: 'ETFs'
+        },
+        nav: {
+          home: 'Home',
+          history: 'History',
+          invest: 'Invest'
+        },
+        categories: {
+          food: 'Food',
+          drinks: 'Drinks',
+          entertainment: 'Entertainment',
+          shopping: 'Shopping',
+          transport: 'Transport',
+          other: 'Other'
+        }
+      }
     };
-
-    // Initialize Firebase
-    let analytics = null;
-    try {
-      if (firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
-        firebase.initializeApp(firebaseConfig);
-        analytics = firebase.analytics();
-        console.log("✅ Firebase Analytics initialized");
-      } else {
-        console.warn("⚠️ Firebase not configured - using demo mode");
-      }
-    } catch (e) {
-      console.error("Firebase init error:", e);
-    }
-
-    // Track event helper
-    function trackEvent(eventName, params = {}) {
-      if (analytics) {
-        analytics.logEvent(eventName, params);
-        console.log("📊 Event:", eventName, params);
-      }
-    }
-
-    // Set user properties
-    function setUserProperties(props) {
-      if (analytics) {
-        Object.keys(props).forEach(key => {
-          analytics.setUserProperties({ [key]: props[key] });
-        });
-        console.log("👤 User properties set:", props);
-      }
-    }
-
-    // ========== APP STATE ==========
-    let app = {
-      termsAccepted: false,
+    
+    // ===========================
+    // APP STATE
+    // ===========================
+    const app = {
       user: null,
+      termsAccepted: false,
+      currentLang: 'he',
       skips: [],
       purchases: [],
-      streak: 0,
-      lastActivity: null
+      totalSaved: 0,
+      totalSpent: 0
     };
-
-    let selectedCategory = '';
-
-    // ========== LOAD/SAVE ==========
-    function save() {
-      localStorage.setItem('skipapp_data', JSON.stringify(app));
-      console.log('Data saved:', app);
-    }
-
-    function load() {
-      try {
-        const data = localStorage.getItem('skipapp_data');
-        if (data) {
-          const loaded = JSON.parse(data);
-          console.log('Data loaded from localStorage:', loaded);
-          
-          // Merge with defaults to ensure all fields exist
-          app = {
-            termsAccepted: loaded.termsAccepted || false,
-            user: loaded.user || null,
-            skips: Array.isArray(loaded.skips) ? loaded.skips : [],
-            purchases: Array.isArray(loaded.purchases) ? loaded.purchases : [],
-            streak: loaded.streak || 0,
-            lastActivity: loaded.lastActivity || null
-          };
-          
-          console.log('App after merge:', app);
-          return true;
-        }
-      } catch (error) {
-        console.error('Error loading data:', error);
-        // Reset to defaults if there's an error
-        localStorage.removeItem('skipapp_data');
+    
+    const categories = [
+      {id: 'food', icon: '🍕', nameHe: 'אוכל', nameEn: 'Food'},
+      {id: 'drinks', icon: '☕', nameHe: 'שתייה', nameEn: 'Drinks'},
+      {id: 'entertainment', icon: '🎉', nameHe: 'בילויים', nameEn: 'Fun'},
+      {id: 'shopping', icon: '🛒', nameHe: 'קניות', nameEn: 'Shopping'},
+      {id: 'transport', icon: '🚌', nameHe: 'תחבורה', nameEn: 'Transport'},
+      {id: 'other', icon: '💡', nameHe: 'אחר', nameEn: 'Other'}
+    ];
+    
+    // Firebase
+    let analytics = null;
+    
+    // ===========================
+    // INIT
+    // ===========================
+    function init() {
+      load();
+      initFirebase();
+      updateLanguage();
+      renderCategories();
+      showInvestmentTab('savings');
+      
+      if (app.termsAccepted && app.user) {
+        goTo('dashboard');
+        updateDashboard();
       }
-      return false;
     }
-
-    // ========== NAVIGATION ==========
+    
+    function initFirebase() {
+      try {
+        const firebaseConfig = {
+          apiKey: "AIzaSyDzPSY4vsIUX8qlp0I8_bBolZ1O7CaMDsc",
+          authDomain: "skipp-app-new.firebaseapp.com",
+          projectId: "skipp-app-new",
+          storageBucket: "skipp-app-new.firebasestorage.app",
+          messagingSenderId: "1083330335906",
+          appId: "1:1083330335906:web:8b8d24482193c168da33fb",
+          measurementId: "G-SQVTRYR5TQ"
+        };
+        firebase.initializeApp(firebaseConfig);
+        analytics = firebase.analytics();
+        console.log('✅ Firebase Analytics initialized');
+      } catch (error) {
+        console.error('Firebase init error:', error);
+      }
+    }
+    
+    function trackEvent(name, params = {}) {
+      if (analytics) {
+        analytics.logEvent(name, params);
+        console.log(`📊 Event: ${name}`, params);
+      }
+    }
+    
+    // ===========================
+    // LANGUAGE
+    // ===========================
+    function toggleLanguage() {
+      app.currentLang = app.currentLang === 'he' ? 'en' : 'he';
+      updateLanguage();
+      save();
+    }
+    
+    function updateLanguage() {
+      const isHe = app.currentLang === 'he';
+      document.documentElement.lang = app.currentLang;
+      document.documentElement.dir = isHe ? 'rtl' : 'ltr';
+      
+      // Update all i18n elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const keys = key.split('.');
+        let value = translations[app.currentLang];
+        for (let k of keys) {
+          value = value?.[k];
+        }
+        if (value) {
+          if (el.tagName === 'INPUT' || el.tagName === 'BUTTON') {
+            el.value = value;
+            if (el.hasAttribute('placeholder')) el.placeholder = value;
+          } else {
+            el.textContent = value;
+          }
+        }
+      });
+      
+      // Update language buttons
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.textContent = isHe ? 'EN' : 'HE';
+      });
+      
+      document.querySelectorAll('.lang-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.lang === app.currentLang);
+      });
+      
+      // Re-render dynamic content
+      renderCategories();
+      updateDashboard();
+      renderHistory();
+    }
+    
+    // ===========================
+    // NAVIGATION
+    // ===========================
     function goTo(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
       
-      // Track screen view
-      trackEvent('screen_view', { screen_name: screenId });
+      document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.remove('active'));
       
-      // Show/hide bottom nav
-      const showNav = ['dashboard', 'history-screen', 'investment-screen', 'summary-screen'].includes(screenId);
-      document.getElementById('bottom-nav').style.display = showNav ? 'flex' : 'none';
+      trackEvent('screen_view', {screen_name: screenId});
       
-      // Update active nav item
-      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-      const navMap = { 'dashboard': 0, 'history-screen': 1, 'investment-screen': 2, 'summary-screen': 3 };
-      if (navMap[screenId] !== undefined) {
-        document.querySelectorAll('.nav-item')[navMap[screenId]].classList.add('active');
-      }
-      
-      // Update data displays
       if (screenId === 'dashboard') updateDashboard();
-      if (screenId === 'history-screen') updateHistory();
-      if (screenId === 'summary-screen') updateSummary();
+      if (screenId === 'history') renderHistory();
     }
-
-    // ========== TERMS ==========
-    function toggleAccept() {
-      const checkbox = document.getElementById('terms-agree');
-      const btn = document.getElementById('btn-accept');
-      if (checkbox && btn) {
-        if (checkbox.checked) {
-          btn.classList.add('enabled');
-          btn.disabled = false;
-        } else {
-          btn.classList.remove('enabled');
-          btn.disabled = true;
-        }
-      }
+    
+    // ===========================
+    // TERMS
+    // ===========================
+    function toggleAcceptBtn() {
+      const checkbox = document.getElementById('terms-checkbox');
+      const btn = document.getElementById('accept-btn');
+      btn.disabled = !checkbox.checked;
+      btn.classList.toggle('enabled', checkbox.checked);
     }
-
+    
     function acceptTerms() {
-      const checkbox = document.getElementById('terms-agree');
-      if (!checkbox || !checkbox.checked) {
-        showToast('יש לאשר את תנאי השימוש');
-        return;
-      }
       app.termsAccepted = true;
       save();
       trackEvent('terms_accepted');
-      goTo('register-screen');
+      goTo('register');
     }
-
-    // ========== REGISTRATION ==========
-    function submitRegister(e) {
-      e.preventDefault();
-      
-      const name = document.getElementById('reg-name').value.trim();
-      const age = parseInt(document.getElementById('reg-age').value);
-      const gender = document.getElementById('reg-gender').value;
-      const language = document.getElementById('reg-language').value;
+    
+    // ===========================
+    // REGISTER
+    // ===========================
+    function register(e) {
+      e?.preventDefault();
+      const name = document.getElementById('user-name').value.trim();
+      const age = document.getElementById('user-age').value;
+      const gender = document.getElementById('user-gender').value;
       
       if (!name || !age || !gender) {
-        showToast('נא למלא את כל השדות');
-        return false;
+        alert('Please fill all fields');
+        return;
       }
       
-      app.user = { name, age, gender, language, registeredAt: new Date().toISOString() };
+      app.user = {name, age, gender, registeredAt: new Date().toISOString()};
       save();
       
-      // Set user properties for analytics
-      setUserProperties({
-        age_group: getAgeGroup(age),
-        gender: gender,
-        language: language
-      });
+      if (analytics) {
+        analytics.setUserProperties({
+          age_group: age,
+          gender: gender,
+          language: app.currentLang
+        });
+      }
       
-      trackEvent('registration_complete', {
-        age_group: getAgeGroup(age),
-        gender: gender
-      });
-      
-      showToast('ברוך הבא, ' + name + '! 🎉');
+      trackEvent('registration_complete', {age_group: age, gender: gender});
       goTo('dashboard');
-      return false;
     }
-
-    function getAgeGroup(age) {
-      if (age < 13) return '8-12';
-      if (age < 18) return '13-17';
-      if (age < 25) return '18-24';
-      if (age < 35) return '25-34';
-      if (age < 45) return '35-44';
-      if (age < 55) return '45-54';
-      return '55+';
-    }
-
-    // ========== SKIP & PURCHASE ==========
-    function selectCategory(el, category) {
-      console.log('selectCategory called with:', category);
-      const parent = el.closest('.category-grid');
-      parent.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-      el.classList.add('active');
-      selectedCategory = category;
-      console.log('selectedCategory set to:', selectedCategory);
-    }
-
-    function saveSkip() {
-      try {
-        console.log('saveSkip called');
-        console.log('selectedCategory:', selectedCategory);
-        
-        const desc = document.getElementById('skip-desc').value.trim();
-        const amount = parseFloat(document.getElementById('skip-amount').value);
-        
-        console.log('desc:', desc);
-        console.log('amount:', amount);
-        
-        if (!selectedCategory) {
-          showToast('❌ נא לבחור קטגוריה');
-          return;
-        }
-        if (!desc || desc.length === 0) {
-          showToast('❌ נא להזין תיאור');
-          return;
-        }
-        if (!amount || amount <= 0 || isNaN(amount)) {
-          showToast('❌ נא להזין סכום תקין');
-          return;
-        }
-        
-        const skip = {
-          id: Date.now(),
-          type: 'skip',
-          category: selectedCategory,
-          description: desc,
-          amount: amount,
-          points: Math.round(amount * 0.5),
-          date: new Date().toISOString(),
-          hebrewDate: getHebrewDate()
-        };
-        
-        console.log('Skip to save:', skip);
-        
-        app.skips.push(skip);
-        updateStreak();
-        save();
-        
-        trackEvent('skip_added', {
-          category: selectedCategory,
-          amount: amount,
-          points: skip.points
-        });
-        
-        showToast('✅ דילוג נשמר! +' + skip.points + ' נקודות ⭐');
-        
-        // Clear form
-        document.getElementById('skip-desc').value = '';
-        document.getElementById('skip-amount').value = '';
-        selectedCategory = '';
-        document.querySelectorAll('#skip-categories .category-btn').forEach(btn => btn.classList.remove('active'));
-        
-        goTo('dashboard');
-      } catch (error) {
-        console.error('Error in saveSkip:', error);
-        showToast('❌ שגיאה בשמירת הדילוג: ' + error.message);
-      }
-    }
-
-    function savePurchase() {
-      try {
-        console.log('savePurchase called');
-        console.log('selectedCategory:', selectedCategory);
-        
-        const desc = document.getElementById('purchase-desc').value.trim();
-        const amount = parseFloat(document.getElementById('purchase-amount').value);
-        
-        console.log('desc:', desc);
-        console.log('amount:', amount);
-        
-        if (!selectedCategory) {
-          showToast('❌ נא לבחור קטגוריה');
-          return;
-        }
-        if (!desc || desc.length === 0) {
-          showToast('❌ נא להזין תיאור');
-          return;
-        }
-        if (!amount || amount <= 0 || isNaN(amount)) {
-          showToast('❌ נא להזין סכום תקין');
-          return;
-        }
-        
-        const purchase = {
-          id: Date.now(),
-          type: 'purchase',
-          category: selectedCategory,
-          description: desc,
-          amount: amount,
-          date: new Date().toISOString(),
-          hebrewDate: getHebrewDate()
-        };
-        
-        console.log('Purchase to save:', purchase);
-        
-        app.purchases.push(purchase);
-        save();
-        
-        trackEvent('purchase_added', {
-          category: selectedCategory,
-          amount: amount
-        });
-        
-        showToast('✅ קנייה נרשמה 🛒');
-        
-        // Clear form
-        document.getElementById('purchase-desc').value = '';
-        document.getElementById('purchase-amount').value = '';
-        selectedCategory = '';
-        document.querySelectorAll('#purchase-categories .category-btn').forEach(btn => btn.classList.remove('active'));
-        
-        goTo('dashboard');
-      } catch (error) {
-        console.error('Error in savePurchase:', error);
-        showToast('❌ שגיאה בשמירת הקנייה: ' + error.message);
-      }
-    }
-
-    // ========== HEBREW DATE ==========
-    function getHebrewDate() {
-      try {
-        const now = new Date();
-        const hebrewFormatter = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        });
-        return hebrewFormatter.format(now);
-      } catch (e) {
-        return '';
-      }
-    }
-
-    function formatDate(isoDate) {
-      const date = new Date(isoDate);
-      const gregorian = date.toLocaleDateString('he-IL', { day: 'numeric', month: 'short', year: 'numeric' });
-      let hebrew = '';
-      try {
-        hebrew = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', { day: 'numeric', month: 'long' }).format(date);
-      } catch (e) {}
-      return { gregorian, hebrew };
-    }
-
-    // ========== STREAK ==========
-    function updateStreak() {
-      const today = new Date().toDateString();
-      if (app.lastActivity !== today) {
-        const yesterday = new Date(Date.now() - 86400000).toDateString();
-        if (app.lastActivity === yesterday) {
-          app.streak++;
-        } else if (app.lastActivity !== today) {
-          app.streak = 1;
-        }
-        app.lastActivity = today;
-      }
-    }
-
-    // ========== UPDATE UI ==========
-    function updateDashboard() {
-      if (app.user) {
-        document.getElementById('user-name').textContent = app.user.name;
-      }
-      const totalSkips = app.skips.length;
-      const totalPoints = app.skips.reduce((sum, s) => sum + s.points, 0);
+    
+    // ===========================
+    // CATEGORIES
+    // ===========================
+    function renderCategories() {
+      const skipCats = document.getElementById('skip-categories');
+      const purchaseCats = document.getElementById('purchase-categories');
       
-      document.getElementById('stat-skips').textContent = totalSkips;
-      document.getElementById('stat-points').textContent = totalPoints;
-      document.getElementById('stat-streak').textContent = app.streak;
+      const html = categories.map(cat => `
+        <div class="category-btn" onclick="selectCategory(this, '${cat.id}')">
+          <div class="category-icon">${cat.icon}</div>
+          <div class="category-name">${app.currentLang === 'he' ? cat.nameHe : cat.nameEn}</div>
+        </div>
+      `).join('');
+      
+      skipCats.innerHTML = html;
+      purchaseCats.innerHTML = html;
     }
-
-    function updateHistory() {
+    
+    function selectCategory(el, catId) {
+      el.parentElement.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('selected'));
+      el.classList.add('selected');
+      el.parentElement.dataset.selected = catId;
+    }
+    
+    // ===========================
+    // SKIP
+    // ===========================
+    function submitSkip() {
+      const category = document.getElementById('skip-categories').dataset.selected;
+      const amount = parseInt(document.getElementById('skip-amount').value);
+      
+      if (!category) {
+        alert(app.currentLang === 'he' ? 'בחר קטגוריה' : 'Choose a category');
+        return;
+      }
+      if (!amount || amount <= 0) {
+        alert(app.currentLang === 'he' ? 'הזן סכום' : 'Enter amount');
+        return;
+      }
+      
+      const skip = {
+        id: Date.now(),
+        category,
+        amount,
+        date: new Date().toISOString()
+      };
+      
+      app.skips.push(skip);
+      app.totalSaved += amount;
+      save();
+      
+      trackEvent('skip_added', {category, amount});
+      
+      document.getElementById('summary-saved').textContent = `₪${app.totalSaved}`;
+      goTo('summary-screen');
+      
+      // Reset form
+      document.getElementById('skip-amount').value = '';
+      document.getElementById('skip-categories').dataset.selected = '';
+      document.querySelectorAll('#skip-categories .category-btn').forEach(btn => btn.classList.remove('selected'));
+    }
+    
+    // ===========================
+    // PURCHASE
+    // ===========================
+    function submitPurchase() {
+      const category = document.getElementById('purchase-categories').dataset.selected;
+      const amount = parseInt(document.getElementById('purchase-amount').value);
+      
+      if (!category) {
+        alert(app.currentLang === 'he' ? 'בחר קטגוריה' : 'Choose a category');
+        return;
+      }
+      if (!amount || amount <= 0) {
+        alert(app.currentLang === 'he' ? 'הזן סכום' : 'Enter amount');
+        return;
+      }
+      
+      const purchase = {
+        id: Date.now(),
+        category,
+        amount,
+        date: new Date().toISOString()
+      };
+      
+      app.purchases.push(purchase);
+      app.totalSpent += amount;
+      save();
+      
+      trackEvent('purchase_added', {category, amount});
+      
+      goTo('dashboard');
+      
+      // Reset form
+      document.getElementById('purchase-amount').value = '';
+      document.getElementById('purchase-categories').dataset.selected = '';
+      document.querySelectorAll('#purchase-categories .category-btn').forEach(btn => btn.classList.remove('selected'));
+    }
+    
+    // ===========================
+    // DASHBOARD
+    // ===========================
+    function updateDashboard() {
+      if (!app.user) return;
+      document.getElementById('dash-user-name').textContent = app.user.name;
+      document.getElementById('stat-saved').textContent = `₪${app.totalSaved}`;
+      document.getElementById('stat-spent').textContent = `₪${app.totalSpent}`;
+    }
+    
+    // ===========================
+    // HISTORY
+    // ===========================
+    function renderHistory() {
       const list = document.getElementById('history-list');
-      const allItems = [...app.skips, ...app.purchases].sort((a, b) => new Date(b.date) - new Date(a.date));
+      const allItems = [
+        ...app.skips.map(s => ({...s, type: 'skip'})),
+        ...app.purchases.map(p => ({...p, type: 'purchase'}))
+      ].sort((a, b) => new Date(b.date) - new Date(a.date));
       
       if (allItems.length === 0) {
-        list.innerHTML = '<div class="history-empty"><p>עדיין אין פעילות</p><p style="font-size: 13px; margin-top: 8px;">התחל לתעד דילוגים וקניות!</p></div>';
+        list.innerHTML = `
+          <div class="history-empty">
+            <div class="history-empty-icon">📭</div>
+            <div>${app.currentLang === 'he' ? 'עדיין אין רשומות' : 'No records yet'}</div>
+          </div>
+        `;
         return;
       }
       
       list.innerHTML = allItems.map(item => {
-        const dates = formatDate(item.date);
-        const isSkip = item.type === 'skip';
+        const cat = categories.find(c => c.id === item.category);
+        const date = new Date(item.date).toLocaleDateString(app.currentLang === 'he' ? 'he-IL' : 'en-US');
         return `
           <div class="history-item">
-            <div class="history-icon ${item.type}">${isSkip ? '✓' : '🛒'}</div>
-            <div class="history-info">
-              <div class="history-desc">${item.description}</div>
-              <div class="history-date">${dates.gregorian}${dates.hebrew ? ' | ' + dates.hebrew : ''}</div>
+            <div class="history-icon ${item.type}">${cat?.icon || '💡'}</div>
+            <div class="history-details">
+              <div class="history-category">${app.currentLang === 'he' ? cat?.nameHe : cat?.nameEn}</div>
+              <div class="history-date">${date}</div>
             </div>
-            <div class="history-amount ${item.type}">${isSkip ? '+' : '-'}₪${item.amount}</div>
+            <div class="history-amount">₪${item.amount}</div>
           </div>
         `;
       }).join('');
     }
-
-    function updateSummary() {
-      const totalSkips = app.skips.length;
-      const totalPoints = app.skips.reduce((sum, s) => sum + s.points, 0);
-      const totalSaved = app.skips.reduce((sum, s) => sum + s.amount, 0);
-      
-      document.getElementById('summary-skips').textContent = totalSkips;
-      document.getElementById('summary-points').textContent = totalPoints;
-      document.getElementById('summary-saved').textContent = '₪' + totalSaved;
-      document.getElementById('summary-streak').textContent = app.streak;
-      
-      // Dynamic tip
-      const tips = [
-        'כל שקל קטן הופך לגדול עם הזמן! המשך לדלג על הוצאות קטנות.',
-        'ידעת? אם תחסוך 20₪ ביום, תצבור 7,300₪ בשנה!',
-        'הרגל של חיסכון נבנה צעד אחרי צעד. אתה בדרך הנכונה!',
-        'חשוב על כל דילוג כהשקעה בעתיד שלך.',
-        'מחקרים מראים שאנשים שמתעדים הוצאות חוסכים יותר.'
-      ];
-      document.getElementById('summary-tip').textContent = tips[Math.floor(Math.random() * tips.length)];
-    }
-
-    // ========== INVESTMENT TABS ==========
-    function showInvestTab(tab) {
-      document.querySelectorAll('.invest-tab').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
-      document.getElementById('invest-adult').style.display = tab === 'adult' ? 'block' : 'none';
-      document.getElementById('invest-youth').style.display = tab === 'youth' ? 'block' : 'none';
-      
-      trackEvent('investment_tab_view', { tab: tab });
-    }
-
-    // ========== SHARE ==========
-    function shareResults() {
-      const totalPoints = app.skips.reduce((sum, s) => sum + s.points, 0);
-      const totalSaved = app.skips.reduce((sum, s) => sum + s.amount, 0);
-      
-      const text = `🎉 הצלחתי לחסוך ₪${totalSaved} עם SKIPAPP!\n⭐ צברתי ${totalPoints} נקודות\n🔥 רצף של ${app.streak} ימים\n\nהצטרפו גם אתם למשחק החיסכון החכם!`;
-      
-      if (navigator.share) {
-        navigator.share({ title: 'SKIPAPP - החיסכון שלי', text: text });
-      } else {
-        navigator.clipboard.writeText(text);
-        showToast('הטקסט הועתק! 📋');
-      }
-      
-      trackEvent('share_results', { points: totalPoints, saved: totalSaved });
-    }
-
-    // ========== RESET ==========
-    function resetApp() {
-      if (confirm('האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים יימחקו.')) {
-        clearData();
-        location.reload();
-      }
+    
+    function clearHistory() {
+      if (!confirm(app.currentLang === 'he' ? 'למחוק את כל ההיסטוריה?' : 'Delete all history?')) return;
+      app.skips = [];
+      app.purchases = [];
+      app.totalSaved = 0;
+      app.totalSpent = 0;
+      save();
+      renderHistory();
+      updateDashboard();
     }
     
-    function clearData() {
-      console.log('Clearing all data...');
-      trackEvent('app_reset');
-      localStorage.removeItem('skipapp_data');
-      app = {
-        termsAccepted: false,
-        user: null,
-        skips: [],
-        purchases: [],
-        streak: 0,
-        lastActivity: null
-      };
-    }
-    
-    // Emergency reset - call this from console if needed
-    window.emergencyReset = function() {
-      console.log('🚨 Emergency reset triggered!');
-      clearData();
-      alert('הנתונים נמחקו! הדף יטען מחדש.');
-      location.reload();
-    };
-
-    // ========== TOAST ==========
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
-    // ========== INIT ==========
-    window.onload = function() {
-      if (load()) {
-        if (app.user) {
-          // Set user properties on load
-          setUserProperties({
-            age_group: getAgeGroup(app.user.age),
-            gender: app.user.gender,
-            language: app.user.language || 'he'
-          });
-          goTo('dashboard');
-        } else if (app.termsAccepted) {
-          goTo('register-screen');
+    // ===========================
+    // INVESTMENT
+    // ===========================
+    function showInvestmentTab(tab) {
+      document.querySelectorAll('.investment-tab').forEach(t => t.classList.remove('active'));
+      event?.target?.classList.add('active');
+      
+      const content = document.getElementById('investment-content');
+      const investmentInfo = {
+        savings: {
+          he: '<h3>חשבון חיסכון</h3><p>דרך בטוחה להתחיל. הכסף שלך שמור ובטוח.</p><ul><li>ללא סיכון</li><li>נזיל - אפשר למשוך בכל עת</li><li>ריבית נמוכה</li></ul>',
+          en: '<h3>Savings Account</h3><p>A safe way to start. Your money is secure.</p><ul><li>No risk</li><li>Liquid - withdraw anytime</li><li>Low interest</li></ul>'
+        },
+        bonds: {
+          he: '<h3>אגרות חוב</h3><p>השקעה בטוחה יחסית עם תשואה קבועה.</p><ul><li>סיכון נמוך</li><li>תשואה קבועה</li><li>מתאים לטווח בינוני</li></ul>',
+          en: '<h3>Bonds</h3><p>Relatively safe investment with fixed returns.</p><ul><li>Low risk</li><li>Fixed returns</li><li>Good for medium term</li></ul>'
+        },
+        stocks: {
+          he: '<h3>מניות</h3><p>פוטנציאל לתשואה גבוהה, אך עם סיכון גבוה יותר.</p><ul><li>סיכון בינוני-גבוה</li><li>פוטנציאל תשואה גבוה</li><li>מתאים לטווח ארוך</li></ul>',
+          en: '<h3>Stocks</h3><p>High return potential, but with higher risk.</p><ul><li>Medium-high risk</li><li>High return potential</li><li>Good for long term</li></ul>'
+        },
+        etf: {
+          he: '<h3>תעודות סל (ETF)</h3><p>השקעה מגוונת בתיק מניות או אג"ח.</p><ul><li>פיזור סיכונים</li><li>עלויות נמוכות</li><li>מומלץ למתחילים</li></ul>',
+          en: '<h3>ETFs</h3><p>Diversified investment in stocks or bonds.</p><ul><li>Risk diversification</li><li>Low costs</li><li>Recommended for beginners</li></ul>'
         }
-      }
+      };
       
-      // Register service worker
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').then(() => {
-          console.log('✅ Service Worker registered');
-        }).catch(err => {
-          console.log('SW registration failed:', err);
-        });
+      content.innerHTML = investmentInfo[tab][app.currentLang];
+      trackEvent('investment_tab_view', {tab});
+    }
+    
+    // ===========================
+    // STORAGE
+    // ===========================
+    function save() {
+      localStorage.setItem('skipapp', JSON.stringify(app));
+    }
+    
+    function load() {
+      const saved = localStorage.getItem('skipapp');
+      if (saved) {
+        const data = JSON.parse(saved);
+        Object.assign(app, data);
       }
-    };
+    }
+    
+    // ===========================
+    // START
+    // ===========================
+    window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
