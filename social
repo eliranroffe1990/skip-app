@@ -1,0 +1,1517 @@
+From e742ba9699dccad6ee22c63fba4d28e441270649 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sun, 2 Aug 2026 08:30:49 +0000
+Subject: [PATCH] Turn SKIPAPP into a social savings circle with pastel
+ redesign
+
+- Pastel color palette (mint/lavender/peach/pink) across all screens
+- New "circle" feature backed by Firebase Auth + Firestore: create/join
+  a circle via invite code, live member list showing each friend's
+  skips/streak/savings, and a shared feed of what everyone skipped
+- Personal savings goals (title, target amount, what it's for) with
+  progress bars on the dashboard and goal screen
+- Basic content moderation: blocklist filter on names/descriptions/goals
+  plus a report button that auto-hides feed posts after 2 reports
+- Added login screen and email/password registration for cross-device sync
+- Updated FIREBASE-SETUP guide with Auth + Firestore setup and security rules
+---
+ FIREBASE-SETUP |  84 ++++-
+ index.html     | 953 +++++++++++++++++++++++++++++++++++++------------
+ manifest.json  |   8 +-
+ 3 files changed, 808 insertions(+), 237 deletions(-)
+
+diff --git a/FIREBASE-SETUP b/FIREBASE-SETUP
+index f8ec12c..81f4834 100644
+--- a/FIREBASE-SETUP
++++ b/FIREBASE-SETUP
+@@ -1,13 +1,77 @@
+-# 🔥 מדריך התקנת Firebase Analytics ל-SKIPAPP
++# 🔥 מדריך התקנת Firebase ל-SKIPAPP (Auth + Firestore + Analytics)
+ 
+-## מה זה Firebase Analytics?
++## מה זה Firebase?
+ 
+-Firebase Analytics הוא כלי חינמי של Google שנותן לך:
+-- ✅ מעקב אחרי משתמשים בזמן אמת
+-- ✅ נתונים על גיל, מין, התנהגות
+-- ✅ דשבורד מקצועי
+-- ✅ ניתוח התנהגותי עמוק
+-- ✅ 100% חינמי!
++מגרסה זו של SKIPAPP, האפליקציה היא חברתית - חברי מעגל צריכים לראות אחד את השני
++בזמן אמת ממכשירים שונים. לשם כך האפליקציה משתמשת ב-3 שירותי Firebase:
++
++- ✅ **Authentication** - הרשמה/כניסה עם אימייל וסיסמה
++- ✅ **Firestore** - בסיס נתונים בזמן אמת לשמירת משתמשים, מעגלים, וההוצאות המשותפות
++- ✅ **Analytics** - מעקב אחרי משתמשים, גיל, מין, התנהגות (כמו בעבר)
++
++⚠️ **בלי הגדרת Firebase**, האפליקציה עדיין תעבוד במצב מקומי (localStorage) לתיעוד
++דילוגים/קניות אישי, אך מסך "המעגל שלי" (הזמנת חברים, פיד משותף) יהיה חסום.
++
++---
++
++## 🆕 שלב 0: הפעלת Authentication ו-Firestore
++
++לאחר יצירת הפרויקט (שלב 1 למטה) ולפני השימוש באפליקציה:
++
++### 0.1 הפעלת Authentication
++
++```
++1. בתפריט הצד: Build → Authentication
++2. לחץ "Get started"
++3. בחר בשיטת הכניסה "Email/Password"
++4. הפעל (Enable) ולחץ Save
++```
++
++### 0.2 יצירת בסיס נתונים Firestore
++
++```
++1. בתפריט הצד: Build → Firestore Database
++2. לחץ "Create database"
++3. בחר "Start in production mode"
++4. בחר מיקום שרת (למשל eur3 - אירופה)
++5. לחץ Enable
++```
++
++### 0.3 הגדרת חוקי אבטחה (Security Rules)
++
++```
++1. ב-Firestore Database → לשונית "Rules"
++2. החלף את התוכן בקוד הבא:
++```
++
++```
++rules_version = '2';
++service cloud.firestore {
++  match /databases/{database}/documents {
++    // כל משתמש רואה/עורך רק את המסמך האישי שלו
++    match /users/{uid} {
++      allow read, write: if request.auth != null && request.auth.uid == uid;
++    }
++
++    // מעגלים ותתי-האוספים שלהם - פתוחים לכל משתמש מאומת
++    // (הרשאות בסיסיות למשתמשים מחוברים בלבד; ניתן להדק בהמשך)
++    match /circles/{circleId} {
++      allow read, write: if request.auth != null;
++
++      match /members/{uid} {
++        allow read, write: if request.auth != null;
++      }
++      match /feed/{postId} {
++        allow read, write: if request.auth != null;
++      }
++    }
++  }
++}
++```
++
++```
++3. לחץ "Publish"
++```
+ 
+ ---
+ 
+@@ -261,6 +325,10 @@ Analytics → Custom Reports → Create Report
+ | `skip_added` | category, amount, age, gender | תיעוד דילוג |
+ | `purchase_added` | category, amount, age, gender | תיעוד קנייה |
+ | `investment_link_clicked` | url | קליק על לינק השקעה |
++| `circle_created` | - | יצירת מעגל חדש |
++| `circle_joined` | - | הצטרפות למעגל עם קוד |
++| `circle_invite_shared` | - | שיתוף קוד הזמנה |
++| `goal_saved` | targetAmount | קביעת/עדכון יעד חיסכון |
+ 
+ ### User Properties
+ 
+diff --git a/index.html b/index.html
+index e49e67d..6133c21 100644
+--- a/index.html
++++ b/index.html
+@@ -7,115 +7,131 @@
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+   <meta name="apple-mobile-web-app-title" content="SKIPAPP">
+   <meta name="mobile-web-app-capable" content="yes">
+-  <meta name="theme-color" content="#A8D5BA">
++  <meta name="theme-color" content="#B5EAD7">
+   <link rel="manifest" href="manifest.json">
+   <link rel="apple-touch-icon" href="icons/icon-192.png">
+-  <title>SKIPAPP - משחק החיסכון החכם</title>
++  <title>SKIPAPP - מעגל החיסכון החכם</title>
+   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+-  
++
+   <!-- Firebase SDK -->
+   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
++  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
++  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics-compat.js"></script>
+-  
++
+   <style>
+     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+     html, body { height: 100%; overflow: hidden; }
+-    body { font-family: 'Assistant', sans-serif; background: linear-gradient(135deg, #A8D5BA 0%, #D4E9DF 100%); min-height: 100vh; }
+-    
++    body { font-family: 'Assistant', sans-serif; background: linear-gradient(135deg, #E8F8F0 0%, #EDEBFA 50%, #FFF6E9 100%); min-height: 100vh; }
++
+     :root {
+-      --primary: #A8D5BA;
+-      --primary-dark: #7EBA9B;
+-      --secondary: #FFD9A0;
+-      --accent: #FFB88C;
+-      --bg: #FFFCF7;
+-      --text: #3D3D3D;
+-      --text-light: #757575;
+-      --success: #90D4A8;
+-      --danger: #FF9B9B;
++      --primary: #B5EAD7;
++      --primary-dark: #8FD9BE;
++      --secondary: #FFE5B4;
++      --accent: #FFB7B2;
++      --lavender: #C7CEEA;
++      --lavender-dark: #9FA8D9;
++      --sky: #AEDFF7;
++      --bg: #FFFDFB;
++      --text: #4A4A4A;
++      --text-light: #8A8A8A;
++      --success: #A8E6CF;
++      --danger: #FFAAA5;
+       --card-bg: #FFFFFF;
+     }
+-    
++
+     .app { width: 100%; height: 100vh; max-width: 500px; margin: 0 auto; background: var(--bg); position: relative; overflow: hidden; }
+-    @media (min-width: 501px) { body { display: flex; justify-content: center; align-items: center; padding: 20px; } .app { height: 90vh; max-height: 800px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); } }
+-    
++    @media (min-width: 501px) { body { display: flex; justify-content: center; align-items: center; padding: 20px; } .app { height: 90vh; max-height: 800px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); } }
++
+     .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; background: var(--bg); overflow-y: auto; padding-bottom: 80px; }
+     .screen.active { display: flex; }
+-    
++
+     /* Welcome Screen */
+-    .welcome-screen { justify-content: center; align-items: center; background: linear-gradient(180deg, #A8D5BA 0%, #D4E9DF 50%, var(--bg) 100%); padding: 40px 30px; text-align: center; }
+-    .welcome-logo { width: 120px; height: 120px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 30px; display: flex; justify-content: center; align-items: center; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(168, 213, 186, 0.4); }
++    .welcome-screen { justify-content: center; align-items: center; background: linear-gradient(180deg, #B5EAD7 0%, #DDEFF0 50%, var(--bg) 100%); padding: 40px 30px; text-align: center; }
++    .welcome-logo { width: 120px; height: 120px; background: linear-gradient(135deg, var(--primary) 0%, var(--lavender) 100%); border-radius: 30px; display: flex; justify-content: center; align-items: center; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(181, 234, 215, 0.5); }
+     .welcome-logo .play-icon { width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+-    .welcome-logo .play-icon::before { content: ''; border-style: solid; border-width: 12px 0 12px 20px; border-color: transparent transparent transparent var(--primary-dark); margin-left: 4px; }
++    .welcome-logo .play-icon::before { content: ''; border-style: solid; border-width: 12px 0 12px 20px; border-color: transparent transparent transparent var(--lavender-dark); margin-left: 4px; }
+     .welcome-title { font-size: 42px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+     .welcome-subtitle { font-size: 18px; color: var(--text-light); margin-bottom: 40px; line-height: 1.6; }
+-    .welcome-btn { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 18px 50px; border-radius: 30px; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(168, 213, 186, 0.5); transition: all 0.3s; font-family: inherit; }
+-    .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(168, 213, 186, 0.6); }
+-    
++    .welcome-btn { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: var(--text); border: none; padding: 18px 50px; border-radius: 30px; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(143, 217, 190, 0.5); transition: all 0.3s; font-family: inherit; }
++    .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(143, 217, 190, 0.6); }
++    .welcome-login-link { margin-top: 18px; color: var(--text); font-weight: 600; text-decoration: underline; }
++
+     /* Terms Screen */
+     .terms-screen { padding: 30px 20px; }
+     .terms-header { text-align: center; margin-bottom: 20px; }
+     .terms-title { font-size: 24px; font-weight: 700; color: var(--text); }
+     .terms-content { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; max-height: 50vh; overflow-y: auto; font-size: 14px; line-height: 1.8; color: var(--text); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+-    .terms-content h3 { margin: 15px 0 10px; color: var(--primary-dark); }
++    .terms-content h3 { margin: 15px 0 10px; color: var(--lavender-dark); }
+     .terms-agree-box { display: flex; align-items: center; gap: 12px; padding: 15px; background: #f8f9fa; border-radius: 15px; margin-bottom: 20px; }
+     .terms-checkbox { width: 24px; height: 24px; accent-color: var(--primary-dark); cursor: pointer; }
+     .terms-label { font-size: 15px; color: var(--text); cursor: pointer; }
+-    .btn-accept { width: 100%; background: #ccc; color: white; border: none; padding: 16px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: not-allowed; transition: all 0.3s; font-family: inherit; }
+-    .btn-accept.enabled { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); cursor: pointer; box-shadow: 0 6px 20px rgba(168, 213, 186, 0.4); }
+-    
+-    /* Register Screen */
++    .btn-accept { width: 100%; background: #ddd; color: white; border: none; padding: 16px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: not-allowed; transition: all 0.3s; font-family: inherit; }
++    .btn-accept.enabled { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: var(--text); cursor: pointer; box-shadow: 0 6px 20px rgba(143, 217, 190, 0.4); }
++
++    /* Register / Login Screen */
+     .register-screen { padding: 30px 20px; }
+     .register-header { text-align: center; margin-bottom: 25px; }
+     .register-title { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+     .register-subtitle { font-size: 15px; color: var(--text-light); }
+     .form-group { margin-bottom: 18px; }
+     .form-label { display: block; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+-    .form-input, .form-select { width: 100%; padding: 14px 18px; border: 2px solid #e8e8e8; border-radius: 15px; font-size: 16px; font-family: inherit; background: white; transition: all 0.3s; }
+-    .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(168, 213, 186, 0.2); }
++    .form-input, .form-select { width: 100%; padding: 14px 18px; border: 2px solid #eee; border-radius: 15px; font-size: 16px; font-family: inherit; background: white; transition: all 0.3s; }
++    textarea.form-input { resize: vertical; }
++    .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary-dark); box-shadow: 0 0 0 4px rgba(181, 234, 215, 0.3); }
+     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+-    .btn-register { width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 16px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; font-family: inherit; box-shadow: 0 6px 20px rgba(168, 213, 186, 0.4); transition: all 0.3s; }
++    .btn-register { width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: var(--text); border: none; padding: 16px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; font-family: inherit; box-shadow: 0 6px 20px rgba(143, 217, 190, 0.4); transition: all 0.3s; }
+     .btn-register:hover { transform: translateY(-2px); }
+-    
++    .auth-switch-link { text-align: center; margin-top: 15px; font-size: 14px; color: var(--text-light); }
++    .auth-switch-link a { color: var(--lavender-dark); font-weight: 700; text-decoration: none; }
++
+     /* Dashboard */
+     .dashboard { padding: 0; }
+-    .dash-header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 30px 20px 40px; border-radius: 0 0 30px 30px; }
+-    .dash-greeting { color: white; font-size: 16px; opacity: 0.9; }
+-    .dash-name { color: white; font-size: 28px; font-weight: 700; margin-top: 5px; }
+-    .dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: -25px 15px 20px; }
+-    .stat-card { background: white; border-radius: 20px; padding: 18px 12px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+-    .stat-icon { font-size: 28px; margin-bottom: 8px; }
+-    .stat-value { font-size: 24px; font-weight: 800; color: var(--text); }
+-    .stat-label { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+-    
+-    .dash-actions { padding: 0 20px; }
++    .dash-header { background: linear-gradient(135deg, var(--primary) 0%, var(--lavender) 100%); padding: 30px 20px 40px; border-radius: 0 0 30px 30px; }
++    .dash-greeting { color: var(--text); opacity: 0.75; font-size: 16px; }
++    .dash-name { color: var(--text); font-size: 28px; font-weight: 700; margin-top: 5px; }
++    .dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: -25px 15px 0; }
++    .stat-card { background: white; border-radius: 20px; padding: 16px 8px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
++    .stat-icon { font-size: 24px; margin-bottom: 6px; }
++    .stat-value { font-size: 20px; font-weight: 800; color: var(--text); }
++    .stat-label { font-size: 11px; color: var(--text-light); margin-top: 4px; }
++
++    .goal-card { margin: 16px 20px 6px; background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%); border-radius: 20px; padding: 16px 18px; }
++    .goal-card-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
++    .goal-progress-bar { width: 100%; height: 12px; background: rgba(255,255,255,0.6); border-radius: 10px; overflow: hidden; }
++    .goal-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary-dark) 0%, var(--lavender-dark) 100%); border-radius: 10px; transition: width 0.4s; }
++    .goal-card-sub { font-size: 13px; color: var(--text); margin-top: 8px; }
++    .goal-whatfor { font-size: 13px; color: var(--text); margin-top: 8px; line-height: 1.5; }
++
++    .dash-actions { padding: 16px 20px 0; }
+     .action-btn { display: flex; align-items: center; gap: 15px; background: white; border: none; width: 100%; padding: 18px 20px; border-radius: 20px; margin-bottom: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.3s; font-family: inherit; }
+     .action-btn:hover { transform: translateX(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+     .action-icon { width: 50px; height: 50px; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 24px; }
+-    .action-icon.skip { background: linear-gradient(135deg, #90D4A8 0%, #6BC48E 100%); }
+-    .action-icon.purchase { background: linear-gradient(135deg, #FFB88C 0%, #FF9B6A 100%); }
++    .action-icon.skip { background: linear-gradient(135deg, #B5EAD7 0%, #8FD9BE 100%); }
++    .action-icon.purchase { background: linear-gradient(135deg, #FFDAC1 0%, #FFB88C 100%); }
+     .action-text { text-align: right; flex: 1; }
+     .action-title { font-size: 17px; font-weight: 700; color: var(--text); }
+     .action-desc { font-size: 13px; color: var(--text-light); margin-top: 3px; }
+-    
++
+     /* Form Screen */
+     .form-screen { padding: 20px; }
+     .form-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+     .back-btn { width: 44px; height: 44px; background: white; border: none; border-radius: 14px; font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; }
+     .form-title { font-size: 22px; font-weight: 700; color: var(--text); }
+-    
++
+     .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+-    .category-btn { background: white; border: 2px solid #e8e8e8; border-radius: 15px; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.3s; }
+-    .category-btn.active { border-color: var(--primary); background: rgba(168, 213, 186, 0.1); }
++    .category-btn { background: white; border: 2px solid #eee; border-radius: 15px; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.3s; }
++    .category-btn.active { border-color: var(--primary-dark); background: rgba(181, 234, 215, 0.2); }
+     .category-icon { font-size: 28px; margin-bottom: 5px; }
+     .category-name { font-size: 13px; color: var(--text); font-weight: 600; }
+-    
++
+     .amount-input-wrap { position: relative; margin-bottom: 20px; }
+-    .amount-input { width: 100%; padding: 20px; padding-left: 50px; border: 2px solid #e8e8e8; border-radius: 20px; font-size: 28px; font-weight: 700; text-align: center; font-family: inherit; }
+-    .amount-input:focus { outline: none; border-color: var(--primary); }
++    .amount-input { width: 100%; padding: 20px; padding-left: 50px; border: 2px solid #eee; border-radius: 20px; font-size: 28px; font-weight: 700; text-align: center; font-family: inherit; }
++    .amount-input:focus { outline: none; border-color: var(--primary-dark); }
+     .currency-symbol { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 24px; color: var(--text-light); }
+-    
+-    .btn-save { width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 18px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 6px 20px rgba(168, 213, 186, 0.4); }
+-    
++
++    .btn-save { width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: var(--text); border: none; padding: 18px; border-radius: 25px; font-size: 18px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 6px 20px rgba(143, 217, 190, 0.4); margin-bottom: 12px; }
++
+     /* History */
+     .history-screen { padding: 20px; }
+     .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+@@ -123,81 +139,85 @@
+     .history-list { display: flex; flex-direction: column; gap: 12px; }
+     .history-item { background: white; border-radius: 18px; padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+     .history-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+-    .history-icon.skip { background: rgba(144, 212, 168, 0.2); }
+-    .history-icon.purchase { background: rgba(255, 184, 140, 0.2); }
++    .history-icon.skip { background: rgba(181, 234, 215, 0.4); }
++    .history-icon.purchase { background: rgba(255, 218, 193, 0.4); }
+     .history-info { flex: 1; }
+     .history-desc { font-size: 15px; font-weight: 600; color: var(--text); }
+     .history-date { font-size: 12px; color: var(--text-light); margin-top: 3px; }
+     .history-amount { font-size: 18px; font-weight: 700; }
+-    .history-amount.skip { color: var(--success); }
+-    .history-amount.purchase { color: var(--accent); }
++    .history-amount.skip { color: #5FBE95; }
++    .history-amount.purchase { color: #FF9B6A; }
+     .history-empty { text-align: center; padding: 40px; color: var(--text-light); }
+-    
++
+     /* Investment Screen */
+     .investment-screen { padding: 20px; }
+-    .invest-header { text-align: center; margin-bottom: 25px; }
+-    .invest-title { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+-    .invest-subtitle { font-size: 14px; color: var(--text-light); }
+     .invest-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+-    .invest-tab { flex: 1; padding: 12px; background: white; border: 2px solid #e8e8e8; border-radius: 15px; text-align: center; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s; }
+-    .invest-tab.active { border-color: var(--primary); background: rgba(168, 213, 186, 0.1); color: var(--primary-dark); }
++    .invest-tab { flex: 1; padding: 12px; background: white; border: 2px solid #eee; border-radius: 15px; text-align: center; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s; }
++    .invest-tab.active { border-color: var(--primary-dark); background: rgba(181, 234, 215, 0.2); color: var(--text); }
+     .invest-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+     .invest-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+-    .invest-card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
++    .invest-card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: linear-gradient(135deg, var(--primary) 0%, var(--lavender) 100%); }
+     .invest-card-title { font-size: 17px; font-weight: 700; color: var(--text); }
+     .invest-card-desc { font-size: 13px; color: var(--text-light); line-height: 1.6; margin-bottom: 15px; }
+     .invest-card-footer { display: flex; gap: 10px; }
+-    .invest-link { flex: 1; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; font-family: inherit; }
+-    .invest-phone { flex: 1; padding: 12px; background: white; border: 2px solid var(--primary); color: var(--primary-dark); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; }
+-    
+-    /* Summary Screen */
+-    .summary-screen { padding: 20px; text-align: center; }
+-    .summary-header { margin-bottom: 30px; }
+-    .summary-title { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+-    .summary-subtitle { font-size: 15px; color: var(--text-light); }
+-    .summary-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+-    .summary-stat { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+-    .summary-stat-icon { font-size: 32px; margin-bottom: 10px; }
+-    .summary-stat-value { font-size: 28px; font-weight: 800; color: var(--text); }
+-    .summary-stat-label { font-size: 13px; color: var(--text-light); margin-top: 5px; }
+-    .summary-tip { background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%); border-radius: 20px; padding: 20px; margin-bottom: 25px; }
+-    .summary-tip-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+-    .summary-tip-text { font-size: 14px; color: var(--text); line-height: 1.6; }
+-    .summary-actions { display: flex; flex-direction: column; gap: 12px; }
+-    .btn-summary { padding: 16px; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all 0.3s; }
+-    .btn-summary.primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; }
+-    .btn-summary.secondary { background: white; color: var(--text); border: 2px solid #e8e8e8; }
+-    .btn-summary.danger { background: white; color: var(--danger); border: 2px solid var(--danger); }
+-    
++    .invest-link { flex: 1; padding: 12px; background: var(--primary-dark); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; font-family: inherit; }
++    .invest-phone { flex: 1; padding: 12px; background: white; border: 2px solid var(--primary-dark); color: var(--text); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; }
++
++    /* Circle Screen */
++    .circle-screen { padding: 20px; }
++    .empty-state { text-align: center; padding: 30px 15px; color: var(--text-light); background: white; border-radius: 20px; line-height: 1.7; }
++    .circle-option-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
++    .circle-option-card h3 { font-size: 16px; color: var(--text); margin-bottom: 12px; }
++    .circle-option-card .form-input { margin-bottom: 12px; }
++    .circle-info-card { background: linear-gradient(135deg, var(--primary) 0%, var(--lavender) 100%); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
++    .circle-name { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
++    .circle-invite-row { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.6); border-radius: 14px; padding: 10px 14px; font-size: 14px; color: var(--text); margin-bottom: 12px; }
++    .invite-share-btn { background: white; border: none; border-radius: 10px; padding: 8px 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
++    .leave-circle-btn { background: none; border: none; color: var(--text); opacity: 0.7; font-size: 13px; text-decoration: underline; cursor: pointer; font-family: inherit; }
++    .section-subtitle { font-size: 16px; font-weight: 700; color: var(--text); margin: 18px 0 12px; }
++    .member-list, .feed-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
++    .member-card { background: white; border-radius: 18px; padding: 14px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
++    .member-avatar { width: 46px; height: 46px; min-width: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--text); }
++    .member-info { flex: 1; }
++    .member-name { font-size: 15px; font-weight: 700; color: var(--text); }
++    .member-stats { font-size: 12px; color: var(--text-light); margin-top: 3px; }
++    .member-goal { font-size: 12px; color: var(--lavender-dark); margin-top: 4px; font-weight: 600; }
++    .feed-item { background: white; border-radius: 18px; padding: 14px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
++    .feed-avatar { width: 40px; height: 40px; min-width: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--text); font-size: 14px; }
++    .feed-info { flex: 1; }
++    .feed-text { font-size: 14px; color: var(--text); line-height: 1.5; }
++    .feed-amount { font-size: 13px; color: #5FBE95; font-weight: 700; margin-top: 2px; }
++    .report-btn { background: none; border: none; font-size: 16px; cursor: pointer; opacity: 0.5; padding: 6px; }
++    .report-btn:hover { opacity: 1; }
++    .report-btn:disabled { opacity: 0.25; cursor: default; }
++
+     /* Bottom Nav */
+     .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; background: white; padding: 12px 20px 20px; display: flex; justify-content: space-around; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 25px 25px 0 0; z-index: 100; }
+     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 15px; border-radius: 15px; transition: all 0.3s; background: none; border: none; font-family: inherit; }
+-    .nav-item.active { background: rgba(168, 213, 186, 0.2); }
++    .nav-item.active { background: rgba(181, 234, 215, 0.3); }
+     .nav-icon { font-size: 24px; }
+     .nav-label { font-size: 11px; font-weight: 600; color: var(--text-light); }
+-    .nav-item.active .nav-label { color: var(--primary-dark); }
+-    
++    .nav-item.active .nav-label { color: var(--text); }
++
+     /* Toast */
+-    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 14px 28px; border-radius: 30px; font-size: 15px; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
++    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 14px 28px; border-radius: 30px; font-size: 15px; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 85%; text-align: center; }
+     .toast.show { opacity: 1; }
+-    
+-    /* Hebrew Calendar */
+-    .date-display { font-size: 12px; color: var(--text-light); margin-top: 2px; direction: rtl; }
+   </style>
+ </head>
+ <body>
+   <div class="app">
+-    
++
+     <!-- Welcome Screen -->
+     <div class="screen welcome-screen active" id="welcome-screen">
+       <div class="welcome-logo">
+         <div class="play-icon"></div>
+       </div>
+       <h1 class="welcome-title">SKIPAPP</h1>
+-      <p class="welcome-subtitle">משחק החיסכון החכם<br>דלג על הוצאות קטנות, צבור נקודות, והפוך את החיסכון להרגל!</p>
++      <p class="welcome-subtitle">מעגל החיסכון החכם 💚<br>דלגו על הוצאות קטנות ביחד עם המעגל שלכם, ותגשימו יעדים משותפים!</p>
+       <button class="welcome-btn" onclick="goTo('terms-screen')">בואו נתחיל! 🚀</button>
++      <a href="#" class="welcome-login-link" onclick="goTo('login-screen');return false;">יש לי כבר חשבון</a>
+     </div>
+-    
++
+     <!-- Terms Screen -->
+     <div class="screen terms-screen" id="terms-screen">
+       <div class="terms-header">
+@@ -205,17 +225,20 @@
+       </div>
+       <div class="terms-content">
+         <h3>ברוכים הבאים ל-SKIPAPP!</h3>
+-        <p>האפליקציה פותחה במסגרת מחקר דוקטורט בכלכלה התנהגותית באוניברסיטת אדם מיקביץ' בפוזנן, פולין.</p>
+-        
++        <p>האפליקציה עוזרת לך ולמעגל החברים או המשפחה שלך לחסוך יחד, ולהגשים יעדי חיסכון אישיים.</p>
++
+         <h3>מטרת האפליקציה</h3>
+-        <p>לעזור לך לפתח מודעות להוצאות קטנות ולהבין את הכוח המצטבר של חיסכון קטן לאורך זמן.</p>
+-        
++        <p>לעזור לך לפתח מודעות להוצאות קטנות ולהבין את הכוח המצטבר של חיסכון קטן לאורך זמן - ביחד עם אנשים קרובים אליך.</p>
++
++        <h3>שיתוף במעגל</h3>
++        <p>אם תצטרפו למעגל חברתי, פרטי הדילוגים שתבחרו לתעד (קטגוריה, תיאור וסכום) יהיו גלויים לחברי המעגל שלכם בלבד - לא לציבור הרחב. כל חבר יכול לדווח על תוכן לא הולם, והוא יוסתר אוטומטית לאחר מספר דיווחים.</p>
++
+         <h3>איסוף נתונים</h3>
+-        <p>האפליקציה אוספת נתונים אנונימיים לצורכי מחקר בלבד: גיל, מין, דפוסי שימוש. המידע משמש לניתוח סטטיסטי ולא ניתן לזיהוי אישי.</p>
+-        
++        <p>האפליקציה אוספת נתונים לצורך תפעול המעגלים החברתיים ולצרכים אנונימיים סטטיסטיים. המידע לא משותף עם גורמים חיצוניים.</p>
++
+         <h3>פרטיות</h3>
+-        <p>אנו מחויבים להגנה על פרטיותך. הנתונים נשמרים בצורה מאובטחת ולא משותפים עם גורמים חיצוניים.</p>
+-        
++        <p>אנו מחויבים להגנה על פרטיותך. הנתונים נשמרים בצורה מאובטחת.</p>
++
+         <h3>שימוש אחראי</h3>
+         <p>האפליקציה מספקת כלים חינוכיים בלבד ואינה מהווה ייעוץ פיננסי מקצועי.</p>
+       </div>
+@@ -225,7 +248,7 @@
+       </div>
+       <button class="btn-accept" id="btn-accept" onclick="acceptTerms()">המשך להרשמה</button>
+     </div>
+-    
++
+     <!-- Register Screen -->
+     <div class="screen register-screen" id="register-screen">
+       <div class="register-header">
+@@ -252,6 +275,14 @@
+             </select>
+           </div>
+         </div>
++        <div class="form-group">
++          <label class="form-label">אימייל</label>
++          <input type="email" class="form-input" id="reg-email" required placeholder="you@example.com">
++        </div>
++        <div class="form-group">
++          <label class="form-label">סיסמה</label>
++          <input type="password" class="form-input" id="reg-password" required minlength="6" placeholder="לפחות 6 תווים">
++        </div>
+         <div class="form-group">
+           <label class="form-label">שפה מועדפת</label>
+           <select class="form-select" id="reg-language">
+@@ -261,8 +292,29 @@
+         </div>
+         <button type="submit" class="btn-register">התחל לחסוך! 💰</button>
+       </form>
++      <p class="auth-switch-link">יש לך כבר חשבון? <a href="#" onclick="goTo('login-screen');return false;">כניסה כאן</a></p>
+     </div>
+-    
++
++    <!-- Login Screen -->
++    <div class="screen register-screen" id="login-screen">
++      <div class="register-header">
++        <h2 class="register-title">🔑 כניסה</h2>
++        <p class="register-subtitle">התחבר/י לחשבון הקיים שלך</p>
++      </div>
++      <form id="login-form" onsubmit="return submitLogin(event)">
++        <div class="form-group">
++          <label class="form-label">אימייל</label>
++          <input type="email" class="form-input" id="login-email" required placeholder="you@example.com">
++        </div>
++        <div class="form-group">
++          <label class="form-label">סיסמה</label>
++          <input type="password" class="form-input" id="login-password" required placeholder="הסיסמה שלך">
++        </div>
++        <button type="submit" class="btn-register">כניסה 🔓</button>
++      </form>
++      <p class="auth-switch-link">אין לך חשבון? <a href="#" onclick="goTo('terms-screen');return false;">הירשם/י כאן</a></p>
++    </div>
++
+     <!-- Dashboard -->
+     <div class="screen dashboard" id="dashboard">
+       <div class="dash-header">
+@@ -275,13 +327,24 @@
+           <div class="stat-value" id="stat-skips">0</div>
+           <div class="stat-label">דילוגים</div>
+         </div>
+-
+         <div class="stat-card">
+           <div class="stat-icon">🔥</div>
+           <div class="stat-value" id="stat-streak">0</div>
+           <div class="stat-label">רצף ימים</div>
+         </div>
++        <div class="stat-card">
++          <div class="stat-icon">💰</div>
++          <div class="stat-value" id="stat-saved">₪0</div>
++          <div class="stat-label">נחסך</div>
++        </div>
++      </div>
++
++      <div class="goal-card" id="goal-card" style="display:none;">
++        <div class="goal-card-title" id="goal-card-title"></div>
++        <div class="goal-progress-bar"><div class="goal-progress-fill" id="goal-progress-fill" style="width:0%;"></div></div>
++        <div class="goal-card-sub" id="goal-card-sub"></div>
+       </div>
++
+       <div class="dash-actions">
+         <button class="action-btn" onclick="goTo('skip-form')">
+           <div class="action-icon skip">✓</div>
+@@ -297,6 +360,20 @@
+             <div class="action-desc">תעד קנייה שביצעת</div>
+           </div>
+         </button>
++        <button class="action-btn" onclick="goTo('circle-screen')">
++          <div class="action-icon" style="background: linear-gradient(135deg, #C7CEEA 0%, #9FA8D9 100%);">👥</div>
++          <div class="action-text">
++            <div class="action-title">המעגל שלי</div>
++            <div class="action-desc">ראו מה החברים דילגו וחסכו</div>
++          </div>
++        </button>
++        <button class="action-btn" onclick="goTo('goal-screen')">
++          <div class="action-icon" style="background: linear-gradient(135deg, #FFB7B2 0%, #FF9B9B 100%);">🎯</div>
++          <div class="action-text">
++            <div class="action-title">יעד החיסכון שלי</div>
++            <div class="action-desc">הגדר/י למה את/ה חוסכ/ת</div>
++          </div>
++        </button>
+         <button class="action-btn" onclick="goTo('history-screen')">
+           <div class="action-icon" style="background: linear-gradient(135deg, #B8A9D4 0%, #9B89C4 100%);">📊</div>
+           <div class="action-text">
+@@ -313,7 +390,7 @@
+         </button>
+       </div>
+     </div>
+-    
++
+     <!-- Skip Form -->
+     <div class="screen form-screen" id="skip-form">
+       <div class="form-header">
+@@ -337,9 +414,10 @@
+         <span class="currency-symbol">₪</span>
+         <input type="number" class="amount-input" id="skip-amount" placeholder="0" min="1">
+       </div>
++      <p style="color: var(--text-light); margin-bottom: 12px; font-size: 12px;">אם את/ה במעגל, הדילוג הזה ישותף עם חברי המעגל שלך 💚</p>
+       <button class="btn-save" onclick="saveSkip()">שמור דילוג ✓</button>
+     </div>
+-    
++
+     <!-- Purchase Form -->
+     <div class="screen form-screen" id="purchase-form">
+       <div class="form-header">
+@@ -363,9 +441,9 @@
+         <span class="currency-symbol">₪</span>
+         <input type="number" class="amount-input" id="purchase-amount" placeholder="0" min="1">
+       </div>
+-      <button class="btn-save" style="background: linear-gradient(135deg, var(--accent) 0%, #FF9B6A 100%);" onclick="savePurchase()">שמור קנייה 🛒</button>
++      <button class="btn-save" style="background: linear-gradient(135deg, var(--accent) 0%, #FF9B9B 100%);" onclick="savePurchase()">שמור קנייה 🛒</button>
+     </div>
+-    
++
+     <!-- History Screen -->
+     <div class="screen history-screen" id="history-screen">
+       <div class="history-header">
+@@ -379,7 +457,7 @@
+         </div>
+       </div>
+     </div>
+-    
++
+     <!-- Investment Screen -->
+     <div class="screen investment-screen" id="investment-screen">
+       <div class="form-header">
+@@ -458,52 +536,87 @@
+         </div>
+       </div>
+     </div>
+-    
+-    <!-- Summary Screen -->
+-    <div class="screen summary-screen" id="summary-screen">
+-      <div class="summary-header">
+-        <h2 class="summary-title">🎉 סיכום</h2>
+-        <p class="summary-subtitle">הנה ההישגים שלך עד כה</p>
+-      </div>
+-      <div class="summary-stats">
+-        <div class="summary-stat">
+-          <div class="summary-stat-icon">🎯</div>
+-          <div class="summary-stat-value" id="summary-skips">0</div>
+-          <div class="summary-stat-label">דילוגים</div>
++
++    <!-- Circle Screen -->
++    <div class="screen circle-screen" id="circle-screen">
++      <div class="form-header">
++        <button class="back-btn" onclick="goTo('dashboard')">→</button>
++        <h2 class="form-title">המעגל שלי</h2>
++      </div>
++
++      <div id="circle-no-firebase" style="display:none;">
++        <div class="empty-state">
++          <p>🔧 תכונת המעגל החברתי דורשת חיבור ל-Firebase (Firestore + Auth).</p>
++          <p style="margin-top:8px;font-size:13px;">ראו את קובץ ה-FIREBASE-SETUP בפרויקט להוראות הגדרה.</p>
+         </div>
+-        <div class="summary-stat">
+-          <div class="summary-stat-icon">⭐</div>
+-          <div class="summary-stat-value" id="summary-points">0</div>
+-          <div class="summary-stat-label">נקודות</div>
++      </div>
++
++      <div id="circle-setup" style="display:none;">
++        <div class="circle-option-card">
++          <h3>✨ צור מעגל חדש</h3>
++          <input class="form-input" id="new-circle-name" placeholder="שם המעגל (למשל: החברים מהעבודה)">
++          <button class="btn-save" onclick="createCircle()">צור מעגל 🎉</button>
+         </div>
+-        <div class="summary-stat">
+-          <div class="summary-stat-icon">💰</div>
+-          <div class="summary-stat-value" id="summary-saved">₪0</div>
+-          <div class="summary-stat-label">נחסך</div>
++        <div class="circle-option-card">
++          <h3>🤝 הצטרף למעגל קיים</h3>
++          <input class="form-input" id="join-circle-code" placeholder="קוד הזמנה" style="text-transform:uppercase;">
++          <button class="btn-save" style="background: linear-gradient(135deg, var(--lavender) 0%, var(--lavender-dark) 100%); color: var(--text);" onclick="joinCircleWithCode()">הצטרף למעגל 🤝</button>
+         </div>
+-        <div class="summary-stat">
+-          <div class="summary-stat-icon">🔥</div>
+-          <div class="summary-stat-value" id="summary-streak">0</div>
+-          <div class="summary-stat-label">רצף ימים</div>
++      </div>
++
++      <div id="circle-view" style="display:none;">
++        <div class="circle-info-card">
++          <div class="circle-name" id="circle-name-display"></div>
++          <div class="circle-invite-row">
++            <span>קוד הזמנה: <b id="circle-invite-code"></b></span>
++            <button class="invite-share-btn" onclick="shareInvite()">📤 שתף</button>
++          </div>
++          <button class="leave-circle-btn" onclick="leaveCircle()">עזוב מעגל</button>
+         </div>
++
++        <h3 class="section-subtitle">👥 חברי המעגל</h3>
++        <div class="member-list" id="member-list"></div>
++
++        <h3 class="section-subtitle">💚 מה החברים דילגו</h3>
++        <div class="feed-list" id="feed-list"></div>
++      </div>
++    </div>
++
++    <!-- Goal Screen -->
++    <div class="screen form-screen goal-screen" id="goal-screen">
++      <div class="form-header">
++        <button class="back-btn" onclick="goTo('dashboard')">→</button>
++        <h2 class="form-title">יעד החיסכון שלי</h2>
+       </div>
+-      <div class="summary-tip">
+-        <div class="summary-tip-title">💡 טיפ לחיסכון</div>
+-        <div class="summary-tip-text" id="summary-tip">כל שקל קטן הופך לגדול עם הזמן! המשך לדלג על הוצאות קטנות ותראה איך החיסכון גדל.</div>
++      <div class="goal-card" id="goal-progress-card" style="display:none;"></div>
++      <div class="form-group">
++        <label class="form-label">מה היעד שלך?</label>
++        <input class="form-input" id="goal-title" placeholder="למשל: טיול לאילת">
++      </div>
++      <div class="form-group">
++        <label class="form-label">כמה תרצה/י לחסוך?</label>
++        <div class="amount-input-wrap">
++          <span class="currency-symbol">₪</span>
++          <input type="number" class="amount-input" id="goal-target" placeholder="0" min="1">
++        </div>
+       </div>
+-      <div class="summary-actions">
+-        <button class="btn-summary primary" onclick="goTo('dashboard')">🏠 חזרה לדשבורד</button>
+-        <button class="btn-summary secondary" onclick="shareResults()">📤 שתף את ההישגים</button>
+-        <button class="btn-summary danger" onclick="resetApp()">🔄 התחל מחדש</button>
++      <div class="form-group">
++        <label class="form-label">מה תעשה/י עם זה כשתגיע/י ליעד?</label>
++        <textarea class="form-input" id="goal-whatfor" rows="3" placeholder="ספר/י לנו..."></textarea>
+       </div>
++      <button class="btn-save" onclick="saveGoal()">שמור יעד 🎯</button>
+     </div>
+-    
++
+     <!-- Bottom Navigation -->
+     <nav class="bottom-nav" id="bottom-nav" style="display: none;">
+       <button class="nav-item active" onclick="goTo('dashboard')">
+         <span class="nav-icon">🏠</span>
+         <span class="nav-label">בית</span>
+       </button>
++      <button class="nav-item" onclick="goTo('circle-screen')">
++        <span class="nav-icon">👥</span>
++        <span class="nav-label">מעגל</span>
++      </button>
+       <button class="nav-item" onclick="goTo('history-screen')">
+         <span class="nav-icon">📊</span>
+         <span class="nav-label">היסטוריה</span>
+@@ -512,19 +625,15 @@
+         <span class="nav-icon">💡</span>
+         <span class="nav-label">השקעות</span>
+       </button>
+-      <button class="nav-item" onclick="goTo('summary-screen')">
+-        <span class="nav-icon">🎯</span>
+-        <span class="nav-label">סיכום</span>
+-      </button>
+     </nav>
+-    
++
+     <!-- Toast -->
+     <div class="toast" id="toast"></div>
+   </div>
+ 
+   <script>
+     // ========== FIREBASE CONFIGURATION ==========
+-    // ⚠️ IMPORTANT: Replace with your Firebase config!
++    // ⚠️ IMPORTANT: Replace with your Firebase config! See FIREBASE-SETUP.
+     const firebaseConfig = {
+       apiKey: "YOUR_API_KEY_HERE",
+       authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+@@ -535,20 +644,33 @@
+       measurementId: "YOUR_MEASUREMENT_ID"
+     };
+ 
+-    // Initialize Firebase
++    const firebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY_HERE";
+     let analytics = null;
++    let auth = null;
++    let db = null;
++    let currentUser = null;
++    let currentCircle = null;
++    let memberListUnsub = null;
++    let feedListUnsub = null;
++
+     try {
+-      if (firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
++      if (firebaseConfigured) {
+         firebase.initializeApp(firebaseConfig);
+         analytics = firebase.analytics();
+-        console.log("✅ Firebase Analytics initialized");
++        auth = firebase.auth();
++        db = firebase.firestore();
++        console.log("✅ Firebase initialized (Auth + Firestore + Analytics)");
+       } else {
+-        console.warn("⚠️ Firebase not configured - using demo mode");
++        console.warn("⚠️ Firebase not configured - social circle features disabled, running in local demo mode");
+       }
+     } catch (e) {
+       console.error("Firebase init error:", e);
+     }
+ 
++    function isFirebaseReady() {
++      return firebaseConfigured && !!auth && !!db;
++    }
++
+     // Track event helper
+     function trackEvent(eventName, params = {}) {
+       if (analytics) {
+@@ -593,29 +715,48 @@
+       return false;
+     }
+ 
++    // ========== SECURITY HELPERS ==========
++    function escapeHtml(str) {
++      const div = document.createElement('div');
++      div.textContent = str == null ? '' : String(str);
++      return div.innerHTML;
++    }
++
++    // ========== CONTENT MODERATION ==========
++    const BLOCKED_WORDS = [
++      'זונה', 'שרמוטה', 'מניאק', 'חרא', 'מפגר', 'טמבל', 'אידיוט', 'דפוק',
++      'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'idiot', 'stupid'
++    ];
++    function moderateText(text) {
++      if (!text) return true;
++      const normalized = text.toLowerCase();
++      return !BLOCKED_WORDS.some(w => normalized.includes(w));
++    }
++
+     // ========== NAVIGATION ==========
+     function goTo(screenId) {
+       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+       document.getElementById(screenId).classList.add('active');
+-      
++
+       // Track screen view
+       trackEvent('screen_view', { screen_name: screenId });
+-      
++
+       // Show/hide bottom nav
+-      const showNav = ['dashboard', 'history-screen', 'investment-screen', 'summary-screen'].includes(screenId);
++      const showNav = ['dashboard', 'circle-screen', 'history-screen', 'investment-screen'].includes(screenId);
+       document.getElementById('bottom-nav').style.display = showNav ? 'flex' : 'none';
+-      
++
+       // Update active nav item
+       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+-      const navMap = { 'dashboard': 0, 'history-screen': 1, 'investment-screen': 2, 'summary-screen': 3 };
++      const navMap = { 'dashboard': 0, 'circle-screen': 1, 'history-screen': 2, 'investment-screen': 3 };
+       if (navMap[screenId] !== undefined) {
+         document.querySelectorAll('.nav-item')[navMap[screenId]].classList.add('active');
+       }
+-      
++
+       // Update data displays
+       if (screenId === 'dashboard') updateDashboard();
+       if (screenId === 'history-screen') updateHistory();
+-      if (screenId === 'summary-screen') updateSummary();
++      if (screenId === 'circle-screen') updateCircleScreen();
++      if (screenId === 'goal-screen') updateGoalScreen();
+     }
+ 
+     // ========== TERMS ==========
+@@ -643,40 +784,112 @@
+       goTo('register-screen');
+     }
+ 
++    // ========== AUTH HELPERS ==========
++    function friendlyAuthError(err) {
++      const map = {
++        'auth/email-already-in-use': 'האימייל כבר רשום במערכת, נסה/י להתחבר',
++        'auth/invalid-email': 'כתובת אימייל לא תקינה',
++        'auth/weak-password': 'הסיסמה חלשה מדי',
++        'auth/user-not-found': 'לא נמצא משתמש עם אימייל זה',
++        'auth/wrong-password': 'סיסמה שגויה',
++        'auth/invalid-credential': 'פרטי ההתחברות שגויים'
++      };
++      return (err && map[err.code]) || 'אירעה שגיאה, נסה/י שוב';
++    }
++
+     // ========== REGISTRATION ==========
+-    function submitRegister(e) {
++    async function submitRegister(e) {
+       e.preventDefault();
+-      
++
+       const name = document.getElementById('reg-name').value.trim();
+       const age = parseInt(document.getElementById('reg-age').value);
+       const gender = document.getElementById('reg-gender').value;
+       const language = document.getElementById('reg-language').value;
+-      
+-      if (!name || !age || !gender) {
++      const email = document.getElementById('reg-email').value.trim();
++      const password = document.getElementById('reg-password').value;
++
++      if (!name || !age || !gender || !email || !password) {
+         showToast('נא למלא את כל השדות');
+         return false;
+       }
+-      
+-      app.user = { name, age, gender, language, registeredAt: new Date().toISOString() };
++      if (password.length < 6) {
++        showToast('הסיסמה חייבת להכיל לפחות 6 תווים');
++        return false;
++      }
++      if (!moderateText(name)) {
++        showToast('השם שהוזן לא עומד בכללי הקהילה');
++        return false;
++      }
++
++      if (isFirebaseReady()) {
++        try {
++          const cred = await auth.createUserWithEmailAndPassword(email, password);
++          currentUser = cred.user;
++          await db.collection('users').doc(currentUser.uid).set({
++            name, age, gender, language, email,
++            createdAt: firebase.firestore.FieldValue.serverTimestamp()
++          });
++        } catch (err) {
++          console.error(err);
++          showToast(friendlyAuthError(err));
++          return false;
++        }
++      }
++
++      app.user = { name, age, gender, language, email, registeredAt: new Date().toISOString(), circleId: null, goal: null };
+       save();
+-      
++
+       // Set user properties for analytics
+       setUserProperties({
+         age_group: getAgeGroup(age),
+         gender: gender,
+         language: language
+       });
+-      
++
+       trackEvent('registration_complete', {
+         age_group: getAgeGroup(age),
+         gender: gender
+       });
+-      
++
+       showToast('ברוך הבא, ' + name + '! 🎉');
+       goTo('dashboard');
+       return false;
+     }
+ 
++    async function submitLogin(e) {
++      e.preventDefault();
++
++      if (!isFirebaseReady()) {
++        showToast('התחברות דורשת הגדרת Firebase (ראו FIREBASE-SETUP)');
++        return false;
++      }
++
++      const email = document.getElementById('login-email').value.trim();
++      const password = document.getElementById('login-password').value;
++
++      try {
++        const cred = await auth.signInWithEmailAndPassword(email, password);
++        currentUser = cred.user;
++        const doc = await db.collection('users').doc(currentUser.uid).get();
++        if (doc.exists) {
++          const data = doc.data();
++          app.user = {
++            name: data.name, age: data.age, gender: data.gender, language: data.language,
++            email: data.email, circleId: data.circleId || null, goal: data.goal || null,
++            registeredAt: new Date().toISOString()
++          };
++        }
++        save();
++        trackEvent('login');
++        showToast('ברוך/ה הבא/ה בחזרה! 👋');
++        goTo('dashboard');
++      } catch (err) {
++        console.error(err);
++        showToast(friendlyAuthError(err));
++      }
++      return false;
++    }
++
+     function getAgeGroup(age) {
+       if (age < 13) return '8-12';
+       if (age < 18) return '13-17';
+@@ -698,7 +911,7 @@
+     function saveSkip() {
+       const desc = document.getElementById('skip-desc').value.trim();
+       const amount = parseFloat(document.getElementById('skip-amount').value);
+-      
++
+       if (!selectedCategory) {
+         showToast('נא לבחור קטגוריה');
+         return;
+@@ -707,7 +920,11 @@
+         showToast('נא להזין סכום');
+         return;
+       }
+-      
++      if (desc && !moderateText(desc)) {
++        showToast('התיאור לא עומד בכללי הקהילה, נא לנסח מחדש');
++        return;
++      }
++
+       const skip = {
+         id: Date.now(),
+         type: 'skip',
+@@ -717,31 +934,36 @@
+         date: new Date().toISOString(),
+         hebrewDate: getHebrewDate()
+       };
+-      
++
+       app.skips.push(skip);
+       updateStreak();
+       save();
+-      
++
+       trackEvent('skip_added', {
+         category: selectedCategory,
+         amount: amount
+       });
+-      
++
+       showToast('דילוג נשמר! ✓');
+-      
++
++      if (isFirebaseReady() && currentUser && app.user.circleId) {
++        syncMemberStats();
++        postSkipToFeed(skip);
++      }
++
+       // Clear form
+       document.getElementById('skip-desc').value = '';
+       document.getElementById('skip-amount').value = '';
+       selectedCategory = '';
+       document.querySelectorAll('#skip-categories .category-btn').forEach(btn => btn.classList.remove('active'));
+-      
++
+       goTo('dashboard');
+     }
+ 
+     function savePurchase() {
+       const desc = document.getElementById('purchase-desc').value.trim();
+       const amount = parseFloat(document.getElementById('purchase-amount').value);
+-      
++
+       if (!selectedCategory) {
+         showToast('נא לבחור קטגוריה');
+         return;
+@@ -750,7 +972,11 @@
+         showToast('נא להזין סכום');
+         return;
+       }
+-      
++      if (desc && !moderateText(desc)) {
++        showToast('התיאור לא עומד בכללי הקהילה, נא לנסח מחדש');
++        return;
++      }
++
+       const purchase = {
+         id: Date.now(),
+         type: 'purchase',
+@@ -760,23 +986,23 @@
+         date: new Date().toISOString(),
+         hebrewDate: getHebrewDate()
+       };
+-      
++
+       app.purchases.push(purchase);
+       save();
+-      
++
+       trackEvent('purchase_added', {
+         category: selectedCategory,
+         amount: amount
+       });
+-      
++
+       showToast('קנייה נרשמה 🛒');
+-      
++
+       // Clear form
+       document.getElementById('purchase-desc').value = '';
+       document.getElementById('purchase-amount').value = '';
+       selectedCategory = '';
+       document.querySelectorAll('#purchase-categories .category-btn').forEach(btn => btn.classList.remove('active'));
+-      
++
+       goTo('dashboard');
+     }
+ 
+@@ -825,21 +1051,34 @@
+         document.getElementById('user-name').textContent = app.user.name;
+       }
+       const totalSkips = app.skips.length;
+-      
+-      
++      const totalSaved = app.skips.reduce((sum, s) => sum + s.amount, 0);
++
+       document.getElementById('stat-skips').textContent = totalSkips;
+       document.getElementById('stat-streak').textContent = app.streak;
++      document.getElementById('stat-saved').textContent = '₪' + totalSaved;
++
++      const goalCard = document.getElementById('goal-card');
++      if (app.user && app.user.goal && app.user.goal.targetAmount) {
++        const g = app.user.goal;
++        const pct = Math.min(100, Math.round((totalSaved / g.targetAmount) * 100));
++        goalCard.style.display = 'block';
++        document.getElementById('goal-card-title').textContent = '🎯 ' + g.title;
++        document.getElementById('goal-progress-fill').style.width = pct + '%';
++        document.getElementById('goal-card-sub').textContent = `₪${totalSaved} מתוך ₪${g.targetAmount} (${pct}%)`;
++      } else {
++        goalCard.style.display = 'none';
++      }
+     }
+ 
+     function updateHistory() {
+       const list = document.getElementById('history-list');
+       const allItems = [...app.skips, ...app.purchases].sort((a, b) => new Date(b.date) - new Date(a.date));
+-      
++
+       if (allItems.length === 0) {
+         list.innerHTML = '<div class="history-empty"><p>עדיין אין פעילות</p><p style="font-size: 13px; margin-top: 8px;">התחל לתעד דילוגים וקניות!</p></div>';
+         return;
+       }
+-      
++
+       list.innerHTML = allItems.map(item => {
+         const dates = formatDate(item.date);
+         const isSkip = item.type === 'skip';
+@@ -847,7 +1086,7 @@
+           <div class="history-item">
+             <div class="history-icon ${item.type}">${isSkip ? '✓' : '🛒'}</div>
+             <div class="history-info">
+-              <div class="history-desc">${item.description}</div>
++              <div class="history-desc">${escapeHtml(item.description)}</div>
+               <div class="history-date">${dates.gregorian}${dates.hebrew ? ' | ' + dates.hebrew : ''}</div>
+             </div>
+             <div class="history-amount ${item.type}">${isSkip ? '+' : '-'}₪${item.amount}</div>
+@@ -856,57 +1095,315 @@
+       }).join('');
+     }
+ 
+-    function updateSummary() {
+-      const totalSkips = app.skips.length;
+-      
+-      const totalSaved = app.skips.reduce((sum, s) => sum + s.amount, 0);
+-      
+-      document.getElementById('summary-skips').textContent = totalSkips;
+-      document.getElementById('summary-saved').textContent = '₪' + totalSaved;
+-      document.getElementById('summary-streak').textContent = app.streak;
+-      
+-      // Dynamic tip
+-      const tips = [
+-        'כל שקל קטן הופך לגדול עם הזמן! המשך לדלג על הוצאות קטנות.',
+-        'ידעת? אם תחסוך 20₪ ביום, תצבור 7,300₪ בשנה!',
+-        'הרגל של חיסכון נבנה צעד אחרי צעד. אתה בדרך הנכונה!',
+-        'חשוב על כל דילוג כהשקעה בעתיד שלך.',
+-        'מחקרים מראים שאנשים שמתעדים הוצאות חוסכים יותר.'
+-      ];
+-      document.getElementById('summary-tip').textContent = tips[Math.floor(Math.random() * tips.length)];
+-    }
+-
+     // ========== INVESTMENT TABS ==========
+     function showInvestTab(tab) {
+       document.querySelectorAll('.invest-tab').forEach(t => t.classList.remove('active'));
+       event.target.classList.add('active');
+       document.getElementById('invest-adult').style.display = tab === 'adult' ? 'block' : 'none';
+       document.getElementById('invest-youth').style.display = tab === 'youth' ? 'block' : 'none';
+-      
++
+       trackEvent('investment_tab_view', { tab: tab });
+     }
+ 
+-    // ========== SHARE ==========
+-    function shareResults() {
+-      
+-      const totalSaved = app.skips.reduce((sum, s) => sum + s.amount, 0);
+-      
+-      const text = `🎉 הצלחתי לחסוך ₪${totalSaved} עם SKIPAPP!\n🔥 רצף של ${app.streak} ימים\n\nהצטרפו גם אתם למשחק החיסכון החכם!`;
+-      
++    // ========== SOCIAL CIRCLE ==========
++    const AVATAR_COLORS = ['#B5EAD7', '#C7CEEA', '#FFDAC1', '#FFB7B2', '#E2F0CB', '#AEDFF7', '#F6C6EA'];
++    function colorForUid(uid) {
++      let hash = 0;
++      const key = uid || '';
++      for (let i = 0; i < key.length; i++) hash = key.charCodeAt(i) + ((hash << 5) - hash);
++      return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
++    }
++
++    function generateInviteCode() {
++      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
++      let code = '';
++      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
++      return code;
++    }
++
++    function memberSnapshot() {
++      const totalSaved = app.skips.reduce((s, x) => s + x.amount, 0);
++      return {
++        name: app.user.name,
++        goal: app.user.goal || null,
++        totalSaved,
++        skipCount: app.skips.length,
++        streak: app.streak,
++        joinedAt: firebase.firestore.FieldValue.serverTimestamp()
++      };
++    }
++
++    function updateCircleScreen() {
++      document.getElementById('circle-no-firebase').style.display = 'none';
++      document.getElementById('circle-setup').style.display = 'none';
++      document.getElementById('circle-view').style.display = 'none';
++
++      if (!isFirebaseReady()) {
++        document.getElementById('circle-no-firebase').style.display = 'block';
++        return;
++      }
++      if (app.user && app.user.circleId) {
++        document.getElementById('circle-view').style.display = 'block';
++        loadCircle(app.user.circleId);
++      } else {
++        document.getElementById('circle-setup').style.display = 'block';
++      }
++    }
++
++    async function createCircle() {
++      const name = document.getElementById('new-circle-name').value.trim();
++      if (!name) { showToast('נא להזין שם למעגל'); return; }
++      if (!moderateText(name)) { showToast('שם לא הולם, נא לבחור שם אחר'); return; }
++      if (!currentUser) { showToast('יש להתחבר כדי ליצור מעגל'); return; }
++
++      try {
++        const inviteCode = generateInviteCode();
++        const circleRef = db.collection('circles').doc();
++        await circleRef.set({
++          name, ownerId: currentUser.uid, inviteCode,
++          memberIds: [currentUser.uid],
++          createdAt: firebase.firestore.FieldValue.serverTimestamp()
++        });
++        await circleRef.collection('members').doc(currentUser.uid).set(memberSnapshot());
++        await db.collection('users').doc(currentUser.uid).update({ circleId: circleRef.id });
++
++        app.user.circleId = circleRef.id;
++        save();
++        trackEvent('circle_created');
++        showToast('המעגל נוצר! 🎉');
++        goTo('circle-screen');
++      } catch (e) {
++        console.error(e);
++        showToast('שגיאה ביצירת מעגל');
++      }
++    }
++
++    async function joinCircleWithCode() {
++      const code = document.getElementById('join-circle-code').value.trim().toUpperCase();
++      if (!code) { showToast('נא להזין קוד הזמנה'); return; }
++      if (!currentUser) { showToast('יש להתחבר כדי להצטרף למעגל'); return; }
++
++      try {
++        const q = await db.collection('circles').where('inviteCode', '==', code).limit(1).get();
++        if (q.empty) { showToast('קוד לא נמצא, בדוק/י ונסה/י שוב'); return; }
++
++        const circleDoc = q.docs[0];
++        await circleDoc.ref.update({ memberIds: firebase.firestore.FieldValue.arrayUnion(currentUser.uid) });
++        await circleDoc.ref.collection('members').doc(currentUser.uid).set(memberSnapshot());
++        await db.collection('users').doc(currentUser.uid).update({ circleId: circleDoc.id });
++
++        app.user.circleId = circleDoc.id;
++        save();
++        trackEvent('circle_joined');
++        showToast('הצטרפת למעגל! 🤝');
++        goTo('circle-screen');
++      } catch (e) {
++        console.error(e);
++        showToast('שגיאה בהצטרפות למעגל');
++      }
++    }
++
++    async function loadCircle(circleId) {
++      const circleDoc = await db.collection('circles').doc(circleId).get();
++      if (!circleDoc.exists) {
++        showToast('המעגל לא נמצא');
++        app.user.circleId = null;
++        save();
++        updateCircleScreen();
++        return;
++      }
++      currentCircle = { id: circleId, ...circleDoc.data() };
++      document.getElementById('circle-name-display').textContent = currentCircle.name;
++      document.getElementById('circle-invite-code').textContent = currentCircle.inviteCode;
++
++      if (memberListUnsub) memberListUnsub();
++      memberListUnsub = db.collection('circles').doc(circleId).collection('members').onSnapshot(snap => {
++        const members = [];
++        snap.forEach(d => members.push({ uid: d.id, ...d.data() }));
++        renderMembers(members);
++      });
++
++      if (feedListUnsub) feedListUnsub();
++      feedListUnsub = db.collection('circles').doc(circleId).collection('feed')
++        .orderBy('createdAt', 'desc').limit(30).onSnapshot(snap => {
++          const posts = [];
++          snap.forEach(d => posts.push({ id: d.id, ...d.data() }));
++          renderFeed(posts);
++        });
++    }
++
++    function renderMembers(members) {
++      const list = document.getElementById('member-list');
++      if (members.length === 0) {
++        list.innerHTML = '<div class="history-empty"><p>אין עדיין חברים במעגל</p></div>';
++        return;
++      }
++      list.innerHTML = members.map(m => {
++        const color = colorForUid(m.uid);
++        const initial = escapeHtml((m.name || '?').charAt(0));
++        let goalHtml = '';
++        if (m.goal && m.goal.targetAmount) {
++          const pct = Math.min(100, Math.round(((m.totalSaved || 0) / m.goal.targetAmount) * 100));
++          goalHtml = `<div class="member-goal">🎯 ${escapeHtml(m.goal.title)} — ${pct}%</div>`;
++        }
++        return `
++          <div class="member-card">
++            <div class="member-avatar" style="background:${color};">${initial}</div>
++            <div class="member-info">
++              <div class="member-name">${escapeHtml(m.name || 'חבר/ה')}</div>
++              <div class="member-stats">🎯 ${m.skipCount || 0} דילוגים · 🔥 ${m.streak || 0} ימים · 💰 ₪${m.totalSaved || 0}</div>
++              ${goalHtml}
++            </div>
++          </div>
++        `;
++      }).join('');
++    }
++
++    function renderFeed(posts) {
++      const list = document.getElementById('feed-list');
++      const visible = posts.filter(p => !(p.reportedBy && p.reportedBy.length >= 2));
++      if (visible.length === 0) {
++        list.innerHTML = '<div class="history-empty"><p>עדיין אין דילוגים משותפים</p></div>';
++        return;
++      }
++      list.innerHTML = visible.map(p => {
++        const reported = currentUser && p.reportedBy && p.reportedBy.includes(currentUser.uid);
++        return `
++          <div class="feed-item">
++            <div class="feed-avatar" style="background:${colorForUid(p.uid)};">${escapeHtml((p.name || '?').charAt(0))}</div>
++            <div class="feed-info">
++              <div class="feed-text"><b>${escapeHtml(p.name)}</b> דילג/ה על ${escapeHtml(p.description)} 💚</div>
++              <div class="feed-amount">חסכ/ה ₪${p.amount}</div>
++            </div>
++            <button class="report-btn" onclick="reportPost('${p.id}')" ${reported ? 'disabled' : ''} title="דווח על תוכן לא הולם">🚩</button>
++          </div>
++        `;
++      }).join('');
++    }
++
++    function reportPost(postId) {
++      if (!currentUser || !currentCircle) return;
++      db.collection('circles').doc(currentCircle.id).collection('feed').doc(postId).update({
++        reportedBy: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
++      }).catch(e => console.error(e));
++      showToast('דיווחת על התוכן, תודה 🙏');
++    }
++
++    function syncMemberStats() {
++      const totalSaved = app.skips.reduce((s, x) => s + x.amount, 0);
++      db.collection('circles').doc(app.user.circleId).collection('members').doc(currentUser.uid).set({
++        name: app.user.name, totalSaved, skipCount: app.skips.length, streak: app.streak
++      }, { merge: true }).catch(e => console.error(e));
++    }
++
++    function postSkipToFeed(skip) {
++      db.collection('circles').doc(app.user.circleId).collection('feed').add({
++        uid: currentUser.uid,
++        name: app.user.name,
++        type: 'skip',
++        category: skip.category,
++        description: skip.description,
++        amount: skip.amount,
++        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
++        reportedBy: []
++      }).catch(e => console.error(e));
++    }
++
++    function shareInvite() {
++      if (!currentCircle) return;
++      const text = `הצטרפ/י למעגל החיסכון שלנו "${currentCircle.name}" ב-SKIPAPP! 🎯\nקוד ההזמנה: ${currentCircle.inviteCode}`;
+       if (navigator.share) {
+-        navigator.share({ title: 'SKIPAPP - החיסכון שלי', text: text });
++        navigator.share({ title: 'הזמנה למעגל SKIPAPP', text: text });
+       } else {
+         navigator.clipboard.writeText(text);
+-        showToast('הטקסט הועתק! 📋');
++        showToast('טקסט ההזמנה הועתק! 📋');
+       }
+-      
+-      trackEvent('share_results', { saved: totalSaved });
++      trackEvent('circle_invite_shared');
++    }
++
++    async function leaveCircle() {
++      if (!confirm('לעזוב את המעגל?')) return;
++      if (!currentCircle || !currentUser) return;
++
++      try {
++        await db.collection('circles').doc(currentCircle.id).collection('members').doc(currentUser.uid).delete();
++        await db.collection('circles').doc(currentCircle.id).update({ memberIds: firebase.firestore.FieldValue.arrayRemove(currentUser.uid) });
++        await db.collection('users').doc(currentUser.uid).update({ circleId: firebase.firestore.FieldValue.delete() });
++
++        app.user.circleId = null;
++        save();
++        if (memberListUnsub) memberListUnsub();
++        if (feedListUnsub) feedListUnsub();
++        currentCircle = null;
++        showToast('עזבת את המעגל');
++        goTo('circle-screen');
++      } catch (e) {
++        console.error(e);
++        showToast('שגיאה בעזיבת המעגל');
++      }
++    }
++
++    // ========== SAVINGS GOAL ==========
++    function updateGoalScreen() {
++      const card = document.getElementById('goal-progress-card');
++      const totalSaved = app.skips.reduce((s, x) => s + x.amount, 0);
++
++      if (app.user && app.user.goal && app.user.goal.targetAmount) {
++        const g = app.user.goal;
++        const pct = Math.min(100, Math.round((totalSaved / g.targetAmount) * 100));
++        card.style.display = 'block';
++        card.innerHTML = `
++          <div class="goal-card-title">🎯 ${escapeHtml(g.title)}</div>
++          <div class="goal-progress-bar"><div class="goal-progress-fill" style="width:${pct}%;"></div></div>
++          <div class="goal-card-sub">₪${totalSaved} מתוך ₪${g.targetAmount} (${pct}%)</div>
++          ${g.whatFor ? `<div class="goal-whatfor">💭 ${escapeHtml(g.whatFor)}</div>` : ''}
++        `;
++        document.getElementById('goal-title').value = g.title;
++        document.getElementById('goal-target').value = g.targetAmount;
++        document.getElementById('goal-whatfor').value = g.whatFor || '';
++      } else {
++        card.style.display = 'none';
++      }
++    }
++
++    async function saveGoal() {
++      const title = document.getElementById('goal-title').value.trim();
++      const targetAmount = parseFloat(document.getElementById('goal-target').value);
++      const whatFor = document.getElementById('goal-whatfor').value.trim();
++
++      if (!title || !targetAmount || targetAmount <= 0) {
++        showToast('נא למלא יעד וסכום');
++        return;
++      }
++      if (!moderateText(title) || !moderateText(whatFor)) {
++        showToast('התוכן לא עומד בכללי הקהילה, נא לנסח מחדש');
++        return;
++      }
++
++      app.user.goal = { title, targetAmount, whatFor };
++      save();
++
++      if (isFirebaseReady() && currentUser) {
++        try {
++          await db.collection('users').doc(currentUser.uid).update({ goal: app.user.goal });
++          if (app.user.circleId) {
++            await db.collection('circles').doc(app.user.circleId).collection('members').doc(currentUser.uid).set({ goal: app.user.goal }, { merge: true });
++          }
++        } catch (e) { console.error(e); }
++      }
++
++      trackEvent('goal_saved', { targetAmount });
++      showToast('היעד נשמר! 🎯');
++      goTo('dashboard');
+     }
+ 
+     // ========== RESET ==========
+     function resetApp() {
+       if (confirm('האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים יימחקו.')) {
+         trackEvent('app_reset');
++        if (isFirebaseReady() && auth.currentUser) {
++          auth.signOut().catch(e => console.error(e));
++        }
+         localStorage.removeItem('skipapp_data');
+         location.reload();
+       }
+@@ -935,7 +1432,13 @@
+           goTo('register-screen');
+         }
+       }
+-      
++
++      if (isFirebaseReady()) {
++        auth.onAuthStateChanged(user => {
++          currentUser = user;
++        });
++      }
++
+       // Register service worker
+       if ('serviceWorker' in navigator) {
+         navigator.serviceWorker.register('sw.js').then(() => {
+diff --git a/manifest.json b/manifest.json
+index d9849f7..876924f 100644
+--- a/manifest.json
++++ b/manifest.json
+@@ -1,12 +1,12 @@
+ {
+-  "name": "SKIPAPP - משחק החיסכון החכם",
++  "name": "SKIPAPP - מעגל החיסכון החכם",
+   "short_name": "SKIPAPP",
+-  "description": "אפליקציה לתיעוד דילוגים על הוצאות וחיסכון חכם",
++  "description": "אפליקציה חברתית לתיעוד דילוגים על הוצאות וחיסכון משותף עם מעגל חברים",
+   "start_url": "/skip-app/",
+   "scope": "/skip-app/",
+   "display": "standalone",
+-  "background_color": "#A8D5BA",
+-  "theme_color": "#A8D5BA",
++  "background_color": "#B5EAD7",
++  "theme_color": "#B5EAD7",
+   "orientation": "portrait",
+   "lang": "he",
+   "dir": "rtl",
+-- 
+2.43.0
+
