@@ -173,6 +173,15 @@
     .circle-name { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
     .circle-invite-row { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.6); border-radius: 14px; padding: 10px 14px; font-size: 14px; color: var(--text); margin-bottom: 12px; }
     .invite-share-btn { background: white; border: none; border-radius: 10px; padding: 8px 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .invite-methods { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .invite-method-btn { flex: 1; min-width: 100px; background: rgba(255,255,255,0.7); border: none; border-radius: 12px; padding: 10px 8px; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text); font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; }
+    .invite-method-btn:hover { background: white; }
+    .picked-contacts { margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .contact-invite-row { background: rgba(255,255,255,0.7); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .contact-invite-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .contact-invite-actions { display: flex; gap: 6px; }
+    .contact-invite-btn { background: white; border: none; border-radius: 10px; padding: 6px 10px; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--text); font-family: inherit; }
+    .contact-invite-btn.whatsapp { background: #25D366; color: white; }
     .leave-circle-btn { background: none; border: none; color: var(--text); opacity: 0.7; font-size: 13px; text-decoration: underline; cursor: pointer; font-family: inherit; }
     .section-subtitle { font-size: 16px; font-weight: 700; color: var(--text); margin: 18px 0 12px; }
     .member-list, .feed-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
@@ -577,6 +586,12 @@
             <span>קוד הזמנה: <b id="circle-invite-code"></b></span>
             <button class="invite-share-btn" onclick="shareInvite()">📤 שתף</button>
           </div>
+          <div class="invite-methods">
+            <button class="invite-method-btn" onclick="inviteViaWhatsappGeneric()">💬 WhatsApp</button>
+            <button class="invite-method-btn" onclick="inviteViaSmsGeneric()">✉️ SMS</button>
+            <button class="invite-method-btn" id="contact-picker-btn" style="display:none;" onclick="inviteFromContacts()">📇 מאנשי קשר</button>
+          </div>
+          <div class="picked-contacts" id="picked-contacts" style="display:none;"></div>
           <button class="leave-circle-btn" onclick="leaveCircle()">עזוב מעגל</button>
         </div>
 
@@ -1222,6 +1237,9 @@
       currentCircle = { id: circleId, ...circleDoc.data() };
       document.getElementById('circle-name-display').textContent = currentCircle.name;
       document.getElementById('circle-invite-code').textContent = currentCircle.inviteCode;
+      document.getElementById('contact-picker-btn').style.display = supportsContactPicker() ? 'flex' : 'none';
+      pickedContacts = [];
+      renderPickedContacts();
 
       if (memberListUnsub) memberListUnsub();
       memberListUnsub = db.collection('circles').doc(circleId).collection('members').onSnapshot(snap => {
@@ -1345,9 +1363,14 @@
       }).catch(e => console.error(e));
     }
 
+    function inviteMessage() {
+      if (!currentCircle) return '';
+      return `הצטרפ/י למעגל החיסכון שלנו "${currentCircle.name}" ב-SKIPAPP! 🎯\nקוד ההזמנה: ${currentCircle.inviteCode}`;
+    }
+
     function shareInvite() {
       if (!currentCircle) return;
-      const text = `הצטרפ/י למעגל החיסכון שלנו "${currentCircle.name}" ב-SKIPAPP! 🎯\nקוד ההזמנה: ${currentCircle.inviteCode}`;
+      const text = inviteMessage();
       if (navigator.share) {
         navigator.share({ title: 'הזמנה למעגל SKIPAPP', text: text });
       } else {
@@ -1355,6 +1378,80 @@
         showToast('טקסט ההזמנה הועתק! 📋');
       }
       trackEvent('circle_invite_shared');
+    }
+
+    function inviteViaWhatsappGeneric() {
+      if (!currentCircle) return;
+      window.open(`https://wa.me/?text=${encodeURIComponent(inviteMessage())}`, '_blank');
+      trackEvent('circle_invite_whatsapp');
+    }
+
+    function inviteViaSmsGeneric() {
+      if (!currentCircle) return;
+      window.open(`sms:?body=${encodeURIComponent(inviteMessage())}`, '_blank');
+      trackEvent('circle_invite_sms');
+    }
+
+    // ========== INVITE FROM DEVICE CONTACTS ==========
+    let pickedContacts = [];
+
+    function supportsContactPicker() {
+      return !!(navigator.contacts && navigator.contacts.select && window.ContactsManager);
+    }
+
+    async function inviteFromContacts() {
+      if (!supportsContactPicker()) {
+        showToast('הדפדפן שלך לא תומך בבחירת אנשי קשר. נסה WhatsApp או SMS');
+        return;
+      }
+      try {
+        const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: true });
+        if (!contacts.length) return;
+        pickedContacts = contacts.map(c => ({
+          name: (c.name && c.name[0]) || 'חבר/ה',
+          tel: (c.tel && c.tel[0]) || ''
+        }));
+        renderPickedContacts();
+        trackEvent('circle_invite_contacts_picked', { count: pickedContacts.length });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderPickedContacts() {
+      const wrap = document.getElementById('picked-contacts');
+      if (!pickedContacts.length) {
+        wrap.style.display = 'none';
+        wrap.innerHTML = '';
+        return;
+      }
+      wrap.style.display = 'flex';
+      wrap.innerHTML = pickedContacts.map((c, i) => `
+        <div class="contact-invite-row">
+          <span class="contact-invite-name">${escapeHtml(c.name)}</span>
+          <div class="contact-invite-actions">
+            <button class="contact-invite-btn" onclick="inviteContactViaSms(${i})">✉️ SMS</button>
+            <button class="contact-invite-btn whatsapp" onclick="inviteContactViaWhatsapp(${i})">💬 WhatsApp</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function inviteContactViaSms(i) {
+      const c = pickedContacts[i];
+      if (!c) return;
+      const tel = (c.tel || '').replace(/\s+/g, '');
+      window.open(`sms:${tel}?body=${encodeURIComponent(inviteMessage())}`, '_blank');
+      trackEvent('circle_invite_sms');
+    }
+
+    function inviteContactViaWhatsapp(i) {
+      const c = pickedContacts[i];
+      if (!c) return;
+      const tel = (c.tel || '').replace(/[^\d+]/g, '').replace(/^\+/, '');
+      const url = tel ? `https://wa.me/${tel}?text=${encodeURIComponent(inviteMessage())}` : `https://wa.me/?text=${encodeURIComponent(inviteMessage())}`;
+      window.open(url, '_blank');
+      trackEvent('circle_invite_whatsapp');
     }
 
     async function leaveCircle() {
