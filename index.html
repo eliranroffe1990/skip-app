@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#B5EAD7">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>SKIPAPP - מעגל החיסכון החכם</title>
+  <title id="page-title">SKIPAPP - מעגל החיסכון החכם</title>
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Firebase SDK -->
@@ -43,8 +43,9 @@
     .app { width: 100%; height: 100vh; max-width: 500px; margin: 0 auto; background: var(--bg); position: relative; overflow: hidden; }
     @media (min-width: 501px) { body { display: flex; justify-content: center; align-items: center; padding: 20px; } .app { height: 90vh; max-height: 800px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); } }
 
-    .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; background: var(--bg); overflow-y: auto; padding-bottom: 80px; }
+    .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; background: var(--bg); overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 80px; }
     .screen.active { display: flex; }
+    .brightness-overlay { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
 
     /* Welcome Screen */
     .welcome-screen { justify-content: center; align-items: center; background: linear-gradient(180deg, #B5EAD7 0%, #DDEFF0 50%, var(--bg) 100%); padding: 40px 30px; text-align: center; }
@@ -88,7 +89,7 @@
     /* Dashboard */
     .dashboard { padding: 0; }
     .dash-header { position: relative; background: linear-gradient(135deg, var(--primary) 0%, var(--lavender) 100%); padding: 30px 20px 40px; border-radius: 0 0 30px 30px; }
-    .settings-gear-btn { position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.35); border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .settings-gear-btn { position: absolute; top: 20px; left: 20px; z-index: 5; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.35); border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .settings-gear-btn:hover { background: rgba(255,255,255,0.55); }
     .dash-greeting { color: var(--text); opacity: 0.75; font-size: 16px; }
     .dash-name { color: var(--text); font-size: 28px; font-weight: 700; margin-top: 5px; }
@@ -240,17 +241,17 @@
         <div class="play-icon"></div>
       </div>
       <h1 class="welcome-title">SKIPAPP</h1>
-      <p class="welcome-subtitle">מעגל החיסכון החכם 💚<br>דלגו על הוצאות קטנות ביחד עם המעגל שלכם, ותגשימו יעדים משותפים!</p>
-      <button class="welcome-btn" onclick="goTo('terms-screen')">בואו נתחיל! 🚀</button>
-      <a href="#" class="welcome-login-link" onclick="goTo('login-screen');return false;">יש לי כבר חשבון</a>
+      <p class="welcome-subtitle" data-i18n-html="welcome_subtitle_html">מעגל החיסכון החכם 💚<br>דלגו על הוצאות קטנות ביחד עם המעגל שלכם, ותגשימו יעדים משותפים!</p>
+      <button class="welcome-btn" data-i18n="welcome_btn" onclick="goTo('terms-screen')">בואו נתחיל! 🚀</button>
+      <a href="#" class="welcome-login-link" data-i18n="welcome_login_link" onclick="goTo('login-screen');return false;">יש לי כבר חשבון</a>
     </div>
 
     <!-- Terms Screen -->
     <div class="screen terms-screen" id="terms-screen">
       <div class="terms-header">
-        <h2 class="terms-title">📜 תנאי שימוש</h2>
+        <h2 class="terms-title" data-i18n="terms_title">📜 תנאי שימוש</h2>
       </div>
-      <div class="terms-content">
+      <div class="terms-content" data-i18n-html="terms_content_html">
         <h3>ברוכים הבאים ל-SKIPAPP!</h3>
         <p>האפליקציה עוזרת לך ולמעגל החברים או המשפחה שלך לחסוך יחד, ולהגשים יעדי חיסכון אישיים.</p>
 
@@ -271,99 +272,99 @@
       </div>
       <div class="terms-agree-box">
         <input type="checkbox" id="terms-agree" class="terms-checkbox" onchange="toggleAccept()">
-        <label for="terms-agree" class="terms-label">קראתי ואני מסכים/ה לתנאי השימוש</label>
+        <label for="terms-agree" class="terms-label" data-i18n="terms_agree_label">קראתי ואני מסכים/ה לתנאי השימוש</label>
       </div>
-      <button class="btn-accept" id="btn-accept" onclick="acceptTerms()">המשך להרשמה</button>
+      <button class="btn-accept" id="btn-accept" data-i18n="btn_accept" onclick="acceptTerms()">המשך להרשמה</button>
     </div>
 
     <!-- Register Screen -->
     <div class="screen register-screen" id="register-screen">
       <div class="register-header">
-        <h2 class="register-title">📝 הרשמה</h2>
-        <p class="register-subtitle">ספר/י לנו קצת על עצמך</p>
+        <h2 class="register-title" data-i18n="register_title">📝 הרשמה</h2>
+        <p class="register-subtitle" data-i18n="register_subtitle">ספר/י לנו קצת על עצמך</p>
       </div>
       <form id="register-form" onsubmit="return submitRegister(event)">
         <div class="form-group">
-          <label class="form-label">שם מלא</label>
-          <input type="text" class="form-input" id="reg-name" required placeholder="הכנס/י את שמך">
+          <label class="form-label" data-i18n="label_name">שם מלא</label>
+          <input type="text" class="form-input" id="reg-name" required data-i18n-placeholder="placeholder_name" placeholder="הכנס/י את שמך">
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">גיל</label>
-            <input type="number" class="form-input" id="reg-age" required min="8" max="120" placeholder="גיל">
+            <label class="form-label" data-i18n="label_age">גיל</label>
+            <input type="number" class="form-input" id="reg-age" required min="8" max="120" data-i18n-placeholder="label_age" placeholder="גיל">
           </div>
           <div class="form-group">
-            <label class="form-label">מין</label>
+            <label class="form-label" data-i18n="label_gender">מין</label>
             <select class="form-select" id="reg-gender" required>
-              <option value="">בחר/י</option>
-              <option value="male">זכר</option>
-              <option value="female">נקבה</option>
-              <option value="other">אחר</option>
+              <option value="" data-i18n="gender_choose">בחר/י</option>
+              <option value="male" data-i18n="gender_male">זכר</option>
+              <option value="female" data-i18n="gender_female">נקבה</option>
+              <option value="other" data-i18n="gender_other">אחר</option>
             </select>
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">אימייל</label>
+          <label class="form-label" data-i18n="label_email">אימייל</label>
           <input type="email" class="form-input" id="reg-email" required placeholder="you@example.com">
         </div>
         <div class="form-group">
-          <label class="form-label">סיסמה</label>
-          <input type="password" class="form-input" id="reg-password" required minlength="6" placeholder="לפחות 6 תווים">
+          <label class="form-label" data-i18n="label_password">סיסמה</label>
+          <input type="password" class="form-input" id="reg-password" required minlength="6" data-i18n-placeholder="placeholder_password" placeholder="לפחות 6 תווים">
         </div>
         <div class="form-group">
-          <label class="form-label">שפה מועדפת</label>
-          <select class="form-select" id="reg-language">
-            <option value="he">עברית</option>
-            <option value="en">English</option>
+          <label class="form-label" data-i18n="label_language">שפה מועדפת</label>
+          <select class="form-select" id="reg-language" onchange="applyLanguage(this.value)">
+            <option value="he" data-i18n="lang_he">עברית</option>
+            <option value="en" data-i18n="lang_en">English</option>
           </select>
         </div>
-        <button type="submit" class="btn-register">התחל לחסוך! 💰</button>
+        <button type="submit" class="btn-register" data-i18n="btn_start_saving">התחל לחסוך! 💰</button>
       </form>
-      <p class="auth-switch-link">יש לך כבר חשבון? <a href="#" onclick="goTo('login-screen');return false;">כניסה כאן</a></p>
+      <p class="auth-switch-link"><span data-i18n="have_account">יש לך כבר חשבון?</span> <a href="#" data-i18n="login_here" onclick="goTo('login-screen');return false;">כניסה כאן</a></p>
     </div>
 
     <!-- Login Screen -->
     <div class="screen register-screen" id="login-screen">
       <div class="register-header">
-        <h2 class="register-title">🔑 כניסה</h2>
-        <p class="register-subtitle">התחבר/י לחשבון הקיים שלך</p>
+        <h2 class="register-title" data-i18n="login_title">🔑 כניסה</h2>
+        <p class="register-subtitle" data-i18n="login_subtitle">התחבר/י לחשבון הקיים שלך</p>
       </div>
       <form id="login-form" onsubmit="return submitLogin(event)">
         <div class="form-group">
-          <label class="form-label">אימייל</label>
+          <label class="form-label" data-i18n="label_email">אימייל</label>
           <input type="email" class="form-input" id="login-email" required placeholder="you@example.com">
         </div>
         <div class="form-group">
-          <label class="form-label">סיסמה</label>
-          <input type="password" class="form-input" id="login-password" required placeholder="הסיסמה שלך">
+          <label class="form-label" data-i18n="label_password">סיסמה</label>
+          <input type="password" class="form-input" id="login-password" required data-i18n-placeholder="placeholder_password_login" placeholder="הסיסמה שלך">
         </div>
-        <button type="submit" class="btn-register">כניסה 🔓</button>
+        <button type="submit" class="btn-register" data-i18n="btn_login">כניסה 🔓</button>
       </form>
-      <p class="auth-switch-link">אין לך חשבון? <a href="#" onclick="goTo('terms-screen');return false;">הירשם/י כאן</a></p>
+      <p class="auth-switch-link"><span data-i18n="no_account">אין לך חשבון?</span> <a href="#" data-i18n="register_here" onclick="goTo('terms-screen');return false;">הירשם/י כאן</a></p>
     </div>
 
     <!-- Dashboard -->
     <div class="screen dashboard" id="dashboard">
       <div class="dash-header">
-        <button class="settings-gear-btn" onclick="goTo('settings-screen')" title="הגדרות חשבון">⚙️</button>
-        <p class="dash-greeting">שלום,</p>
+        <button class="settings-gear-btn" onclick="goTo('settings-screen')" data-i18n-title="settings_title" title="הגדרות חשבון">⚙️</button>
+        <p class="dash-greeting" data-i18n="greeting">שלום,</p>
         <h2 class="dash-name" id="user-name">משתמש</h2>
       </div>
       <div class="dash-stats">
         <div class="stat-card">
           <div class="stat-icon">🎯</div>
           <div class="stat-value" id="stat-skips">0</div>
-          <div class="stat-label">דילוגים</div>
+          <div class="stat-label" data-i18n="stat_skips">דילוגים</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon">🔥</div>
           <div class="stat-value" id="stat-streak">0</div>
-          <div class="stat-label">רצף ימים</div>
+          <div class="stat-label" data-i18n="stat_streak">רצף ימים</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon">💰</div>
           <div class="stat-value" id="stat-saved">₪0</div>
-          <div class="stat-label">נחסך</div>
+          <div class="stat-label" data-i18n="stat_saved">נחסך</div>
         </div>
       </div>
 
@@ -377,43 +378,43 @@
         <button class="action-btn" onclick="goTo('skip-form')">
           <div class="action-icon skip">✓</div>
           <div class="action-text">
-            <div class="action-title">הוסף דילוג</div>
-            <div class="action-desc">תעד קנייה שדילגת עליה</div>
+            <div class="action-title" data-i18n="action_add_skip_title">הוסף דילוג</div>
+            <div class="action-desc" data-i18n="action_add_skip_desc">תעד קנייה שדילגת עליה</div>
           </div>
         </button>
         <button class="action-btn" onclick="goTo('purchase-form')">
           <div class="action-icon purchase">🛒</div>
           <div class="action-text">
-            <div class="action-title">הוסף קנייה</div>
-            <div class="action-desc">תעד קנייה שביצעת</div>
+            <div class="action-title" data-i18n="action_add_purchase_title">הוסף קנייה</div>
+            <div class="action-desc" data-i18n="action_add_purchase_desc">תעד קנייה שביצעת</div>
           </div>
         </button>
         <button class="action-btn" onclick="goTo('circle-screen')">
           <div class="action-icon" style="background: linear-gradient(135deg, #C7CEEA 0%, #9FA8D9 100%);">👥</div>
           <div class="action-text">
-            <div class="action-title">המעגל שלי</div>
-            <div class="action-desc">ראו מה החברים דילגו וחסכו</div>
+            <div class="action-title" data-i18n="action_circle_title">המעגל שלי</div>
+            <div class="action-desc" data-i18n="action_circle_desc">ראו מה החברים דילגו וחסכו</div>
           </div>
         </button>
         <button class="action-btn" onclick="goTo('goal-screen')">
           <div class="action-icon" style="background: linear-gradient(135deg, #FFB7B2 0%, #FF9B9B 100%);">🎯</div>
           <div class="action-text">
-            <div class="action-title">יעד החיסכון שלי</div>
-            <div class="action-desc">הגדר/י למה את/ה חוסכ/ת</div>
+            <div class="action-title" data-i18n="action_goal_title">יעד החיסכון שלי</div>
+            <div class="action-desc" data-i18n="action_goal_desc">הגדר/י למה את/ה חוסכ/ת</div>
           </div>
         </button>
         <button class="action-btn" onclick="goTo('history-screen')">
           <div class="action-icon" style="background: linear-gradient(135deg, #B8A9D4 0%, #9B89C4 100%);">📊</div>
           <div class="action-text">
-            <div class="action-title">היסטוריה</div>
-            <div class="action-desc">צפה בכל הפעילות שלך</div>
+            <div class="action-title" data-i18n="action_history_title">היסטוריה</div>
+            <div class="action-desc" data-i18n="action_history_desc">צפה בכל הפעילות שלך</div>
           </div>
         </button>
         <button class="action-btn" onclick="goTo('investment-screen')">
           <div class="action-icon" style="background: linear-gradient(135deg, #FFD9A0 0%, #FFCC80 100%);">💡</div>
           <div class="action-text">
-            <div class="action-title">אפיקי השקעה</div>
-            <div class="action-desc">למד איך להשקיע את החיסכון</div>
+            <div class="action-title" data-i18n="action_invest_title">אפיקי השקעה</div>
+            <div class="action-desc" data-i18n="action_invest_desc">למד איך להשקיע את החיסכון</div>
           </div>
         </button>
       </div>
@@ -423,65 +424,65 @@
     <div class="screen form-screen" id="skip-form">
       <div class="form-header">
         <button class="back-btn" onclick="goTo('dashboard')">→</button>
-        <h2 class="form-title">הוסף דילוג</h2>
+        <h2 class="form-title" data-i18n="skip_form_title">הוסף דילוג</h2>
       </div>
-      <p style="color: var(--text-light); margin-bottom: 20px; font-size: 14px;">על מה דילגת היום?</p>
+      <p style="color: var(--text-light); margin-bottom: 20px; font-size: 14px;" data-i18n="skip_form_question">על מה דילגת היום?</p>
       <div class="category-grid" id="skip-categories">
-        <div class="category-btn" onclick="selectCategory(this, 'אוכל')"><div class="category-icon">🍕</div><div class="category-name">אוכל</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'שתייה')"><div class="category-icon">☕</div><div class="category-name">שתייה</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'בילויים')"><div class="category-icon">🎬</div><div class="category-name">בילויים</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'קניות')"><div class="category-icon">🛍️</div><div class="category-name">קניות</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'תחבורה')"><div class="category-icon">🚗</div><div class="category-name">תחבורה</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'אחר')"><div class="category-icon">📦</div><div class="category-name">אחר</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'food')"><div class="category-icon">🍕</div><div class="category-name" data-i18n="cat_food">אוכל</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'drink')"><div class="category-icon">☕</div><div class="category-name" data-i18n="cat_drink">שתייה</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'fun')"><div class="category-icon">🎬</div><div class="category-name" data-i18n="cat_fun">בילויים</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'shopping')"><div class="category-icon">🛍️</div><div class="category-name" data-i18n="cat_shopping">קניות</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'transport')"><div class="category-icon">🚗</div><div class="category-name" data-i18n="cat_transport">תחבורה</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'other')"><div class="category-icon">📦</div><div class="category-name" data-i18n="cat_other">אחר</div></div>
       </div>
       <div class="form-group">
-        <label class="form-label">תיאור קצר</label>
-        <input type="text" class="form-input" id="skip-desc" placeholder="לדוגמה: קפה בבוקר">
+        <label class="form-label" data-i18n="label_desc">תיאור קצר</label>
+        <input type="text" class="form-input" id="skip-desc" data-i18n-placeholder="placeholder_skip_desc" placeholder="לדוגמה: קפה בבוקר">
       </div>
       <div class="amount-input-wrap">
         <span class="currency-symbol">₪</span>
         <input type="number" class="amount-input" id="skip-amount" placeholder="0" min="1">
       </div>
-      <p style="color: var(--text-light); margin-bottom: 12px; font-size: 12px;">אם את/ה במעגל, הדילוג הזה ישותף עם חברי המעגל שלך 💚</p>
-      <button class="btn-save" onclick="saveSkip()">שמור דילוג ✓</button>
+      <p style="color: var(--text-light); margin-bottom: 12px; font-size: 12px;" data-i18n="skip_share_note">אם את/ה במעגל, הדילוג הזה ישותף עם חברי המעגל שלך 💚</p>
+      <button class="btn-save" data-i18n="btn_save_skip" onclick="saveSkip()">שמור דילוג ✓</button>
     </div>
 
     <!-- Purchase Form -->
     <div class="screen form-screen" id="purchase-form">
       <div class="form-header">
         <button class="back-btn" onclick="goTo('dashboard')">→</button>
-        <h2 class="form-title">הוסף קנייה</h2>
+        <h2 class="form-title" data-i18n="purchase_form_title">הוסף קנייה</h2>
       </div>
-      <p style="color: var(--text-light); margin-bottom: 20px; font-size: 14px;">מה קנית היום?</p>
+      <p style="color: var(--text-light); margin-bottom: 20px; font-size: 14px;" data-i18n="purchase_form_question">מה קנית היום?</p>
       <div class="category-grid" id="purchase-categories">
-        <div class="category-btn" onclick="selectCategory(this, 'אוכל')"><div class="category-icon">🍕</div><div class="category-name">אוכל</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'שתייה')"><div class="category-icon">☕</div><div class="category-name">שתייה</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'בילויים')"><div class="category-icon">🎬</div><div class="category-name">בילויים</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'קניות')"><div class="category-icon">🛍️</div><div class="category-name">קניות</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'תחבורה')"><div class="category-icon">🚗</div><div class="category-name">תחבורה</div></div>
-        <div class="category-btn" onclick="selectCategory(this, 'אחר')"><div class="category-icon">📦</div><div class="category-name">אחר</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'food')"><div class="category-icon">🍕</div><div class="category-name" data-i18n="cat_food">אוכל</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'drink')"><div class="category-icon">☕</div><div class="category-name" data-i18n="cat_drink">שתייה</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'fun')"><div class="category-icon">🎬</div><div class="category-name" data-i18n="cat_fun">בילויים</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'shopping')"><div class="category-icon">🛍️</div><div class="category-name" data-i18n="cat_shopping">קניות</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'transport')"><div class="category-icon">🚗</div><div class="category-name" data-i18n="cat_transport">תחבורה</div></div>
+        <div class="category-btn" onclick="selectCategory(this, 'other')"><div class="category-icon">📦</div><div class="category-name" data-i18n="cat_other">אחר</div></div>
       </div>
       <div class="form-group">
-        <label class="form-label">תיאור קצר</label>
-        <input type="text" class="form-input" id="purchase-desc" placeholder="לדוגמה: ארוחת צהריים">
+        <label class="form-label" data-i18n="label_desc">תיאור קצר</label>
+        <input type="text" class="form-input" id="purchase-desc" data-i18n-placeholder="placeholder_purchase_desc" placeholder="לדוגמה: ארוחת צהריים">
       </div>
       <div class="amount-input-wrap">
         <span class="currency-symbol">₪</span>
         <input type="number" class="amount-input" id="purchase-amount" placeholder="0" min="1">
       </div>
-      <button class="btn-save" style="background: linear-gradient(135deg, var(--accent) 0%, #FF9B9B 100%);" onclick="savePurchase()">שמור קנייה 🛒</button>
+      <button class="btn-save" style="background: linear-gradient(135deg, var(--accent) 0%, #FF9B9B 100%);" data-i18n="btn_save_purchase" onclick="savePurchase()">שמור קנייה 🛒</button>
     </div>
 
     <!-- History Screen -->
     <div class="screen history-screen" id="history-screen">
       <div class="history-header">
         <button class="back-btn" onclick="goTo('dashboard')">→</button>
-        <h2 class="history-title">היסטוריה</h2>
+        <h2 class="history-title" data-i18n="history_title">היסטוריה</h2>
       </div>
       <div class="history-list" id="history-list">
         <div class="history-empty">
-          <p>עדיין אין פעילות</p>
-          <p style="font-size: 13px; margin-top: 8px;">התחל לתעד דילוגים וקניות!</p>
+          <p data-i18n="history_empty_title">עדיין אין פעילות</p>
+          <p style="font-size: 13px; margin-top: 8px;" data-i18n="history_empty_sub">התחל לתעד דילוגים וקניות!</p>
         </div>
       </div>
     </div>
@@ -490,41 +491,41 @@
     <div class="screen investment-screen" id="investment-screen">
       <div class="form-header">
         <button class="back-btn" onclick="goTo('dashboard')">→</button>
-        <h2 class="form-title">אפיקי השקעה</h2>
+        <h2 class="form-title" data-i18n="invest_title">אפיקי השקעה</h2>
       </div>
       <div class="invest-tabs">
-        <div class="invest-tab active" onclick="showInvestTab('adult')">למבוגרים (18+)</div>
-        <div class="invest-tab" onclick="showInvestTab('youth')">לנוער</div>
+        <div class="invest-tab active" data-i18n="invest_tab_adult" onclick="showInvestTab('adult')">למבוגרים (18+)</div>
+        <div class="invest-tab" data-i18n="invest_tab_youth" onclick="showInvestTab('youth')">לנוער</div>
       </div>
       <div id="invest-adult">
         <div class="invest-card">
           <div class="invest-card-header">
             <div class="invest-card-icon">🏦</div>
-            <div class="invest-card-title">Pillow - חיסכון חכם</div>
+            <div class="invest-card-title" data-i18n="invest_pillow_title">Pillow - חיסכון חכם</div>
           </div>
-          <div class="invest-card-desc">אפליקציה לחיסכון אוטומטי עם תשואה יומית. מינימום 1₪.</div>
+          <div class="invest-card-desc" data-i18n="invest_pillow_desc">אפליקציה לחיסכון אוטומטי עם תשואה יומית. מינימום 1₪.</div>
           <div class="invest-card-footer">
-            <a href="https://www.pillow.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
+            <a href="https://www.pillow.co.il" target="_blank" class="invest-link" data-i18n="invest_link">🌐 לאתר</a>
           </div>
         </div>
         <div class="invest-card">
           <div class="invest-card-header">
             <div class="invest-card-icon">📈</div>
-            <div class="invest-card-title">eToro - מסחר בשוק ההון</div>
+            <div class="invest-card-title" data-i18n="invest_etoro_title">eToro - מסחר בשוק ההון</div>
           </div>
-          <div class="invest-card-desc">פלטפורמה בינלאומית למסחר במניות, קריפטו ועוד. מינימום $50.</div>
+          <div class="invest-card-desc" data-i18n="invest_etoro_desc">פלטפורמה בינלאומית למסחר במניות, קריפטו ועוד. מינימום $50.</div>
           <div class="invest-card-footer">
-            <a href="https://www.etoro.com" target="_blank" class="invest-link">🌐 לאתר</a>
+            <a href="https://www.etoro.com" target="_blank" class="invest-link" data-i18n="invest_link">🌐 לאתר</a>
           </div>
         </div>
         <div class="invest-card">
           <div class="invest-card-header">
             <div class="invest-card-icon">💼</div>
-            <div class="invest-card-title">מיטב דש - קרנות נאמנות</div>
+            <div class="invest-card-title" data-i18n="invest_meitav_title">מיטב דש - קרנות נאמנות</div>
           </div>
-          <div class="invest-card-desc">בית השקעות מוביל בישראל עם מגוון קרנות נאמנות.</div>
+          <div class="invest-card-desc" data-i18n="invest_meitav_desc">בית השקעות מוביל בישראל עם מגוון קרנות נאמנות.</div>
           <div class="invest-card-footer">
-            <a href="https://www.meitav.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
+            <a href="https://www.meitav.co.il" target="_blank" class="invest-link" data-i18n="invest_link">🌐 לאתר</a>
             <a href="tel:*6569" class="invest-phone">📞 *6569</a>
           </div>
         </div>
@@ -533,9 +534,9 @@
         <div class="invest-card">
           <div class="invest-card-header">
             <div class="invest-card-icon">👶</div>
-            <div class="invest-card-title">חיסכון לכל ילד</div>
+            <div class="invest-card-title" data-i18n="invest_kidsavings_title">חיסכון לכל ילד</div>
           </div>
-          <div class="invest-card-desc">תוכנית ממשלתית לחיסכון ארוך טווח לילדים. ניתן לבחור מסלול השקעה.</div>
+          <div class="invest-card-desc" data-i18n="invest_kidsavings_desc">תוכנית ממשלתית לחיסכון ארוך טווח לילדים. ניתן לבחור מסלול השקעה.</div>
           <div class="invest-card-footer">
             <a href="tel:*6050" class="invest-phone">📞 *6050</a>
           </div>
@@ -543,22 +544,22 @@
         <div class="invest-card">
           <div class="invest-card-header">
             <div class="invest-card-icon">🏧</div>
-            <div class="invest-card-title">בנק הפועלים - נוער</div>
+            <div class="invest-card-title" data-i18n="invest_hapoalim_title">בנק הפועלים - נוער</div>
           </div>
-          <div class="invest-card-desc">חשבון חיסכון לנוער עם הטבות מיוחדות.</div>
+          <div class="invest-card-desc" data-i18n="invest_hapoalim_desc">חשבון חיסכון לנוער עם הטבות מיוחדות.</div>
           <div class="invest-card-footer">
-            <a href="https://www.bankhapoalim.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
+            <a href="https://www.bankhapoalim.co.il" target="_blank" class="invest-link" data-i18n="invest_link">🌐 לאתר</a>
             <a href="tel:*2407" class="invest-phone">📞 *2407</a>
           </div>
         </div>
         <div class="invest-card">
           <div class="invest-card-header">
             <div class="invest-card-icon">🏧</div>
-            <div class="invest-card-title">בנק לאומי - נוער</div>
+            <div class="invest-card-title" data-i18n="invest_leumi_title">בנק לאומי - נוער</div>
           </div>
-          <div class="invest-card-desc">תוכניות חיסכון ייעודיות לגילאי 12-18.</div>
+          <div class="invest-card-desc" data-i18n="invest_leumi_desc">תוכניות חיסכון ייעודיות לגילאי 12-18.</div>
           <div class="invest-card-footer">
-            <a href="https://www.leumi.co.il" target="_blank" class="invest-link">🌐 לאתר</a>
+            <a href="https://www.leumi.co.il" target="_blank" class="invest-link" data-i18n="invest_link">🌐 לאתר</a>
             <a href="tel:*5522" class="invest-phone">📞 *5522</a>
           </div>
         </div>
@@ -569,26 +570,26 @@
     <div class="screen circle-screen" id="circle-screen">
       <div class="form-header">
         <button class="back-btn" onclick="goTo('dashboard')">→</button>
-        <h2 class="form-title">המעגל שלי</h2>
+        <h2 class="form-title" data-i18n="circle_title">המעגל שלי</h2>
       </div>
 
       <div id="circle-no-firebase" style="display:none;">
         <div class="empty-state">
-          <p>🔧 תכונת המעגל החברתי דורשת חיבור ל-Firebase (Firestore + Auth).</p>
-          <p style="margin-top:8px;font-size:13px;">ראו את קובץ ה-FIREBASE-SETUP בפרויקט להוראות הגדרה.</p>
+          <p data-i18n="circle_no_firebase_1">🔧 תכונת המעגל החברתי דורשת חיבור ל-Firebase (Firestore + Auth).</p>
+          <p style="margin-top:8px;font-size:13px;" data-i18n="circle_no_firebase_2">ראו את קובץ ה-FIREBASE-SETUP בפרויקט להוראות הגדרה.</p>
         </div>
       </div>
 
       <div id="circle-setup" style="display:none;">
         <div class="circle-option-card">
-          <h3>✨ צור מעגל חדש</h3>
-          <input class="form-input" id="new-circle-name" placeholder="שם המעגל (למשל: החברים מהעבודה)">
-          <button class="btn-save" onclick="createCircle()">צור מעגל 🎉</button>
+          <h3 data-i18n="circle_create_title">✨ צור מעגל חדש</h3>
+          <input class="form-input" id="new-circle-name" data-i18n-placeholder="placeholder_circle_name" placeholder="שם המעגל (למשל: החברים מהעבודה)">
+          <button class="btn-save" data-i18n="btn_create_circle" onclick="createCircle()">צור מעגל 🎉</button>
         </div>
         <div class="circle-option-card">
-          <h3>🤝 הצטרף למעגל קיים</h3>
-          <input class="form-input" id="join-circle-code" placeholder="קוד הזמנה" style="text-transform:uppercase;">
-          <button class="btn-save" style="background: linear-gradient(135deg, var(--lavender) 0%, var(--lavender-dark) 100%); color: var(--text);" onclick="joinCircleWithCode()">הצטרף למעגל 🤝</button>
+          <h3 data-i18n="circle_join_title">🤝 הצטרף למעגל קיים</h3>
+          <input class="form-input" id="join-circle-code" data-i18n-placeholder="placeholder_invite_code" placeholder="קוד הזמנה" style="text-transform:uppercase;">
+          <button class="btn-save" style="background: linear-gradient(135deg, var(--lavender) 0%, var(--lavender-dark) 100%); color: var(--text);" data-i18n="btn_join_circle" onclick="joinCircleWithCode()">הצטרף למעגל 🤝</button>
         </div>
       </div>
 
@@ -596,22 +597,22 @@
         <div class="circle-info-card">
           <div class="circle-name" id="circle-name-display"></div>
           <div class="circle-invite-row">
-            <span>קוד הזמנה: <b id="circle-invite-code"></b></span>
-            <button class="invite-share-btn" onclick="shareInvite()">📤 שתף</button>
+            <span><span data-i18n="invite_code_label">קוד הזמנה:</span> <b id="circle-invite-code"></b></span>
+            <button class="invite-share-btn" data-i18n="btn_share" onclick="shareInvite()">📤 שתף</button>
           </div>
           <div class="invite-methods">
-            <button class="invite-method-btn" onclick="inviteViaWhatsappGeneric()">💬 WhatsApp</button>
-            <button class="invite-method-btn" onclick="inviteViaSmsGeneric()">✉️ SMS</button>
-            <button class="invite-method-btn" id="contact-picker-btn" style="display:none;" onclick="inviteFromContacts()">📇 מאנשי קשר</button>
+            <button class="invite-method-btn" data-i18n="btn_whatsapp" onclick="inviteViaWhatsappGeneric()">💬 WhatsApp</button>
+            <button class="invite-method-btn" data-i18n="btn_sms" onclick="inviteViaSmsGeneric()">✉️ SMS</button>
+            <button class="invite-method-btn" id="contact-picker-btn" style="display:none;" data-i18n="btn_contacts" onclick="inviteFromContacts()">📇 מאנשי קשר</button>
           </div>
           <div class="picked-contacts" id="picked-contacts" style="display:none;"></div>
-          <button class="leave-circle-btn" onclick="leaveCircle()">עזוב מעגל</button>
+          <button class="leave-circle-btn" data-i18n="btn_leave_circle" onclick="leaveCircle()">עזוב מעגל</button>
         </div>
 
-        <h3 class="section-subtitle">👥 חברי המעגל</h3>
+        <h3 class="section-subtitle" data-i18n="section_members">👥 חברי המעגל</h3>
         <div class="member-list" id="member-list"></div>
 
-        <h3 class="section-subtitle">💚 מה החברים דילגו</h3>
+        <h3 class="section-subtitle" data-i18n="section_feed">💚 מה החברים דילגו</h3>
         <div class="feed-list" id="feed-list"></div>
       </div>
     </div>
@@ -620,79 +621,79 @@
     <div class="screen form-screen goal-screen" id="goal-screen">
       <div class="form-header">
         <button class="back-btn" onclick="goTo('dashboard')">→</button>
-        <h2 class="form-title">יעד החיסכון שלי</h2>
+        <h2 class="form-title" data-i18n="goal_title">יעד החיסכון שלי</h2>
       </div>
       <div class="goal-card" id="goal-progress-card" style="display:none;"></div>
       <div class="form-group">
-        <label class="form-label">מה היעד שלך?</label>
-        <input class="form-input" id="goal-title" placeholder="למשל: טיול לאילת">
+        <label class="form-label" data-i18n="label_goal_title">מה היעד שלך?</label>
+        <input class="form-input" id="goal-title" data-i18n-placeholder="placeholder_goal_title" placeholder="למשל: טיול לאילת">
       </div>
       <div class="form-group">
-        <label class="form-label">כמה תרצה/י לחסוך?</label>
+        <label class="form-label" data-i18n="label_goal_target">כמה תרצה/י לחסוך?</label>
         <div class="amount-input-wrap">
           <span class="currency-symbol">₪</span>
           <input type="number" class="amount-input" id="goal-target" placeholder="0" min="1">
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">מה תעשה/י עם זה כשתגיע/י ליעד?</label>
-        <textarea class="form-input" id="goal-whatfor" rows="3" placeholder="ספר/י לנו..."></textarea>
+        <label class="form-label" data-i18n="label_goal_whatfor">מה תעשה/י עם זה כשתגיע/י ליעד?</label>
+        <textarea class="form-input" id="goal-whatfor" rows="3" data-i18n-placeholder="placeholder_goal_whatfor" placeholder="ספר/י לנו..."></textarea>
       </div>
-      <button class="btn-save" onclick="saveGoal()">שמור יעד 🎯</button>
+      <button class="btn-save" data-i18n="btn_save_goal" onclick="saveGoal()">שמור יעד 🎯</button>
     </div>
 
     <!-- Settings Screen -->
     <div class="screen form-screen settings-screen" id="settings-screen">
       <div class="form-header">
         <button class="back-btn" onclick="goTo('dashboard')">→</button>
-        <h2 class="form-title">הגדרות חשבון</h2>
+        <h2 class="form-title" data-i18n="settings_title">הגדרות חשבון</h2>
       </div>
 
       <div class="settings-section">
-        <div class="settings-section-title">👤 פרופיל</div>
+        <div class="settings-section-title" data-i18n="section_profile">👤 פרופיל</div>
         <div class="form-group">
-          <label class="form-label">שם מלא</label>
-          <input type="text" class="form-input" id="settings-name" placeholder="השם שלך">
+          <label class="form-label" data-i18n="label_name">שם מלא</label>
+          <input type="text" class="form-input" id="settings-name" data-i18n-placeholder="settings_name_placeholder" placeholder="השם שלך">
         </div>
         <div class="form-group">
-          <label class="form-label">גיל</label>
-          <input type="number" class="form-input" id="settings-age" min="8" max="120" placeholder="גיל">
+          <label class="form-label" data-i18n="label_age">גיל</label>
+          <input type="number" class="form-input" id="settings-age" min="8" max="120" data-i18n-placeholder="label_age" placeholder="גיל">
         </div>
       </div>
 
       <div class="settings-section">
-        <div class="settings-section-title">🎨 העדפות</div>
+        <div class="settings-section-title" data-i18n="section_preferences">🎨 העדפות</div>
         <div class="form-group">
-          <label class="form-label">שפה</label>
-          <select class="form-select" id="settings-language">
-            <option value="he">עברית</option>
-            <option value="en">English</option>
+          <label class="form-label" data-i18n="label_language">שפה</label>
+          <select class="form-select" id="settings-language" onchange="applyLanguage(this.value)">
+            <option value="he" data-i18n="lang_he">עברית</option>
+            <option value="en" data-i18n="lang_en">English</option>
           </select>
         </div>
         <div class="brightness-row">
-          <label>בהירות מסך: <span id="brightness-value">100%</span></label>
+          <label><span data-i18n="brightness_label">בהירות מסך:</span> <span id="brightness-value">100%</span></label>
           <input type="range" class="brightness-slider" id="settings-brightness" min="60" max="130" step="5" value="100" oninput="previewBrightness(this.value)">
         </div>
       </div>
 
-      <button class="btn-save" onclick="saveAccountSettings()">שמור שינויים ✓</button>
+      <button class="btn-save" data-i18n="btn_save_settings" onclick="saveAccountSettings()">שמור שינויים ✓</button>
 
       <div class="settings-section" style="margin-top:10px;">
-        <div class="settings-section-title">ℹ️ מידע ושיתוף</div>
+        <div class="settings-section-title" data-i18n="section_info_share">ℹ️ מידע ושיתוף</div>
         <button class="settings-row-btn" onclick="goTo('settings-terms-screen')">
-          <span>📜 הוראות שימוש ותנאים</span>
+          <span data-i18n="settings_terms_row">📜 הוראות שימוש ותנאים</span>
           <span class="arrow">‹</span>
         </button>
         <button class="settings-row-btn" onclick="goTo('circle-screen')">
-          <span>👥 הזמנת חברים למעגל</span>
+          <span data-i18n="settings_invite_row">👥 הזמנת חברים למעגל</span>
           <span class="arrow">‹</span>
         </button>
       </div>
 
       <div class="settings-section">
-        <div class="settings-section-title">🔐 חשבון</div>
+        <div class="settings-section-title" data-i18n="section_account">🔐 חשבון</div>
         <button class="settings-row-btn danger" onclick="resetApp()">
-          <span>🚪 התנתק והירשם מחדש</span>
+          <span data-i18n="btn_logout">🚪 התנתק והירשם מחדש</span>
         </button>
       </div>
     </div>
@@ -701,9 +702,9 @@
     <div class="screen terms-screen" id="settings-terms-screen">
       <div class="form-header" style="margin-bottom:20px;">
         <button class="back-btn" onclick="goTo('settings-screen')">→</button>
-        <h2 class="form-title">הוראות שימוש</h2>
+        <h2 class="form-title" data-i18n="settings_terms_title">הוראות שימוש</h2>
       </div>
-      <div class="terms-content" style="max-height:none;">
+      <div class="terms-content" style="max-height:none;" data-i18n-html="terms_content_html">
         <h3>ברוכים הבאים ל-SKIPAPP!</h3>
         <p>האפליקציה עוזרת לך ולמעגל החברים או המשפחה שלך לחסוך יחד, ולהגשים יעדי חיסכון אישיים.</p>
 
@@ -724,23 +725,26 @@
       </div>
     </div>
 
+    <!-- Brightness overlay -->
+    <div class="brightness-overlay" id="brightness-overlay"></div>
+
     <!-- Bottom Navigation -->
     <nav class="bottom-nav" id="bottom-nav" style="display: none;">
       <button class="nav-item active" onclick="goTo('dashboard')">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">בית</span>
+        <span class="nav-label" data-i18n="nav_home">בית</span>
       </button>
       <button class="nav-item" onclick="goTo('circle-screen')">
         <span class="nav-icon">👥</span>
-        <span class="nav-label">מעגל</span>
+        <span class="nav-label" data-i18n="nav_circle">מעגל</span>
       </button>
       <button class="nav-item" onclick="goTo('history-screen')">
         <span class="nav-icon">📊</span>
-        <span class="nav-label">היסטוריה</span>
+        <span class="nav-label" data-i18n="nav_history">היסטוריה</span>
       </button>
       <button class="nav-item" onclick="goTo('investment-screen')">
         <span class="nav-icon">💡</span>
-        <span class="nav-label">השקעות</span>
+        <span class="nav-label" data-i18n="nav_invest">השקעות</span>
       </button>
     </nav>
 
@@ -851,6 +855,436 @@
       return !BLOCKED_WORDS.some(w => normalized.includes(w));
     }
 
+    // ========== I18N ==========
+    let currentLang = 'he';
+    let lastMembers = [];
+
+    const translations = {
+      he: {
+        app_title: 'SKIPAPP - מעגל החיסכון החכם',
+        welcome_subtitle_html: 'מעגל החיסכון החכם 💚<br>דלגו על הוצאות קטנות ביחד עם המעגל שלכם, ותגשימו יעדים משותפים!',
+        welcome_btn: 'בואו נתחיל! 🚀',
+        welcome_login_link: 'יש לי כבר חשבון',
+        terms_title: '📜 תנאי שימוש',
+        terms_content_html: `
+          <h3>ברוכים הבאים ל-SKIPAPP!</h3>
+          <p>האפליקציה עוזרת לך ולמעגל החברים או המשפחה שלך לחסוך יחד, ולהגשים יעדי חיסכון אישיים.</p>
+          <h3>מטרת האפליקציה</h3>
+          <p>לעזור לך לפתח מודעות להוצאות קטנות ולהבין את הכוח המצטבר של חיסכון קטן לאורך זמן - ביחד עם אנשים קרובים אליך. השימוש באפליקציה הוא למטרת חיסכון וניהול הוצאות אישי בלבד.</p>
+          <h3>שיתוף במעגל</h3>
+          <p>אם תצטרפו למעגל חברתי, פרטי הדילוגים שתבחרו לתעד (קטגוריה, תיאור וסכום) יהיו גלויים לחברי המעגל שלכם בלבד - לא לציבור הרחב. כל חבר יכול לדווח על תוכן לא הולם, והוא יוסתר אוטומטית לאחר מספר דיווחים.</p>
+          <h3>איסוף נתונים</h3>
+          <p>האפליקציה אוספת נתונים לצורך תפעול המעגלים החברתיים ולצרכים אנונימיים סטטיסטיים. המידע לא משותף עם גורמים חיצוניים.</p>
+          <h3>פרטיות</h3>
+          <p>אנו מחויבים להגנה על פרטיותך. הנתונים נשמרים בצורה מאובטחת.</p>
+          <h3>שימוש אחראי</h3>
+          <p>האפליקציה מספקת כלים חינוכיים בלבד ואינה מהווה ייעוץ פיננסי מקצועי.</p>
+        `,
+        terms_agree_label: 'קראתי ואני מסכים/ה לתנאי השימוש',
+        btn_accept: 'המשך להרשמה',
+        register_title: '📝 הרשמה',
+        register_subtitle: 'ספר/י לנו קצת על עצמך',
+        label_name: 'שם מלא',
+        placeholder_name: 'הכנס/י את שמך',
+        label_age: 'גיל',
+        label_gender: 'מין',
+        gender_choose: 'בחר/י',
+        gender_male: 'זכר',
+        gender_female: 'נקבה',
+        gender_other: 'אחר',
+        label_email: 'אימייל',
+        label_password: 'סיסמה',
+        placeholder_password: 'לפחות 6 תווים',
+        placeholder_password_login: 'הסיסמה שלך',
+        label_language: 'שפה מועדפת',
+        lang_he: 'עברית',
+        lang_en: 'English',
+        btn_start_saving: 'התחל לחסוך! 💰',
+        have_account: 'יש לך כבר חשבון?',
+        login_here: 'כניסה כאן',
+        login_title: '🔑 כניסה',
+        login_subtitle: 'התחבר/י לחשבון הקיים שלך',
+        btn_login: 'כניסה 🔓',
+        no_account: 'אין לך חשבון?',
+        register_here: 'הירשם/י כאן',
+        greeting: 'שלום,',
+        stat_skips: 'דילוגים',
+        stat_streak: 'רצף ימים',
+        stat_saved: 'נחסך',
+        action_add_skip_title: 'הוסף דילוג',
+        action_add_skip_desc: 'תעד קנייה שדילגת עליה',
+        action_add_purchase_title: 'הוסף קנייה',
+        action_add_purchase_desc: 'תעד קנייה שביצעת',
+        action_circle_title: 'המעגל שלי',
+        action_circle_desc: 'ראו מה החברים דילגו וחסכו',
+        action_goal_title: 'יעד החיסכון שלי',
+        action_goal_desc: 'הגדר/י למה את/ה חוסכ/ת',
+        action_history_title: 'היסטוריה',
+        action_history_desc: 'צפה בכל הפעילות שלך',
+        action_invest_title: 'אפיקי השקעה',
+        action_invest_desc: 'למד איך להשקיע את החיסכון',
+        skip_form_title: 'הוסף דילוג',
+        skip_form_question: 'על מה דילגת היום?',
+        label_desc: 'תיאור קצר',
+        placeholder_skip_desc: 'לדוגמה: קפה בבוקר',
+        skip_share_note: 'אם את/ה במעגל, הדילוג הזה ישותף עם חברי המעגל שלך 💚',
+        btn_save_skip: 'שמור דילוג ✓',
+        purchase_form_title: 'הוסף קנייה',
+        purchase_form_question: 'מה קנית היום?',
+        placeholder_purchase_desc: 'לדוגמה: ארוחת צהריים',
+        btn_save_purchase: 'שמור קנייה 🛒',
+        cat_food: 'אוכל',
+        cat_drink: 'שתייה',
+        cat_fun: 'בילויים',
+        cat_shopping: 'קניות',
+        cat_transport: 'תחבורה',
+        cat_other: 'אחר',
+        history_title: 'היסטוריה',
+        history_empty_title: 'עדיין אין פעילות',
+        history_empty_sub: 'התחל לתעד דילוגים וקניות!',
+        invest_title: 'אפיקי השקעה',
+        invest_tab_adult: 'למבוגרים (18+)',
+        invest_tab_youth: 'לנוער',
+        invest_link: '🌐 לאתר',
+        invest_pillow_title: 'Pillow - חיסכון חכם',
+        invest_pillow_desc: 'אפליקציה לחיסכון אוטומטי עם תשואה יומית. מינימום 1₪.',
+        invest_etoro_title: 'eToro - מסחר בשוק ההון',
+        invest_etoro_desc: 'פלטפורמה בינלאומית למסחר במניות, קריפטו ועוד. מינימום $50.',
+        invest_meitav_title: 'מיטב דש - קרנות נאמנות',
+        invest_meitav_desc: 'בית השקעות מוביל בישראל עם מגוון קרנות נאמנות.',
+        invest_kidsavings_title: 'חיסכון לכל ילד',
+        invest_kidsavings_desc: 'תוכנית ממשלתית לחיסכון ארוך טווח לילדים. ניתן לבחור מסלול השקעה.',
+        invest_hapoalim_title: 'בנק הפועלים - נוער',
+        invest_hapoalim_desc: 'חשבון חיסכון לנוער עם הטבות מיוחדות.',
+        invest_leumi_title: 'בנק לאומי - נוער',
+        invest_leumi_desc: 'תוכניות חיסכון ייעודיות לגילאי 12-18.',
+        circle_title: 'המעגל שלי',
+        circle_no_firebase_1: '🔧 תכונת המעגל החברתי דורשת חיבור ל-Firebase (Firestore + Auth).',
+        circle_no_firebase_2: 'ראו את קובץ ה-FIREBASE-SETUP בפרויקט להוראות הגדרה.',
+        circle_create_title: '✨ צור מעגל חדש',
+        placeholder_circle_name: 'שם המעגל (למשל: החברים מהעבודה)',
+        btn_create_circle: 'צור מעגל 🎉',
+        circle_join_title: '🤝 הצטרף למעגל קיים',
+        placeholder_invite_code: 'קוד הזמנה',
+        btn_join_circle: 'הצטרף למעגל 🤝',
+        invite_code_label: 'קוד הזמנה:',
+        btn_share: '📤 שתף',
+        btn_whatsapp: '💬 WhatsApp',
+        btn_sms: '✉️ SMS',
+        btn_contacts: '📇 מאנשי קשר',
+        btn_leave_circle: 'עזוב מעגל',
+        section_members: '👥 חברי המעגל',
+        section_feed: '💚 מה החברים דילגו',
+        no_members: 'אין עדיין חברים במעגל',
+        no_feed: 'עדיין אין דילוגים משותפים',
+        member_default_name: 'חבר/ה',
+        report_title: 'דווח על תוכן לא הולם',
+        goal_title: 'יעד החיסכון שלי',
+        label_goal_title: 'מה היעד שלך?',
+        placeholder_goal_title: 'למשל: טיול לאילת',
+        label_goal_target: 'כמה תרצה/י לחסוך?',
+        label_goal_whatfor: 'מה תעשה/י עם זה כשתגיע/י ליעד?',
+        placeholder_goal_whatfor: 'ספר/י לנו...',
+        btn_save_goal: 'שמור יעד 🎯',
+        settings_title: 'הגדרות חשבון',
+        section_profile: '👤 פרופיל',
+        settings_name_placeholder: 'השם שלך',
+        section_preferences: '🎨 העדפות',
+        brightness_label: 'בהירות מסך:',
+        btn_save_settings: 'שמור שינויים ✓',
+        section_info_share: 'ℹ️ מידע ושיתוף',
+        settings_terms_row: '📜 הוראות שימוש ותנאים',
+        settings_invite_row: '👥 הזמנת חברים למעגל',
+        section_account: '🔐 חשבון',
+        btn_logout: '🚪 התנתק והירשם מחדש',
+        settings_terms_title: 'הוראות שימוש',
+        nav_home: 'בית',
+        nav_circle: 'מעגל',
+        nav_history: 'היסטוריה',
+        nav_invest: 'השקעות',
+        toast_accept_terms: 'יש לאשר את תנאי השימוש',
+        toast_welcome: 'ברוך הבא, {name}! 🎉',
+        toast_fill_all: 'נא למלא את כל השדות',
+        toast_password_short: 'הסיסמה חייבת להכיל לפחות 6 תווים',
+        toast_name_moderation: 'השם שהוזן לא עומד בכללי הקהילה',
+        toast_login_needs_firebase: 'התחברות דורשת הגדרת Firebase (ראו FIREBASE-SETUP)',
+        toast_welcome_back: 'ברוך/ה הבא/ה בחזרה! 👋',
+        auth_error_email_in_use: 'האימייל כבר רשום במערכת, נסה/י להתחבר',
+        auth_error_invalid_email: 'כתובת אימייל לא תקינה',
+        auth_error_weak_password: 'הסיסמה חלשה מדי',
+        auth_error_user_not_found: 'לא נמצא משתמש עם אימייל זה',
+        auth_error_wrong_password: 'סיסמה שגויה',
+        auth_error_invalid_credential: 'פרטי ההתחברות שגויים',
+        auth_error_generic: 'אירעה שגיאה, נסה/י שוב',
+        toast_choose_category: 'נא לבחור קטגוריה',
+        toast_enter_amount: 'נא להזין סכום',
+        toast_desc_moderation: 'התיאור לא עומד בכללי הקהילה, נא לנסח מחדש',
+        toast_skip_saved: 'דילוג נשמר! ✓',
+        toast_purchase_saved: 'קנייה נרשמה 🛒',
+        toast_circle_name_required: 'נא להזין שם למעגל',
+        toast_circle_name_moderation: 'שם לא הולם, נא לבחור שם אחר',
+        toast_need_login_create: 'יש להתחבר כדי ליצור מעגל',
+        toast_circle_created: 'המעגל נוצר! 🎉',
+        toast_circle_create_error: 'שגיאה ביצירת מעגל',
+        toast_invite_code_required: 'נא להזין קוד הזמנה',
+        toast_need_login_join: 'יש להתחבר כדי להצטרף למעגל',
+        toast_code_not_found: 'קוד לא נמצא, בדוק/י ונסה/י שוב',
+        toast_circle_joined: 'הצטרפת למעגל! 🤝',
+        toast_circle_join_error: 'שגיאה בהצטרפות למעגל',
+        toast_circle_not_found: 'המעגל לא נמצא',
+        toast_report_thanks: 'דיווחת על התוכן, תודה 🙏',
+        invite_message_template: 'הצטרפ/י למעגל החיסכון שלנו "{circleName}" ב-SKIPAPP! 🎯\nקוד ההזמנה: {code}',
+        share_invite_title: 'הזמנה למעגל SKIPAPP',
+        toast_invite_copied: 'טקסט ההזמנה הועתק! 📋',
+        toast_no_contact_picker: 'הדפדפן שלך לא תומך בבחירת אנשי קשר. נסה WhatsApp או SMS',
+        confirm_leave_circle: 'לעזוב את המעגל?',
+        toast_left_circle: 'עזבת את המעגל',
+        toast_leave_circle_error: 'שגיאה בעזיבת המעגל',
+        toast_goal_fill: 'נא למלא יעד וסכום',
+        toast_goal_saved: 'היעד נשמר! 🎯',
+        toast_settings_fill: 'נא למלא שם וגיל',
+        toast_settings_saved: 'ההגדרות נשמרו! ✓',
+        confirm_reset: 'האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים יימחקו.',
+        goal_progress_template: '₪{saved} מתוך ₪{target} ({pct}%)',
+        member_stats_template: '🎯 {skips} דילוגים · 🔥 {streak} ימים · 💰 ₪{saved}',
+        feed_text_template: '<b>{name}</b> דילג/ה על {desc} 💚',
+        feed_amount_template: 'חסכ/ה ₪{amount}'
+      },
+      en: {
+        app_title: 'SKIPAPP - Smart Savings Circle',
+        welcome_subtitle_html: 'The smart savings circle 💚<br>Skip small expenses together with your circle, and reach shared goals!',
+        welcome_btn: "Let's start! 🚀",
+        welcome_login_link: 'I already have an account',
+        terms_title: '📜 Terms of Use',
+        terms_content_html: `
+          <h3>Welcome to SKIPAPP!</h3>
+          <p>The app helps you and your circle of friends or family save together, and reach personal savings goals.</p>
+          <h3>App Purpose</h3>
+          <p>To help you build awareness of small expenses and understand the compound power of small savings over time - together with the people close to you. The app is intended for personal savings and expense-tracking purposes only.</p>
+          <h3>Sharing in a Circle</h3>
+          <p>If you join a social circle, the skip details you choose to log (category, description and amount) will be visible only to your circle members - not to the public. Any member can report inappropriate content, and it will be automatically hidden after a few reports.</p>
+          <h3>Data Collection</h3>
+          <p>The app collects data to operate social circles and for anonymous statistical purposes. The data is not shared with external parties.</p>
+          <h3>Privacy</h3>
+          <p>We are committed to protecting your privacy. Data is stored securely.</p>
+          <h3>Responsible Use</h3>
+          <p>The app provides educational tools only and does not constitute professional financial advice.</p>
+        `,
+        terms_agree_label: 'I have read and agree to the terms of use',
+        btn_accept: 'Continue to registration',
+        register_title: '📝 Sign Up',
+        register_subtitle: 'Tell us a bit about yourself',
+        label_name: 'Full name',
+        placeholder_name: 'Enter your name',
+        label_age: 'Age',
+        label_gender: 'Gender',
+        gender_choose: 'Choose',
+        gender_male: 'Male',
+        gender_female: 'Female',
+        gender_other: 'Other',
+        label_email: 'Email',
+        label_password: 'Password',
+        placeholder_password: 'At least 6 characters',
+        placeholder_password_login: 'Your password',
+        label_language: 'Preferred language',
+        lang_he: 'עברית',
+        lang_en: 'English',
+        btn_start_saving: 'Start saving! 💰',
+        have_account: 'Already have an account?',
+        login_here: 'Log in here',
+        login_title: '🔑 Log In',
+        login_subtitle: 'Sign in to your existing account',
+        btn_login: 'Log in 🔓',
+        no_account: "Don't have an account?",
+        register_here: 'Sign up here',
+        greeting: 'Hello,',
+        stat_skips: 'Skips',
+        stat_streak: 'Day streak',
+        stat_saved: 'Saved',
+        action_add_skip_title: 'Add a skip',
+        action_add_skip_desc: 'Log a purchase you skipped',
+        action_add_purchase_title: 'Add a purchase',
+        action_add_purchase_desc: 'Log a purchase you made',
+        action_circle_title: 'My circle',
+        action_circle_desc: 'See what friends skipped and saved',
+        action_goal_title: 'My savings goal',
+        action_goal_desc: "Set what you're saving for",
+        action_history_title: 'History',
+        action_history_desc: 'View all your activity',
+        action_invest_title: 'Investment options',
+        action_invest_desc: 'Learn how to invest your savings',
+        skip_form_title: 'Add a skip',
+        skip_form_question: 'What did you skip today?',
+        label_desc: 'Short description',
+        placeholder_skip_desc: 'e.g. Morning coffee',
+        skip_share_note: "If you're in a circle, this skip will be shared with your circle members 💚",
+        btn_save_skip: 'Save skip ✓',
+        purchase_form_title: 'Add a purchase',
+        purchase_form_question: 'What did you buy today?',
+        placeholder_purchase_desc: 'e.g. Lunch',
+        btn_save_purchase: 'Save purchase 🛒',
+        cat_food: 'Food',
+        cat_drink: 'Drinks',
+        cat_fun: 'Fun',
+        cat_shopping: 'Shopping',
+        cat_transport: 'Transport',
+        cat_other: 'Other',
+        history_title: 'History',
+        history_empty_title: 'No activity yet',
+        history_empty_sub: 'Start logging skips and purchases!',
+        invest_title: 'Investment options',
+        invest_tab_adult: 'Adults (18+)',
+        invest_tab_youth: 'Youth',
+        invest_link: '🌐 Website',
+        invest_pillow_title: 'Pillow - Smart Savings',
+        invest_pillow_desc: 'An automatic savings app with daily returns. Minimum ₪1.',
+        invest_etoro_title: 'eToro - Capital Market Trading',
+        invest_etoro_desc: 'An international platform for trading stocks, crypto and more. Minimum $50.',
+        invest_meitav_title: 'Meitav Dash - Mutual Funds',
+        invest_meitav_desc: 'A leading Israeli investment house with a range of mutual funds.',
+        invest_kidsavings_title: 'Savings for Every Child',
+        invest_kidsavings_desc: 'A government long-term savings program for children. You can choose an investment track.',
+        invest_hapoalim_title: 'Bank Hapoalim - Youth',
+        invest_hapoalim_desc: 'A youth savings account with special benefits.',
+        invest_leumi_title: 'Bank Leumi - Youth',
+        invest_leumi_desc: 'Dedicated savings plans for ages 12-18.',
+        circle_title: 'My Circle',
+        circle_no_firebase_1: '🔧 The social circle feature requires a Firebase connection (Firestore + Auth).',
+        circle_no_firebase_2: 'See the FIREBASE-SETUP file in the project for setup instructions.',
+        circle_create_title: '✨ Create a new circle',
+        placeholder_circle_name: 'Circle name (e.g. Work friends)',
+        btn_create_circle: 'Create circle 🎉',
+        circle_join_title: '🤝 Join an existing circle',
+        placeholder_invite_code: 'Invite code',
+        btn_join_circle: 'Join circle 🤝',
+        invite_code_label: 'Invite code:',
+        btn_share: '📤 Share',
+        btn_whatsapp: '💬 WhatsApp',
+        btn_sms: '✉️ SMS',
+        btn_contacts: '📇 Contacts',
+        btn_leave_circle: 'Leave circle',
+        section_members: '👥 Circle members',
+        section_feed: '💚 What your friends skipped',
+        no_members: 'No members in the circle yet',
+        no_feed: 'No shared skips yet',
+        member_default_name: 'Member',
+        report_title: 'Report inappropriate content',
+        goal_title: 'My savings goal',
+        label_goal_title: "What's your goal?",
+        placeholder_goal_title: 'e.g. Trip to Eilat',
+        label_goal_target: 'How much do you want to save?',
+        label_goal_whatfor: 'What will you do with it when you reach your goal?',
+        placeholder_goal_whatfor: 'Tell us...',
+        btn_save_goal: 'Save goal 🎯',
+        settings_title: 'Account Settings',
+        section_profile: '👤 Profile',
+        settings_name_placeholder: 'Your name',
+        section_preferences: '🎨 Preferences',
+        brightness_label: 'Screen brightness:',
+        btn_save_settings: 'Save changes ✓',
+        section_info_share: 'ℹ️ Info & Sharing',
+        settings_terms_row: '📜 Terms of use & instructions',
+        settings_invite_row: '👥 Invite friends to the circle',
+        section_account: '🔐 Account',
+        btn_logout: '🚪 Log out & re-register',
+        settings_terms_title: 'Terms of use',
+        nav_home: 'Home',
+        nav_circle: 'Circle',
+        nav_history: 'History',
+        nav_invest: 'Invest',
+        toast_accept_terms: 'Please agree to the terms of use',
+        toast_welcome: 'Welcome, {name}! 🎉',
+        toast_fill_all: 'Please fill in all fields',
+        toast_password_short: 'Password must be at least 6 characters',
+        toast_name_moderation: 'The name entered does not meet community guidelines',
+        toast_login_needs_firebase: 'Login requires Firebase setup (see FIREBASE-SETUP)',
+        toast_welcome_back: 'Welcome back! 👋',
+        auth_error_email_in_use: 'This email is already registered, try logging in',
+        auth_error_invalid_email: 'Invalid email address',
+        auth_error_weak_password: 'Password is too weak',
+        auth_error_user_not_found: 'No user found with this email',
+        auth_error_wrong_password: 'Incorrect password',
+        auth_error_invalid_credential: 'Invalid login credentials',
+        auth_error_generic: 'An error occurred, please try again',
+        toast_choose_category: 'Please choose a category',
+        toast_enter_amount: 'Please enter an amount',
+        toast_desc_moderation: 'The description does not meet community guidelines, please rephrase',
+        toast_skip_saved: 'Skip saved! ✓',
+        toast_purchase_saved: 'Purchase logged 🛒',
+        toast_circle_name_required: 'Please enter a circle name',
+        toast_circle_name_moderation: 'Inappropriate name, please choose another',
+        toast_need_login_create: 'You must be logged in to create a circle',
+        toast_circle_created: 'Circle created! 🎉',
+        toast_circle_create_error: 'Error creating circle',
+        toast_invite_code_required: 'Please enter an invite code',
+        toast_need_login_join: 'You must be logged in to join a circle',
+        toast_code_not_found: 'Code not found, please check and try again',
+        toast_circle_joined: 'You joined the circle! 🤝',
+        toast_circle_join_error: 'Error joining circle',
+        toast_circle_not_found: 'Circle not found',
+        toast_report_thanks: 'Thanks for the report 🙏',
+        invite_message_template: 'Join our savings circle "{circleName}" on SKIPAPP! 🎯\nInvite code: {code}',
+        share_invite_title: 'SKIPAPP Circle Invite',
+        toast_invite_copied: 'Invite text copied! 📋',
+        toast_no_contact_picker: "Your browser doesn't support picking contacts. Try WhatsApp or SMS",
+        confirm_leave_circle: 'Leave this circle?',
+        toast_left_circle: 'You left the circle',
+        toast_leave_circle_error: 'Error leaving circle',
+        toast_goal_fill: 'Please fill in a goal and amount',
+        toast_goal_saved: 'Goal saved! 🎯',
+        toast_settings_fill: 'Please fill in your name and age',
+        toast_settings_saved: 'Settings saved! ✓',
+        confirm_reset: 'Are you sure you want to start over? All data will be deleted.',
+        goal_progress_template: '₪{saved} of ₪{target} ({pct}%)',
+        member_stats_template: '🎯 {skips} skips · 🔥 {streak} days · 💰 ₪{saved}',
+        feed_text_template: '<b>{name}</b> skipped {desc} 💚',
+        feed_amount_template: 'saved ₪{amount}'
+      }
+    };
+
+    const CATEGORY_KEY_TO_LABEL_KEY = { food: 'cat_food', drink: 'cat_drink', fun: 'cat_fun', shopping: 'cat_shopping', transport: 'cat_transport', other: 'cat_other' };
+    function categoryLabel(key) {
+      return t(CATEGORY_KEY_TO_LABEL_KEY[key] || 'cat_other');
+    }
+
+    function t(key, vars) {
+      let str = (translations[currentLang] && translations[currentLang][key]) || translations.he[key] || key;
+      if (vars) {
+        Object.keys(vars).forEach(k => {
+          str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]);
+        });
+      }
+      return str;
+    }
+
+    function applyLanguage(lang) {
+      currentLang = lang === 'en' ? 'en' : 'he';
+      document.documentElement.setAttribute('lang', currentLang);
+      document.getElementById('page-title').textContent = t('app_title');
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t(el.getAttribute('data-i18n'));
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        el.innerHTML = t(el.getAttribute('data-i18n-html'));
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
+      });
+      document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
+      });
+
+      // Re-render any dynamic content currently on screen
+      if (document.getElementById('dashboard').classList.contains('active')) updateDashboard();
+      if (document.getElementById('history-screen').classList.contains('active')) updateHistory();
+      if (document.getElementById('circle-screen').classList.contains('active')) {
+        renderMembers(lastMembers);
+        renderFeed(lastFeedPosts);
+      }
+      if (document.getElementById('goal-screen').classList.contains('active')) updateGoalScreen();
+    }
+
     // ========== NAVIGATION ==========
     function goTo(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -894,7 +1328,7 @@
     function acceptTerms() {
       const checkbox = document.getElementById('terms-agree');
       if (!checkbox || !checkbox.checked) {
-        showToast('יש לאשר את תנאי השימוש');
+        showToast(t('toast_accept_terms'));
         return;
       }
       app.termsAccepted = true;
@@ -906,14 +1340,14 @@
     // ========== AUTH HELPERS ==========
     function friendlyAuthError(err) {
       const map = {
-        'auth/email-already-in-use': 'האימייל כבר רשום במערכת, נסה/י להתחבר',
-        'auth/invalid-email': 'כתובת אימייל לא תקינה',
-        'auth/weak-password': 'הסיסמה חלשה מדי',
-        'auth/user-not-found': 'לא נמצא משתמש עם אימייל זה',
-        'auth/wrong-password': 'סיסמה שגויה',
-        'auth/invalid-credential': 'פרטי ההתחברות שגויים'
+        'auth/email-already-in-use': 'auth_error_email_in_use',
+        'auth/invalid-email': 'auth_error_invalid_email',
+        'auth/weak-password': 'auth_error_weak_password',
+        'auth/user-not-found': 'auth_error_user_not_found',
+        'auth/wrong-password': 'auth_error_wrong_password',
+        'auth/invalid-credential': 'auth_error_invalid_credential'
       };
-      return (err && map[err.code]) || 'אירעה שגיאה, נסה/י שוב';
+      return t((err && map[err.code]) || 'auth_error_generic');
     }
 
     // ========== REGISTRATION ==========
@@ -928,15 +1362,15 @@
       const password = document.getElementById('reg-password').value;
 
       if (!name || !age || !gender || !email || !password) {
-        showToast('נא למלא את כל השדות');
+        showToast(t('toast_fill_all'));
         return false;
       }
       if (password.length < 6) {
-        showToast('הסיסמה חייבת להכיל לפחות 6 תווים');
+        showToast(t('toast_password_short'));
         return false;
       }
       if (!moderateText(name)) {
-        showToast('השם שהוזן לא עומד בכללי הקהילה');
+        showToast(t('toast_name_moderation'));
         return false;
       }
 
@@ -955,8 +1389,9 @@
         }
       }
 
-      app.user = { name, age, gender, language, email, registeredAt: new Date().toISOString(), circleId: null, goal: null };
+      app.user = { name, age, gender, language, email, brightness: 100, registeredAt: new Date().toISOString(), circleId: null, goal: null };
       save();
+      applyLanguage(language);
 
       // Set user properties for analytics
       setUserProperties({
@@ -970,7 +1405,7 @@
         gender: gender
       });
 
-      showToast('ברוך הבא, ' + name + '! 🎉');
+      showToast(t('toast_welcome', { name }));
       goTo('dashboard');
       return false;
     }
@@ -979,7 +1414,7 @@
       e.preventDefault();
 
       if (!isFirebaseReady()) {
-        showToast('התחברות דורשת הגדרת Firebase (ראו FIREBASE-SETUP)');
+        showToast(t('toast_login_needs_firebase'));
         return false;
       }
 
@@ -1000,8 +1435,9 @@
           };
         }
         save();
+        applyLanguage(app.user.language || 'he');
         trackEvent('login');
-        showToast('ברוך/ה הבא/ה בחזרה! 👋');
+        showToast(t('toast_welcome_back'));
         goTo('dashboard');
       } catch (err) {
         console.error(err);
@@ -1033,15 +1469,15 @@
       const amount = parseFloat(document.getElementById('skip-amount').value);
 
       if (!selectedCategory) {
-        showToast('נא לבחור קטגוריה');
+        showToast(t('toast_choose_category'));
         return;
       }
       if (!amount || amount <= 0) {
-        showToast('נא להזין סכום');
+        showToast(t('toast_enter_amount'));
         return;
       }
       if (desc && !moderateText(desc)) {
-        showToast('התיאור לא עומד בכללי הקהילה, נא לנסח מחדש');
+        showToast(t('toast_desc_moderation'));
         return;
       }
 
@@ -1049,7 +1485,7 @@
         id: Date.now(),
         type: 'skip',
         category: selectedCategory,
-        description: desc || selectedCategory,
+        description: desc || categoryLabel(selectedCategory),
         amount: amount,
         date: new Date().toISOString(),
         hebrewDate: getHebrewDate()
@@ -1064,7 +1500,7 @@
         amount: amount
       });
 
-      showToast('דילוג נשמר! ✓');
+      showToast(t('toast_skip_saved'));
 
       if (isFirebaseReady() && currentUser && app.user.circleId) {
         syncMemberStats();
@@ -1085,15 +1521,15 @@
       const amount = parseFloat(document.getElementById('purchase-amount').value);
 
       if (!selectedCategory) {
-        showToast('נא לבחור קטגוריה');
+        showToast(t('toast_choose_category'));
         return;
       }
       if (!amount || amount <= 0) {
-        showToast('נא להזין סכום');
+        showToast(t('toast_enter_amount'));
         return;
       }
       if (desc && !moderateText(desc)) {
-        showToast('התיאור לא עומד בכללי הקהילה, נא לנסח מחדש');
+        showToast(t('toast_desc_moderation'));
         return;
       }
 
@@ -1101,7 +1537,7 @@
         id: Date.now(),
         type: 'purchase',
         category: selectedCategory,
-        description: desc || selectedCategory,
+        description: desc || categoryLabel(selectedCategory),
         amount: amount,
         date: new Date().toISOString(),
         hebrewDate: getHebrewDate()
@@ -1115,7 +1551,7 @@
         amount: amount
       });
 
-      showToast('קנייה נרשמה 🛒');
+      showToast(t('toast_purchase_saved'));
 
       // Clear form
       document.getElementById('purchase-desc').value = '';
@@ -1184,7 +1620,7 @@
         goalCard.style.display = 'block';
         document.getElementById('goal-card-title').textContent = '🎯 ' + g.title;
         document.getElementById('goal-progress-fill').style.width = pct + '%';
-        document.getElementById('goal-card-sub').textContent = `₪${totalSaved} מתוך ₪${g.targetAmount} (${pct}%)`;
+        document.getElementById('goal-card-sub').textContent = t('goal_progress_template', { saved: totalSaved, target: g.targetAmount, pct });
       } else {
         goalCard.style.display = 'none';
       }
@@ -1195,7 +1631,7 @@
       const allItems = [...app.skips, ...app.purchases].sort((a, b) => new Date(b.date) - new Date(a.date));
 
       if (allItems.length === 0) {
-        list.innerHTML = '<div class="history-empty"><p>עדיין אין פעילות</p><p style="font-size: 13px; margin-top: 8px;">התחל לתעד דילוגים וקניות!</p></div>';
+        list.innerHTML = `<div class="history-empty"><p>${t('history_empty_title')}</p><p style="font-size: 13px; margin-top: 8px;">${t('history_empty_sub')}</p></div>`;
         return;
       }
 
@@ -1272,9 +1708,9 @@
 
     async function createCircle() {
       const name = document.getElementById('new-circle-name').value.trim();
-      if (!name) { showToast('נא להזין שם למעגל'); return; }
-      if (!moderateText(name)) { showToast('שם לא הולם, נא לבחור שם אחר'); return; }
-      if (!currentUser) { showToast('יש להתחבר כדי ליצור מעגל'); return; }
+      if (!name) { showToast(t('toast_circle_name_required')); return; }
+      if (!moderateText(name)) { showToast(t('toast_circle_name_moderation')); return; }
+      if (!currentUser) { showToast(t('toast_need_login_create')); return; }
 
       try {
         const inviteCode = generateInviteCode();
@@ -1290,22 +1726,22 @@
         app.user.circleId = circleRef.id;
         save();
         trackEvent('circle_created');
-        showToast('המעגל נוצר! 🎉');
+        showToast(t('toast_circle_created'));
         goTo('circle-screen');
       } catch (e) {
         console.error(e);
-        showToast('שגיאה ביצירת מעגל');
+        showToast(t('toast_circle_create_error'));
       }
     }
 
     async function joinCircleWithCode() {
       const code = document.getElementById('join-circle-code').value.trim().toUpperCase();
-      if (!code) { showToast('נא להזין קוד הזמנה'); return; }
-      if (!currentUser) { showToast('יש להתחבר כדי להצטרף למעגל'); return; }
+      if (!code) { showToast(t('toast_invite_code_required')); return; }
+      if (!currentUser) { showToast(t('toast_need_login_join')); return; }
 
       try {
         const q = await db.collection('circles').where('inviteCode', '==', code).limit(1).get();
-        if (q.empty) { showToast('קוד לא נמצא, בדוק/י ונסה/י שוב'); return; }
+        if (q.empty) { showToast(t('toast_code_not_found')); return; }
 
         const circleDoc = q.docs[0];
         await circleDoc.ref.update({ memberIds: firebase.firestore.FieldValue.arrayUnion(currentUser.uid) });
@@ -1315,18 +1751,18 @@
         app.user.circleId = circleDoc.id;
         save();
         trackEvent('circle_joined');
-        showToast('הצטרפת למעגל! 🤝');
+        showToast(t('toast_circle_joined'));
         goTo('circle-screen');
       } catch (e) {
         console.error(e);
-        showToast('שגיאה בהצטרפות למעגל');
+        showToast(t('toast_circle_join_error'));
       }
     }
 
     async function loadCircle(circleId) {
       const circleDoc = await db.collection('circles').doc(circleId).get();
       if (!circleDoc.exists) {
-        showToast('המעגל לא נמצא');
+        showToast(t('toast_circle_not_found'));
         app.user.circleId = null;
         save();
         updateCircleScreen();
@@ -1343,6 +1779,7 @@
       memberListUnsub = db.collection('circles').doc(circleId).collection('members').onSnapshot(snap => {
         const members = [];
         snap.forEach(d => members.push({ uid: d.id, ...d.data() }));
+        lastMembers = members;
         renderMembers(members);
       });
 
@@ -1359,7 +1796,7 @@
     function renderMembers(members) {
       const list = document.getElementById('member-list');
       if (members.length === 0) {
-        list.innerHTML = '<div class="history-empty"><p>אין עדיין חברים במעגל</p></div>';
+        list.innerHTML = `<div class="history-empty"><p>${t('no_members')}</p></div>`;
         return;
       }
       list.innerHTML = members.map(m => {
@@ -1374,8 +1811,8 @@
           <div class="member-card">
             <div class="member-avatar" style="background:${color};">${initial}</div>
             <div class="member-info">
-              <div class="member-name">${escapeHtml(m.name || 'חבר/ה')}</div>
-              <div class="member-stats">🎯 ${m.skipCount || 0} דילוגים · 🔥 ${m.streak || 0} ימים · 💰 ₪${m.totalSaved || 0}</div>
+              <div class="member-name">${escapeHtml(m.name || t('member_default_name'))}</div>
+              <div class="member-stats">${t('member_stats_template', { skips: m.skipCount || 0, streak: m.streak || 0, saved: m.totalSaved || 0 })}</div>
               ${goalHtml}
             </div>
           </div>
@@ -1389,7 +1826,7 @@
       const list = document.getElementById('feed-list');
       const visible = posts.filter(p => !(p.reportedBy && p.reportedBy.length >= 2));
       if (visible.length === 0) {
-        list.innerHTML = '<div class="history-empty"><p>עדיין אין דילוגים משותפים</p></div>';
+        list.innerHTML = `<div class="history-empty"><p>${t('no_feed')}</p></div>`;
         return;
       }
       list.innerHTML = visible.map(p => {
@@ -1409,11 +1846,11 @@
           <div class="feed-item">
             <div class="feed-avatar" style="background:${colorForUid(p.uid)};">${escapeHtml((p.name || '?').charAt(0))}</div>
             <div class="feed-info">
-              <div class="feed-text"><b>${escapeHtml(p.name)}</b> דילג/ה על ${escapeHtml(p.description)} 💚</div>
-              <div class="feed-amount">חסכ/ה ₪${p.amount}</div>
+              <div class="feed-text">${t('feed_text_template', { name: escapeHtml(p.name), desc: escapeHtml(p.description) })}</div>
+              <div class="feed-amount">${t('feed_amount_template', { amount: p.amount })}</div>
               <div class="feed-reactions">${reactionsHtml}</div>
             </div>
-            <button class="report-btn" onclick="reportPost('${p.id}')" ${reported ? 'disabled' : ''} title="דווח על תוכן לא הולם">🚩</button>
+            <button class="report-btn" onclick="reportPost('${p.id}')" ${reported ? 'disabled' : ''} title="${t('report_title')}">🚩</button>
           </div>
         `;
       }).join('');
@@ -1437,7 +1874,7 @@
       db.collection('circles').doc(currentCircle.id).collection('feed').doc(postId).update({
         reportedBy: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
       }).catch(e => console.error(e));
-      showToast('דיווחת על התוכן, תודה 🙏');
+      showToast(t('toast_report_thanks'));
     }
 
     function syncMemberStats() {
@@ -1463,17 +1900,17 @@
 
     function inviteMessage() {
       if (!currentCircle) return '';
-      return `הצטרפ/י למעגל החיסכון שלנו "${currentCircle.name}" ב-SKIPAPP! 🎯\nקוד ההזמנה: ${currentCircle.inviteCode}`;
+      return t('invite_message_template', { circleName: currentCircle.name, code: currentCircle.inviteCode });
     }
 
     function shareInvite() {
       if (!currentCircle) return;
       const text = inviteMessage();
       if (navigator.share) {
-        navigator.share({ title: 'הזמנה למעגל SKIPAPP', text: text });
+        navigator.share({ title: t('share_invite_title'), text: text });
       } else {
         navigator.clipboard.writeText(text);
-        showToast('טקסט ההזמנה הועתק! 📋');
+        showToast(t('toast_invite_copied'));
       }
       trackEvent('circle_invite_shared');
     }
@@ -1499,14 +1936,14 @@
 
     async function inviteFromContacts() {
       if (!supportsContactPicker()) {
-        showToast('הדפדפן שלך לא תומך בבחירת אנשי קשר. נסה WhatsApp או SMS');
+        showToast(t('toast_no_contact_picker'));
         return;
       }
       try {
         const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: true });
         if (!contacts.length) return;
         pickedContacts = contacts.map(c => ({
-          name: (c.name && c.name[0]) || 'חבר/ה',
+          name: (c.name && c.name[0]) || t('member_default_name'),
           tel: (c.tel && c.tel[0]) || ''
         }));
         renderPickedContacts();
@@ -1553,7 +1990,7 @@
     }
 
     async function leaveCircle() {
-      if (!confirm('לעזוב את המעגל?')) return;
+      if (!confirm(t('confirm_leave_circle'))) return;
       if (!currentCircle || !currentUser) return;
 
       try {
@@ -1566,11 +2003,11 @@
         if (memberListUnsub) memberListUnsub();
         if (feedListUnsub) feedListUnsub();
         currentCircle = null;
-        showToast('עזבת את המעגל');
+        showToast(t('toast_left_circle'));
         goTo('circle-screen');
       } catch (e) {
         console.error(e);
-        showToast('שגיאה בעזיבת המעגל');
+        showToast(t('toast_leave_circle_error'));
       }
     }
 
@@ -1586,7 +2023,7 @@
         card.innerHTML = `
           <div class="goal-card-title">🎯 ${escapeHtml(g.title)}</div>
           <div class="goal-progress-bar"><div class="goal-progress-fill" style="width:${pct}%;"></div></div>
-          <div class="goal-card-sub">₪${totalSaved} מתוך ₪${g.targetAmount} (${pct}%)</div>
+          <div class="goal-card-sub">${t('goal_progress_template', { saved: totalSaved, target: g.targetAmount, pct })}</div>
           ${g.whatFor ? `<div class="goal-whatfor">💭 ${escapeHtml(g.whatFor)}</div>` : ''}
         `;
         document.getElementById('goal-title').value = g.title;
@@ -1603,11 +2040,11 @@
       const whatFor = document.getElementById('goal-whatfor').value.trim();
 
       if (!title || !targetAmount || targetAmount <= 0) {
-        showToast('נא למלא יעד וסכום');
+        showToast(t('toast_goal_fill'));
         return;
       }
       if (!moderateText(title) || !moderateText(whatFor)) {
-        showToast('התוכן לא עומד בכללי הקהילה, נא לנסח מחדש');
+        showToast(t('toast_desc_moderation'));
         return;
       }
 
@@ -1624,14 +2061,22 @@
       }
 
       trackEvent('goal_saved', { targetAmount });
-      showToast('היעד נשמר! 🎯');
+      showToast(t('toast_goal_saved'));
       goTo('dashboard');
     }
 
     // ========== ACCOUNT SETTINGS ==========
     function applyBrightness(value) {
-      const appEl = document.querySelector('.app');
-      if (appEl) appEl.style.filter = 'brightness(' + (value / 100) + ')';
+      const overlay = document.getElementById('brightness-overlay');
+      if (!overlay) return;
+      const v = Number(value);
+      if (v < 100) {
+        overlay.style.background = `rgba(0,0,0,${((100 - v) / 100) * 0.6})`;
+      } else if (v > 100) {
+        overlay.style.background = `rgba(255,255,255,${((v - 100) / 30) * 0.35})`;
+      } else {
+        overlay.style.background = 'transparent';
+      }
     }
 
     function previewBrightness(value) {
@@ -1656,11 +2101,11 @@
       const brightness = parseInt(document.getElementById('settings-brightness').value);
 
       if (!name || !age) {
-        showToast('נא למלא שם וגיל');
+        showToast(t('toast_settings_fill'));
         return;
       }
       if (!moderateText(name)) {
-        showToast('השם שהוזן לא עומד בכללי הקהילה');
+        showToast(t('toast_name_moderation'));
         return;
       }
 
@@ -1670,6 +2115,7 @@
       app.user.brightness = brightness;
       save();
 
+      applyLanguage(language);
       applyBrightness(brightness);
       document.getElementById('user-name').textContent = name;
 
@@ -1685,13 +2131,13 @@
       }
 
       trackEvent('settings_updated');
-      showToast('ההגדרות נשמרו! ✓');
+      showToast(t('toast_settings_saved'));
       goTo('dashboard');
     }
 
     // ========== RESET ==========
     function resetApp() {
-      if (confirm('האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים יימחקו.')) {
+      if (confirm(t('confirm_reset'))) {
         trackEvent('app_reset');
         if (isFirebaseReady() && auth.currentUser) {
           auth.signOut().catch(e => console.error(e));
@@ -1712,6 +2158,7 @@
     // ========== INIT ==========
     window.onload = function() {
       if (load()) {
+        applyLanguage((app.user && app.user.language) || 'he');
         if (app.user) {
           // Set user properties on load
           setUserProperties({
@@ -1724,6 +2171,8 @@
         } else if (app.termsAccepted) {
           goTo('register-screen');
         }
+      } else {
+        applyLanguage('he');
       }
 
       if (isFirebaseReady()) {
