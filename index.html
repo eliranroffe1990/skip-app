@@ -87,7 +87,9 @@
 
     /* Dashboard */
     .dashboard { padding: 0; }
-    .dash-header { background: linear-gradient(135deg, var(--primary) 0%, var(--lavender) 100%); padding: 30px 20px 40px; border-radius: 0 0 30px 30px; }
+    .dash-header { position: relative; background: linear-gradient(135deg, var(--primary) 0%, var(--lavender) 100%); padding: 30px 20px 40px; border-radius: 0 0 30px 30px; }
+    .settings-gear-btn { position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.35); border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .settings-gear-btn:hover { background: rgba(255,255,255,0.55); }
     .dash-greeting { color: var(--text); opacity: 0.75; font-size: 16px; }
     .dash-name { color: var(--text); font-size: 28px; font-weight: 700; margin-top: 5px; }
     .dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: -25px 15px 0; }
@@ -183,6 +185,16 @@
     .contact-invite-btn { background: white; border: none; border-radius: 10px; padding: 6px 10px; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--text); font-family: inherit; }
     .contact-invite-btn.whatsapp { background: #25D366; color: white; }
     .leave-circle-btn { background: none; border: none; color: var(--text); opacity: 0.7; font-size: 13px; text-decoration: underline; cursor: pointer; font-family: inherit; }
+
+    /* Settings Screen */
+    .settings-section { margin-bottom: 24px; }
+    .settings-section-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+    .settings-row-btn { display: flex; align-items: center; justify-content: space-between; background: white; border: none; width: 100%; padding: 16px 18px; border-radius: 16px; margin-bottom: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.05); font-family: inherit; font-size: 15px; color: var(--text); font-weight: 600; }
+    .settings-row-btn .arrow { color: var(--text-light); }
+    .settings-row-btn.danger { color: #E06666; }
+    .brightness-row { background: white; border-radius: 16px; padding: 16px 18px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .brightness-row label { display: block; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+    .brightness-slider { width: 100%; accent-color: var(--primary-dark); }
     .section-subtitle { font-size: 16px; font-weight: 700; color: var(--text); margin: 18px 0 12px; }
     .member-list, .feed-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
     .member-card { background: white; border-radius: 18px; padding: 14px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -333,6 +345,7 @@
     <!-- Dashboard -->
     <div class="screen dashboard" id="dashboard">
       <div class="dash-header">
+        <button class="settings-gear-btn" onclick="goTo('settings-screen')" title="הגדרות חשבון">⚙️</button>
         <p class="dash-greeting">שלום,</p>
         <h2 class="dash-name" id="user-name">משתמש</h2>
       </div>
@@ -628,6 +641,89 @@
       <button class="btn-save" onclick="saveGoal()">שמור יעד 🎯</button>
     </div>
 
+    <!-- Settings Screen -->
+    <div class="screen form-screen settings-screen" id="settings-screen">
+      <div class="form-header">
+        <button class="back-btn" onclick="goTo('dashboard')">→</button>
+        <h2 class="form-title">הגדרות חשבון</h2>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">👤 פרופיל</div>
+        <div class="form-group">
+          <label class="form-label">שם מלא</label>
+          <input type="text" class="form-input" id="settings-name" placeholder="השם שלך">
+        </div>
+        <div class="form-group">
+          <label class="form-label">גיל</label>
+          <input type="number" class="form-input" id="settings-age" min="8" max="120" placeholder="גיל">
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">🎨 העדפות</div>
+        <div class="form-group">
+          <label class="form-label">שפה</label>
+          <select class="form-select" id="settings-language">
+            <option value="he">עברית</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div class="brightness-row">
+          <label>בהירות מסך: <span id="brightness-value">100%</span></label>
+          <input type="range" class="brightness-slider" id="settings-brightness" min="60" max="130" step="5" value="100" oninput="previewBrightness(this.value)">
+        </div>
+      </div>
+
+      <button class="btn-save" onclick="saveAccountSettings()">שמור שינויים ✓</button>
+
+      <div class="settings-section" style="margin-top:10px;">
+        <div class="settings-section-title">ℹ️ מידע ושיתוף</div>
+        <button class="settings-row-btn" onclick="goTo('settings-terms-screen')">
+          <span>📜 הוראות שימוש ותנאים</span>
+          <span class="arrow">‹</span>
+        </button>
+        <button class="settings-row-btn" onclick="goTo('circle-screen')">
+          <span>👥 הזמנת חברים למעגל</span>
+          <span class="arrow">‹</span>
+        </button>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">🔐 חשבון</div>
+        <button class="settings-row-btn danger" onclick="resetApp()">
+          <span>🚪 התנתק והירשם מחדש</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Settings: Terms Viewer (read-only) -->
+    <div class="screen terms-screen" id="settings-terms-screen">
+      <div class="form-header" style="margin-bottom:20px;">
+        <button class="back-btn" onclick="goTo('settings-screen')">→</button>
+        <h2 class="form-title">הוראות שימוש</h2>
+      </div>
+      <div class="terms-content" style="max-height:none;">
+        <h3>ברוכים הבאים ל-SKIPAPP!</h3>
+        <p>האפליקציה עוזרת לך ולמעגל החברים או המשפחה שלך לחסוך יחד, ולהגשים יעדי חיסכון אישיים.</p>
+
+        <h3>מטרת האפליקציה</h3>
+        <p>לעזור לך לפתח מודעות להוצאות קטנות ולהבין את הכוח המצטבר של חיסכון קטן לאורך זמן - ביחד עם אנשים קרובים אליך. השימוש באפליקציה הוא למטרת חיסכון וניהול הוצאות אישי בלבד.</p>
+
+        <h3>שיתוף במעגל</h3>
+        <p>אם תצטרפו למעגל חברתי, פרטי הדילוגים שתבחרו לתעד (קטגוריה, תיאור וסכום) יהיו גלויים לחברי המעגל שלכם בלבד - לא לציבור הרחב. כל חבר יכול לדווח על תוכן לא הולם, והוא יוסתר אוטומטית לאחר מספר דיווחים.</p>
+
+        <h3>איסוף נתונים</h3>
+        <p>האפליקציה אוספת נתונים לצורך תפעול המעגלים החברתיים ולצרכים אנונימיים סטטיסטיים. המידע לא משותף עם גורמים חיצוניים.</p>
+
+        <h3>פרטיות</h3>
+        <p>אנו מחויבים להגנה על פרטיותך. הנתונים נשמרים בצורה מאובטחת.</p>
+
+        <h3>שימוש אחראי</h3>
+        <p>האפליקציה מספקת כלים חינוכיים בלבד ואינה מהווה ייעוץ פיננסי מקצועי.</p>
+      </div>
+    </div>
+
     <!-- Bottom Navigation -->
     <nav class="bottom-nav" id="bottom-nav" style="display: none;">
       <button class="nav-item active" onclick="goTo('dashboard')">
@@ -779,6 +875,7 @@
       if (screenId === 'history-screen') updateHistory();
       if (screenId === 'circle-screen') updateCircleScreen();
       if (screenId === 'goal-screen') updateGoalScreen();
+      if (screenId === 'settings-screen') updateSettingsScreen();
     }
 
     // ========== TERMS ==========
@@ -898,6 +995,7 @@
           app.user = {
             name: data.name, age: data.age, gender: data.gender, language: data.language,
             email: data.email, circleId: data.circleId || null, goal: data.goal || null,
+            brightness: data.brightness || 100,
             registeredAt: new Date().toISOString()
           };
         }
@@ -1530,6 +1628,67 @@
       goTo('dashboard');
     }
 
+    // ========== ACCOUNT SETTINGS ==========
+    function applyBrightness(value) {
+      const appEl = document.querySelector('.app');
+      if (appEl) appEl.style.filter = 'brightness(' + (value / 100) + ')';
+    }
+
+    function previewBrightness(value) {
+      document.getElementById('brightness-value').textContent = value + '%';
+      applyBrightness(value);
+    }
+
+    function updateSettingsScreen() {
+      if (!app.user) return;
+      document.getElementById('settings-name').value = app.user.name || '';
+      document.getElementById('settings-age').value = app.user.age || '';
+      document.getElementById('settings-language').value = app.user.language || 'he';
+      const brightness = app.user.brightness || 100;
+      document.getElementById('settings-brightness').value = brightness;
+      document.getElementById('brightness-value').textContent = brightness + '%';
+    }
+
+    async function saveAccountSettings() {
+      const name = document.getElementById('settings-name').value.trim();
+      const age = parseInt(document.getElementById('settings-age').value);
+      const language = document.getElementById('settings-language').value;
+      const brightness = parseInt(document.getElementById('settings-brightness').value);
+
+      if (!name || !age) {
+        showToast('נא למלא שם וגיל');
+        return;
+      }
+      if (!moderateText(name)) {
+        showToast('השם שהוזן לא עומד בכללי הקהילה');
+        return;
+      }
+
+      app.user.name = name;
+      app.user.age = age;
+      app.user.language = language;
+      app.user.brightness = brightness;
+      save();
+
+      applyBrightness(brightness);
+      document.getElementById('user-name').textContent = name;
+
+      setUserProperties({ age_group: getAgeGroup(age), gender: app.user.gender, language });
+
+      if (isFirebaseReady() && currentUser) {
+        try {
+          await db.collection('users').doc(currentUser.uid).update({ name, age, language, brightness });
+          if (app.user.circleId) {
+            await db.collection('circles').doc(app.user.circleId).collection('members').doc(currentUser.uid).set({ name }, { merge: true });
+          }
+        } catch (e) { console.error(e); }
+      }
+
+      trackEvent('settings_updated');
+      showToast('ההגדרות נשמרו! ✓');
+      goTo('dashboard');
+    }
+
     // ========== RESET ==========
     function resetApp() {
       if (confirm('האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים יימחקו.')) {
@@ -1560,6 +1719,7 @@
             gender: app.user.gender,
             language: app.user.language || 'he'
           });
+          if (app.user.brightness) applyBrightness(app.user.brightness);
           goTo('dashboard');
         } else if (app.termsAccepted) {
           goTo('register-screen');
