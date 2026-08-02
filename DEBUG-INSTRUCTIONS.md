@@ -1,3 +1,4 @@
+[DEBUG-INSTRUCTIONS.md](https://github.com/user-attachments/files/30630571/DEBUG-INSTRUCTIONS.md)
 # 🔧 הוראות דיבאג - כפתור "שמור דילוג" לא עובד
 
 ## מה תיקנתי?
