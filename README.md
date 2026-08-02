@@ -1,3 +1,4 @@
+[README.md](https://github.com/user-attachments/files/30630542/README.md)
 [README-SIMPLE.md](https://github.com/user-attachments/files/25799902/README-SIMPLE.md)
 # 📦 SKIPAPP - עדכון v2.0.1
 
