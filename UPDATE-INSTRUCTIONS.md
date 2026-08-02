@@ -1,3 +1,4 @@
+[UPDATE-INSTRUCTIONS.md](https://github.com/user-attachments/files/30630553/UPDATE-INSTRUCTIONS.md)
 # 🚀 SKIPAPP - עדכון v2.0
 
 ## 📋 מה השתנה?
