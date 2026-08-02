@@ -1,13 +1,77 @@
-# 🔥 מדריך התקנת Firebase Analytics ל-SKIPAPP
+# 🔥 מדריך התקנת Firebase ל-SKIPAPP (Auth + Firestore + Analytics)
 
-## מה זה Firebase Analytics?
+## מה זה Firebase?
 
-Firebase Analytics הוא כלי חינמי של Google שנותן לך:
-- ✅ מעקב אחרי משתמשים בזמן אמת
-- ✅ נתונים על גיל, מין, התנהגות
-- ✅ דשבורד מקצועי
-- ✅ ניתוח התנהגותי עמוק
-- ✅ 100% חינמי!
+מגרסה זו של SKIPAPP, האפליקציה היא חברתית - חברי מעגל צריכים לראות אחד את השני
+בזמן אמת ממכשירים שונים. לשם כך האפליקציה משתמשת ב-3 שירותי Firebase:
+
+- ✅ **Authentication** - הרשמה/כניסה עם אימייל וסיסמה
+- ✅ **Firestore** - בסיס נתונים בזמן אמת לשמירת משתמשים, מעגלים, וההוצאות המשותפות
+- ✅ **Analytics** - מעקב אחרי משתמשים, גיל, מין, התנהגות (כמו בעבר)
+
+⚠️ **בלי הגדרת Firebase**, האפליקציה עדיין תעבוד במצב מקומי (localStorage) לתיעוד
+דילוגים/קניות אישי, אך מסך "המעגל שלי" (הזמנת חברים, פיד משותף) יהיה חסום.
+
+---
+
+## 🆕 שלב 0: הפעלת Authentication ו-Firestore
+
+לאחר יצירת הפרויקט (שלב 1 למטה) ולפני השימוש באפליקציה:
+
+### 0.1 הפעלת Authentication
+
+```
+1. בתפריט הצד: Build → Authentication
+2. לחץ "Get started"
+3. בחר בשיטת הכניסה "Email/Password"
+4. הפעל (Enable) ולחץ Save
+```
+
+### 0.2 יצירת בסיס נתונים Firestore
+
+```
+1. בתפריט הצד: Build → Firestore Database
+2. לחץ "Create database"
+3. בחר "Start in production mode"
+4. בחר מיקום שרת (למשל eur3 - אירופה)
+5. לחץ Enable
+```
+
+### 0.3 הגדרת חוקי אבטחה (Security Rules)
+
+```
+1. ב-Firestore Database → לשונית "Rules"
+2. החלף את התוכן בקוד הבא:
+```
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // כל משתמש רואה/עורך רק את המסמך האישי שלו
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // מעגלים ותתי-האוספים שלהם - פתוחים לכל משתמש מאומת
+    // (הרשאות בסיסיות למשתמשים מחוברים בלבד; ניתן להדק בהמשך)
+    match /circles/{circleId} {
+      allow read, write: if request.auth != null;
+
+      match /members/{uid} {
+        allow read, write: if request.auth != null;
+      }
+      match /feed/{postId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+  }
+}
+```
+
+```
+3. לחץ "Publish"
+```
 
 ---
 
@@ -261,6 +325,10 @@ Analytics → Custom Reports → Create Report
 | `skip_added` | category, amount, age, gender | תיעוד דילוג |
 | `purchase_added` | category, amount, age, gender | תיעוד קנייה |
 | `investment_link_clicked` | url | קליק על לינק השקעה |
+| `circle_created` | - | יצירת מעגל חדש |
+| `circle_joined` | - | הצטרפות למעגל עם קוד |
+| `circle_invite_shared` | - | שיתוף קוד הזמנה |
+| `goal_saved` | targetAmount | קביעת/עדכון יעד חיסכון |
 
 ### User Properties
 
