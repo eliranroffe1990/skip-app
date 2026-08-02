@@ -187,6 +187,12 @@
     .feed-info { flex: 1; }
     .feed-text { font-size: 14px; color: var(--text); line-height: 1.5; }
     .feed-amount { font-size: 13px; color: #5FBE95; font-weight: 700; margin-top: 2px; }
+    .feed-reactions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .reaction-btn { background: #F5F5F5; border: none; border-radius: 14px; padding: 4px 10px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: inherit; transition: all 0.2s; }
+    .reaction-btn:hover { transform: translateY(-1px); }
+    .reaction-btn .reaction-count { font-size: 11px; font-weight: 700; color: var(--text-light); }
+    .reaction-btn.active { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
+    .reaction-btn.active .reaction-count { color: var(--text); }
     .report-btn { background: none; border: none; font-size: 16px; cursor: pointer; opacity: 0.5; padding: 6px; }
     .report-btn:hover { opacity: 1; }
     .report-btn:disabled { opacity: 0.25; cursor: default; }
@@ -652,6 +658,7 @@
     let currentCircle = null;
     let memberListUnsub = null;
     let feedListUnsub = null;
+    let lastFeedPosts = [];
 
     try {
       if (firebaseConfigured) {
@@ -1228,6 +1235,7 @@
         .orderBy('createdAt', 'desc').limit(30).onSnapshot(snap => {
           const posts = [];
           snap.forEach(d => posts.push({ id: d.id, ...d.data() }));
+          lastFeedPosts = posts;
           renderFeed(posts);
         });
     }
@@ -1259,6 +1267,8 @@
       }).join('');
     }
 
+    const REACTION_EMOJIS = ['👏', '💪', '🔥'];
+
     function renderFeed(posts) {
       const list = document.getElementById('feed-list');
       const visible = posts.filter(p => !(p.reportedBy && p.reportedBy.length >= 2));
@@ -1268,17 +1278,42 @@
       }
       list.innerHTML = visible.map(p => {
         const reported = currentUser && p.reportedBy && p.reportedBy.includes(currentUser.uid);
+        const reactions = p.reactions || {};
+        const myReaction = currentUser ? reactions[currentUser.uid] : null;
+        const reactionsHtml = REACTION_EMOJIS.map(emoji => {
+          const count = Object.values(reactions).filter(r => r === emoji).length;
+          const active = myReaction === emoji;
+          return `
+            <button class="reaction-btn ${active ? 'active' : ''}" onclick="toggleReaction('${p.id}', '${emoji}')">
+              ${emoji}${count > 0 ? `<span class="reaction-count">${count}</span>` : ''}
+            </button>
+          `;
+        }).join('');
         return `
           <div class="feed-item">
             <div class="feed-avatar" style="background:${colorForUid(p.uid)};">${escapeHtml((p.name || '?').charAt(0))}</div>
             <div class="feed-info">
               <div class="feed-text"><b>${escapeHtml(p.name)}</b> דילג/ה על ${escapeHtml(p.description)} 💚</div>
               <div class="feed-amount">חסכ/ה ₪${p.amount}</div>
+              <div class="feed-reactions">${reactionsHtml}</div>
             </div>
             <button class="report-btn" onclick="reportPost('${p.id}')" ${reported ? 'disabled' : ''} title="דווח על תוכן לא הולם">🚩</button>
           </div>
         `;
       }).join('');
+    }
+
+    function toggleReaction(postId, emoji) {
+      if (!currentUser || !currentCircle) return;
+      const ref = db.collection('circles').doc(currentCircle.id).collection('feed').doc(postId);
+      const post = lastFeedPosts.find(p => p.id === postId);
+      const current = post && post.reactions ? post.reactions[currentUser.uid] : null;
+      const fieldPath = `reactions.${currentUser.uid}`;
+      if (current === emoji) {
+        ref.update({ [fieldPath]: firebase.firestore.FieldValue.delete() }).catch(e => console.error(e));
+      } else {
+        ref.update({ [fieldPath]: emoji }).catch(e => console.error(e));
+      }
     }
 
     function reportPost(postId) {
@@ -1305,7 +1340,8 @@
         description: skip.description,
         amount: skip.amount,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        reportedBy: []
+        reportedBy: [],
+        reactions: {}
       }).catch(e => console.error(e));
     }
 
