@@ -63,11 +63,12 @@
       --welcome-gradient: linear-gradient(180deg, #16352A 0%, #1B1F2A 50%, var(--bg) 100%);
     }
 
-    .app { width: 100%; height: 100vh; max-width: 500px; margin: 0 auto; background: var(--bg); position: relative; overflow: hidden; }
-    @media (min-width: 501px) { body { display: flex; justify-content: center; align-items: center; padding: 20px; } .app { height: 90vh; max-height: 800px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); } }
+    .app { width: 100%; height: 100vh; height: 100dvh; max-width: 500px; margin: 0 auto; background: var(--bg); position: relative; overflow: hidden; }
+    @media (min-width: 501px) { body { display: flex; justify-content: center; align-items: center; padding: 20px; } .app { height: 90vh; height: 90dvh; max-height: 800px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); } }
 
-    .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; background: var(--bg); overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 80px; }
+    .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; background: var(--bg); overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 20px; }
     .screen.active { display: flex; }
+    .screen.has-nav { height: calc(100% - 80px); }
     .brightness-overlay { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
 
     /* Welcome Screen */
@@ -180,14 +181,10 @@
     .invest-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
     .invest-tab { flex: 1; padding: 12px; background: var(--card-bg); border: 2px solid var(--input-border); border-radius: 15px; text-align: center; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s; }
     .invest-tab.active { border-color: var(--primary-dark); background: rgba(181, 234, 215, 0.2); color: var(--text); }
-    .invest-card { background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    .invest-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .invest-card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: linear-gradient(135deg, var(--primary) 0%, var(--lavender) 100%); }
-    .invest-card-title { font-size: 17px; font-weight: 700; color: var(--text); }
-    .invest-card-desc { font-size: 13px; color: var(--text-light); line-height: 1.6; margin-bottom: 15px; }
-    .invest-card-footer { display: flex; gap: 10px; }
-    .invest-link { flex: 1; padding: 12px; background: var(--primary-dark); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; font-family: inherit; }
-    .invest-phone { flex: 1; padding: 12px; background: var(--card-bg); border: 2px solid var(--primary-dark); color: var(--text); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; }
+    .invest-search-card { background: var(--card-bg); border-radius: 20px; padding: 50px 24px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .invest-search-icon { font-size: 40px; margin-bottom: 16px; }
+    .invest-search-text { font-size: 15px; color: var(--text); line-height: 1.6; margin-bottom: 22px; }
+    .invest-search-link { padding: 14px 28px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: var(--text); border: none; border-radius: 16px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 
     /* Circle Screen */
     .circle-screen { padding: 20px; }
@@ -247,7 +244,7 @@
     .report-btn:disabled { opacity: 0.25; cursor: default; }
 
     /* Bottom Nav */
-    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; background: var(--card-bg); padding: 12px 20px 20px; display: flex; justify-content: space-around; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 25px 25px 0 0; z-index: 100; }
+    .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; background: var(--card-bg); padding: 12px 20px 20px; display: flex; justify-content: space-around; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 25px 25px 0 0; z-index: 100; }
     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 15px; border-radius: 15px; transition: all 0.3s; background: none; border: none; font-family: inherit; }
     .nav-item.active { background: rgba(181, 234, 215, 0.3); }
     .nav-icon { font-size: 24px; }
@@ -255,7 +252,7 @@
     .nav-item.active .nav-label { color: var(--text); }
 
     /* Toast */
-    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 14px 28px; border-radius: 30px; font-size: 15px; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 85%; text-align: center; }
+    .toast { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 14px 28px; border-radius: 30px; font-size: 15px; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 85%; text-align: center; }
     .toast.show { opacity: 1; }
   </style>
 </head>
@@ -525,70 +522,17 @@
         <div class="invest-tab" data-i18n="invest_tab_youth" onclick="showInvestTab('youth')">לנוער</div>
       </div>
       <div id="invest-adult">
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">🏦</div>
-            <div class="invest-card-title" data-i18n="invest_pillow_title">Pillow - חיסכון חכם</div>
-          </div>
-          <div class="invest-card-desc" data-i18n="invest_pillow_desc">אפליקציה לחיסכון אוטומטי עם תשואה יומית. מינימום 1₪.</div>
-          <div class="invest-card-footer">
-            <a href="https://www.pillow.co.il" target="_blank" class="invest-link" data-i18n="invest_link">🌐 לאתר</a>
-          </div>
-        </div>
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">📈</div>
-            <div class="invest-card-title" data-i18n="invest_etoro_title">eToro - מסחר בשוק ההון</div>
-          </div>
-          <div class="invest-card-desc" data-i18n="invest_etoro_desc">פלטפורמה בינלאומית למסחר במניות, קריפטו ועוד. מינימום $50.</div>
-          <div class="invest-card-footer">
-            <a href="https://www.etoro.com" target="_blank" class="invest-link" data-i18n="invest_link">🌐 לאתר</a>
-          </div>
-        </div>
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">💼</div>
-            <div class="invest-card-title" data-i18n="invest_meitav_title">מיטב דש - קרנות נאמנות</div>
-          </div>
-          <div class="invest-card-desc" data-i18n="invest_meitav_desc">בית השקעות מוביל בישראל עם מגוון קרנות נאמנות.</div>
-          <div class="invest-card-footer">
-            <a href="https://www.meitav.co.il" target="_blank" class="invest-link" data-i18n="invest_link">🌐 לאתר</a>
-            <a href="tel:*6569" class="invest-phone">📞 *6569</a>
-          </div>
+        <div class="invest-search-card">
+          <div class="invest-search-icon">🔍</div>
+          <p class="invest-search-text" data-i18n="invest_search_adult_text">רוצה/ה ללמוד עוד על חיסכון והשקעות למבוגרים?</p>
+          <button class="invest-search-link" data-i18n="invest_search_btn" onclick="openInvestSearch('adult')">🌐 חפש/י באינטרנט</button>
         </div>
       </div>
       <div id="invest-youth" style="display: none;">
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">👶</div>
-            <div class="invest-card-title" data-i18n="invest_kidsavings_title">חיסכון לכל ילד</div>
-          </div>
-          <div class="invest-card-desc" data-i18n="invest_kidsavings_desc">תוכנית ממשלתית לחיסכון ארוך טווח לילדים. ניתן לבחור מסלול השקעה.</div>
-          <div class="invest-card-footer">
-            <a href="tel:*6050" class="invest-phone">📞 *6050</a>
-          </div>
-        </div>
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">🏧</div>
-            <div class="invest-card-title" data-i18n="invest_hapoalim_title">בנק הפועלים - נוער</div>
-          </div>
-          <div class="invest-card-desc" data-i18n="invest_hapoalim_desc">חשבון חיסכון לנוער עם הטבות מיוחדות.</div>
-          <div class="invest-card-footer">
-            <a href="https://www.bankhapoalim.co.il" target="_blank" class="invest-link" data-i18n="invest_link">🌐 לאתר</a>
-            <a href="tel:*2407" class="invest-phone">📞 *2407</a>
-          </div>
-        </div>
-        <div class="invest-card">
-          <div class="invest-card-header">
-            <div class="invest-card-icon">🏧</div>
-            <div class="invest-card-title" data-i18n="invest_leumi_title">בנק לאומי - נוער</div>
-          </div>
-          <div class="invest-card-desc" data-i18n="invest_leumi_desc">תוכניות חיסכון ייעודיות לגילאי 12-18.</div>
-          <div class="invest-card-footer">
-            <a href="https://www.leumi.co.il" target="_blank" class="invest-link" data-i18n="invest_link">🌐 לאתר</a>
-            <a href="tel:*5522" class="invest-phone">📞 *5522</a>
-          </div>
+        <div class="invest-search-card">
+          <div class="invest-search-icon">🔍</div>
+          <p class="invest-search-text" data-i18n="invest_search_youth_text">רוצה/ה ללמוד עוד על חיסכון לבני נוער?</p>
+          <button class="invest-search-link" data-i18n="invest_search_btn" onclick="openInvestSearch('youth')">🌐 חפש/י באינטרנט</button>
         </div>
       </div>
     </div>
@@ -998,19 +942,9 @@
         invest_title: 'אפיקי השקעה',
         invest_tab_adult: 'למבוגרים (18+)',
         invest_tab_youth: 'לנוער',
-        invest_link: '🌐 לאתר',
-        invest_pillow_title: 'Pillow - חיסכון חכם',
-        invest_pillow_desc: 'אפליקציה לחיסכון אוטומטי עם תשואה יומית. מינימום 1₪.',
-        invest_etoro_title: 'eToro - מסחר בשוק ההון',
-        invest_etoro_desc: 'פלטפורמה בינלאומית למסחר במניות, קריפטו ועוד. מינימום $50.',
-        invest_meitav_title: 'מיטב דש - קרנות נאמנות',
-        invest_meitav_desc: 'בית השקעות מוביל בישראל עם מגוון קרנות נאמנות.',
-        invest_kidsavings_title: 'חיסכון לכל ילד',
-        invest_kidsavings_desc: 'תוכנית ממשלתית לחיסכון ארוך טווח לילדים. ניתן לבחור מסלול השקעה.',
-        invest_hapoalim_title: 'בנק הפועלים - נוער',
-        invest_hapoalim_desc: 'חשבון חיסכון לנוער עם הטבות מיוחדות.',
-        invest_leumi_title: 'בנק לאומי - נוער',
-        invest_leumi_desc: 'תוכניות חיסכון ייעודיות לגילאי 12-18.',
+        invest_search_adult_text: 'רוצה/ה ללמוד עוד על חיסכון והשקעות למבוגרים?',
+        invest_search_youth_text: 'רוצה/ה ללמוד עוד על חיסכון לבני נוער?',
+        invest_search_btn: '🌐 חפש/י באינטרנט',
         circle_title: 'המעגל שלי',
         circle_no_firebase_1: '🔧 תכונת המעגל החברתי דורשת חיבור ל-Firebase (Firestore + Auth).',
         circle_no_firebase_2: 'ראו את קובץ ה-FIREBASE-SETUP בפרויקט להוראות הגדרה.',
@@ -1199,19 +1133,9 @@
         invest_title: 'Investment options',
         invest_tab_adult: 'Adults (18+)',
         invest_tab_youth: 'Youth',
-        invest_link: '🌐 Website',
-        invest_pillow_title: 'Pillow - Smart Savings',
-        invest_pillow_desc: 'An automatic savings app with daily returns. Minimum ₪1.',
-        invest_etoro_title: 'eToro - Capital Market Trading',
-        invest_etoro_desc: 'An international platform for trading stocks, crypto and more. Minimum $50.',
-        invest_meitav_title: 'Meitav Dash - Mutual Funds',
-        invest_meitav_desc: 'A leading Israeli investment house with a range of mutual funds.',
-        invest_kidsavings_title: 'Savings for Every Child',
-        invest_kidsavings_desc: 'A government long-term savings program for children. You can choose an investment track.',
-        invest_hapoalim_title: 'Bank Hapoalim - Youth',
-        invest_hapoalim_desc: 'A youth savings account with special benefits.',
-        invest_leumi_title: 'Bank Leumi - Youth',
-        invest_leumi_desc: 'Dedicated savings plans for ages 12-18.',
+        invest_search_adult_text: 'Want to learn more about savings and investing for adults?',
+        invest_search_youth_text: 'Want to learn more about savings for teenagers?',
+        invest_search_btn: '🌐 Search the web',
         circle_title: 'My Circle',
         circle_no_firebase_1: '🔧 The social circle feature requires a Firebase connection (Firestore + Auth).',
         circle_no_firebase_2: 'See the FIREBASE-SETUP file in the project for setup instructions.',
@@ -1371,6 +1295,7 @@
       // Show/hide bottom nav
       const showNav = ['dashboard', 'circle-screen', 'history-screen', 'investment-screen'].includes(screenId);
       document.getElementById('bottom-nav').style.display = showNav ? 'flex' : 'none';
+      target.classList.toggle('has-nav', showNav);
 
       // Update active nav item
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -1738,6 +1663,16 @@
       document.getElementById('invest-youth').style.display = tab === 'youth' ? 'block' : 'none';
 
       trackEvent('investment_tab_view', { tab: tab });
+    }
+
+    const INVEST_SEARCH_QUERIES = {
+      adult: { he: 'חיסכון והשקעות למבוגרים', en: 'savings and investing for adults' },
+      youth: { he: 'חיסכון לבני נוער', en: 'savings for teenagers' }
+    };
+    function openInvestSearch(audience) {
+      const q = (INVEST_SEARCH_QUERIES[audience] && INVEST_SEARCH_QUERIES[audience][currentLang]) || INVEST_SEARCH_QUERIES[audience].he;
+      window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank');
+      trackEvent('investment_search_click', { audience });
     }
 
     // ========== SOCIAL CIRCLE ==========
